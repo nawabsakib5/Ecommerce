@@ -1,8 +1,9 @@
+
 from django.db import models
 from item.models import Item
 from django.contrib.auth.models import User
 
-# Create your models here.
+
 class Conversation(models.Model):
     item = models.ForeignKey(Item,related_name='conversations' , on_delete=models.CASCADE)
     members = models.ManyToManyField(User, related_name='conversations')

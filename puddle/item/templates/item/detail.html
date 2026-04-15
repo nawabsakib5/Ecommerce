@@ -32,7 +32,7 @@
 
         {% else %}
             <div class="mt-6">
-                <a href="#" class="inline-block px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">Contact Seller</a>
+                <a href="{% url 'conversation:new' item.id %}" class="inline-block px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">Contact Seller</a>
             </div>
         {% endif %}
     </div>
