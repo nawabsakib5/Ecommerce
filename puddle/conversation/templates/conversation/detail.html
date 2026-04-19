@@ -1,5 +1,183 @@
 {% extends "core/base.html" %}
 
+{% block title %}Conversation{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .shell {
+    max-width: 520px;
+    margin: 2rem auto;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 0.5px solid #e4e4e7;
+    font-family: sans-serif;
+    background: #fff;
+  }
+
+  .header {
+    background: #18181b;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hav {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: #6366f1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 500; color: #fff;
+    flex-shrink: 0;
+  }
+  .hname { font-size: 15px; font-weight: 500; color: #fff; flex: 1; }
+
+  .chat-body {
+    background: #f4f4f5;
+    padding: 16px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 420px;
+  }
+
+  .msg-wrap {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .msg-row { display: flex; gap: 8px; align-items: flex-end; }
+  .msg-row.mine { flex-direction: row-reverse; }
+
+  .av-sm {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #6366f1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; color: #fff;
+    flex-shrink: 0;
+  }
+  .av-sm.me { background: #0ea5e9; }
+
+  .bwrap { display: flex; flex-direction: column; max-width: 74%; }
+  .mine .bwrap { align-items: flex-end; }
+
+  .bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+  .theirs .bubble {
+    background: #fff;
+    border: 0.5px solid #e4e4e7;
+    border-bottom-left-radius: 4px;
+    color: #111;
+  }
+  .mine .bubble {
+    background: #6366f1;
+    border-bottom-right-radius: 4px;
+    color: #fff;
+  }
+  .bmeta {
+    font-size: 10px; color: #aaa;
+    margin-top: 4px;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .mine .bmeta { justify-content: flex-end; }
+  .tick { color: #6366f1; }
+
+  /* ── Form ── */
+  .form-area {
+    background: #fff;
+    border-top: 0.5px solid #e4e4e7;
+    padding: 12px 14px;
+    display: flex; align-items: flex-end; gap: 8px;
+  }
+  .form-area p { margin: 0; display: contents; }
+  .form-area label { display: none; }
+  .form-area textarea,
+  .form-area input[type="text"] {
+    flex: 1;
+    background: #f4f4f5;
+    border: 0.5px solid #e4e4e7;
+    border-radius: 22px;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    outline: none; resize: none;
+    font-family: sans-serif; color: #111;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .form-area textarea:focus,
+  .form-area input[type="text"]:focus {
+    border-color: #6366f1;
+    background: #fff;
+  }
+  .send-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: #6366f1;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .send-btn:hover { background: #4f46e5; }
+</style>
+
+<div class="shell">
+
+  <div class="header">
+    <div class="hav">C</div>
+    <p class="hname">Conversation</p>
+  </div>
+
+  <div class="chat-body">
+    {% for message in conversation.messages.all %}
+      <div class="msg-row {% if message.created_by == request.user %}mine{% else %}theirs{% endif %}">
+
+        <div class="av-sm {% if message.created_by == request.user %}me{% endif %}">
+          {{ message.created_by.username|first|upper }}
+        </div>
+
+        <div class="bwrap">
+          <div class="bubble">{{ message.content }}</div>
+          <div class="bmeta">
+            <strong>{{ message.created_by.username }}</strong>
+            &middot; {{ message.created_at }}
+          </div>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+
+  <form method="POST" action="." class="form-area">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="send-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+      </svg>
+    </button>
+  </form>
+
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "core/base.html" %}
+
 {% block title %}Converastion{% endblock %}
 
 
@@ -9,15 +187,22 @@
 
 
 <div class="space-y-6">
-    {% for message in conversations.messages.all %}
+    {% for message in conversation.messages.all %}
 
-        <div class="p-6 flex bg-grey-100 rounded-xl">
+        <div class="p-6 flex {% if message.created_by == request.user %}bg-blue-100{% else %}bg-grey-100 {% endif %} rounded-xl">
             <div>
-                <p class="mb-4"><strong>{{ message.created__by.username }}</strong> @ {{ message.created_at }}</p>
+                <p class="mb-4"><strong>{{ message.created_by.username }}</strong> @ {{ message.created_at }}</p>
                 <p>{{ message.content }}</p>
             </div>
         </div>
     
     {% endfor %}
 </div>
-{% endblock %}
+
+<form method="POST" action="." class="mt-6">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="py-4 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">Send</button>
+</form>   
+
+{% endblock %} {% endcomment %}

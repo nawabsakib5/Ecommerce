@@ -1,5 +1,151 @@
 {% extends 'core/base.html' %}
 
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .page {
+    min-height: 80vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    background: #f4f4f5;
+    font-family: sans-serif;
+  }
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    border: 0.5px solid #e4e4e7;
+    padding: 2rem 2.5rem;
+    width: 100%; max-width: 420px;
+  }
+  .logo {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: #6366f1;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-size: 22px; font-weight: 500; color: #111;
+    margin-bottom: 4px;
+  }
+  .card-sub {
+    font-size: 13px; color: #999;
+    margin-bottom: 1.75rem;
+  }
+  .field { margin-bottom: 1rem; }
+  .field label {
+    display: inline-block;
+    font-size: 12px; font-weight: 500; color: #555;
+    margin-bottom: 6px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: #f4f4f5;
+    border: 0.5px solid #e4e4e7;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #111;
+    outline: none;
+    font-family: sans-serif;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: #6366f1;
+    background: #fff;
+  }
+  .error-box {
+    background: #fef2f2;
+    border: 0.5px solid #fecaca;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px; color: #b91c1c;
+    margin-bottom: 1rem;
+  }
+  .submit-btn {
+    width: 100%;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.25rem;
+  }
+  .submit-btn:hover { background: #4f46e5; }
+</style>
+
+<div class="page">
+  <div class="card">
+
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+        <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+    </div>
+
+    <p class="card-title">Create your account</p>
+    <p class="card-sub">Join Puddle and start buying &amp; selling</p>
+
+    <form method="post" action=".">
+      {% csrf_token %}
+
+      <div class="field mb-3">
+        <label class="inline-block mb-2">Username</label><br>
+        {{ form.username }}
+      </div>
+
+      <div class="field mb-3">
+        <label class="inline-block mb-2">Email</label><br>
+        {{ form.email }}
+      </div>
+
+      <div class="field mb-3">
+        <label class="inline-block mb-2">Password</label><br>
+        {{ form.password1 }}
+      </div>
+
+      <div class="field mb-3">
+        <label class="inline-block mb-2">Repeat Password</label><br>
+        {{ form.password2 }}
+      </div>
+
+      {% if form.errors or form.non_field_errors %}
+        <div class="error-box">
+          {% for field in form %}
+            {{ field.errors }}
+          {% endfor %}
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <button class="submit-btn">Create Account</button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'core/base.html' %}
+
 {% block title %} Sign Up {% endblock  %}
 
 {% block content %}
@@ -44,4 +190,4 @@
     </form>
 </div>
 
-{% endblock %}
+{% endblock %} {% endcomment %}

@@ -1,4 +1,52 @@
 {% extends "core/base.html" %}
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<style>
+  .inbox-wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
+  .pg-title { font-size: 22px; font-weight: 500; margin-bottom: 1.25rem; color: #111; }
+  .conv-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 0.5px solid #e8e8e8; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; text-decoration: none; transition: border-color 0.15s, background 0.12s; }
+  .conv-card:hover { border-color: #bbb; background: #fafafa; }
+  .conv-card img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  .cinfo { flex: 1; min-width: 0; }
+  .r1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .r1 strong { font-size: 14px; font-weight: 500; color: #111; }
+  .time { font-size: 11px; color: #aaa; }
+  .iname { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+
+<div class="inbox-wrap">
+  <h1 class="pg-title">Inbox</h1>
+
+  <div>
+    {% for conversation in conversations %}
+      <a href="{% url 'conversation:detail' conversation.id %}" class="conv-card">
+
+        <img src="{{ conversation.item.image.url }}" alt="{{ conversation.item.name }}">
+
+        <div class="cinfo">
+          {% for member in conversation.members.all %}
+            {% if member != request.user %}
+              <div class="r1">
+                <strong>{{ member.username }}</strong>
+                <span class="time">{{ conversation.modified_at|timesince }} ago</span>
+              </div>
+              <p class="iname">{{ conversation.item.name }}</p>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+{% comment %} {% extends "core/base.html" %}
 
 {% block title %}Inbox{% endblock %}
 
@@ -36,4 +84,4 @@
         </a>
     {% endfor %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}
