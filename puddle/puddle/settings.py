@@ -129,13 +129,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
-
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dxk8k2qkg',
-    'API_KEY': '363587151294176',
-    'API_SECRET': 'r69rvAmZcxKS8L3I0C_doJPur8w',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
+
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'dxk8k2qkg',
+#     'API_KEY': '363587151294176',
+#     'API_SECRET': 'r69rvAmZcxKS8L3I0C_doJPur8w',
+# }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
