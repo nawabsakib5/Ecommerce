@@ -28,6 +28,8 @@ SECRET_KEY = 'django-insecure-f8)u5is$dth%*p^5d#bl)k-xx#0yzepnq42-fkj!28rk6tpa*n
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://web-production-30f2d.up.railway.app']
+
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
@@ -135,11 +137,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# CLOUDINARY_STORAGE = {
-#     'CLOUD_NAME': 'dxk8k2qkg',
-#     'API_KEY': '363587151294176',
-#     'API_SECRET': 'r69rvAmZcxKS8L3I0C_doJPur8w',
-# }
+
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
