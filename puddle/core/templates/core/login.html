@@ -3,167 +3,96 @@
 {% block title %}Log In{% endblock %}
 
 {% block content %}
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .page {
-    min-height: 80vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 2rem;
-    background: #f4f4f5;
-    font-family: sans-serif;
-  }
-  .card {
-    background: #fff;
-    border-radius: 20px;
-    border: 0.5px solid #e4e4e7;
-    padding: 2rem 2.5rem;
-    width: 100%; max-width: 420px;
-  }
-  .logo {
-    width: 44px; height: 44px;
-    border-radius: 12px;
-    background: #6366f1;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 1.25rem;
-  }
-  .card-title {
-    font-size: 22px; font-weight: 500; color: #111;
-    margin-bottom: 4px;
-  }
-  .card-sub {
-    font-size: 13px; color: #999;
-    margin-bottom: 1.75rem;
-  }
-  .field { margin-bottom: 1rem; }
-  .field label {
-    display: inline-block;
-    font-size: 12px; font-weight: 500; color: #555;
-    margin-bottom: 6px;
-  }
-  .field input {
-    width: 100%;
-    background: #f4f4f5;
-    border: 0.5px solid #e4e4e7;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 13.5px;
-    color: #111;
-    outline: none;
-    font-family: sans-serif;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .field input:focus {
-    border-color: #6366f1;
-    background: #fff;
-  }
-  .error-box {
-    background: #fef2f2;
-    border: 0.5px solid #fecaca;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 12px; color: #b91c1c;
-    margin-bottom: 1rem;
-  }
-  .submit-btn {
-    width: 100%;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 13px;
-    font-size: 14px; font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-    margin-top: 0.25rem;
-  }
-  .submit-btn:hover { background: #4f46e5; }
-</style>
-
-<div class="page">
-  <div class="card">
-
-    <div class="logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-        <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-      </svg>
-    </div>
-
-    <p class="card-title">Welcome back</p>
-    <p class="card-sub">Log in to your account</p>
-
-    <form method="post" action=".">
-      {% csrf_token %}
-
-      <div class="field mb-3">
-        <label class="inline-block mb-2">Username</label><br>
-        {{ form.username }}
-      </div>
-
-      <div class="field mb-3">
-        <label class="inline-block mb-2">Password</label><br>
-        {{ form.password }}
-      </div>
-
-      {% if form.errors or form.non_field_errors %}
-        <div class="error-box">
-          {% for field in form %}
-            {{ field.errors }}
-          {% endfor %}
-          {{ form.non_field_errors }}
-        </div>
-      {% endif %}
-
-      <button class="submit-btn">Log In</button>
-    </form>
-
-  </div>
-</div>
-
-{% endblock %}
-
-
-
-
-
-
-{% comment %} {% extends 'core/base.html' %}
-
-{% block title %} Log In {% endblock  %}
-
-{% block content %}
-<div class="w-1/2 my-6 mx-auto p-6 bg-gray-100 rounded-xl">
-    <h1 class="mb-6 text-3xl">Log In</h1>
-
-    <form method="post" action=".">
-        {% csrf_token %}
-
-        <div class="mb-3">
-            <lebel class="inline-block mb-2">Username</lebel><br>
-
-            {{ form.username }}
-        </div>
+<div class="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-xl border border-gray-100">
         
-        <div class="mb-3">
-            <lebel class="inline-block mb-2">Password</lebel><br>
-
-            {{ form.password }}
-        </div>
-        
-
-        {% if form.errors or form.non_field_errors%}
-            <div class="mb-3 p-6 bg-red-100 rounded-xl">
-                {% for field in form %}
-                    {{ field.errors }}
-                {% endfor %}
-
-                {{ form.non_field_errors }}
+        <!-- Header Section -->
+        <div class="text-center">
+            <div class="mx-auto h-14 w-14 bg-teal-500 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-100">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+                </svg>
             </div>
-        {% endif %}
+            <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Welcome Back</h2>
+            <p class="mt-2 text-sm text-gray-500">Log in to your account to continue</p>
+        </div>
 
-    <button class="py-4 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">Submit</button>
-    </form>
+        <!-- Form Section -->
+        <form class="mt-8 space-y-6" method="POST" action=".">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <!-- Username -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+                    <div class="login-input-wrapper">
+                        {{ form.username }}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                    <div class="login-input-wrapper">
+                        {{ form.password }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Handling -->
+            {% if form.errors or form.non_field_errors %}
+            <div class="rounded-xl bg-red-50 p-4 border-l-4 border-red-500 animate-pulse">
+                <div class="flex">
+                    <div class="flex-shrink-0 text-red-400">
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3 text-sm text-red-700">
+                        {% for field in form %}
+                            {{ field.errors|striptags }}
+                        {% endfor %}
+                        {{ form.non_field_errors|striptags }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <div>
+                <button type="submit" class="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-300 shadow-md transform hover:-translate-y-0.5 active:scale-95">
+                    Sign In
+                </button>
+            </div>
+
+            <!-- Footer Link -->
+            <div class="text-center pt-6 border-t border-gray-100">
+                <p class="text-sm text-gray-600">
+                    New to Puddle? 
+                    <a href="{% url 'core:signup' %}" class="font-bold text-teal-600 hover:text-teal-500 hover:underline transition-colors">Create an account</a>
+                </p>
+            </div>
+        </form>
+    </div>
 </div>
 
-{% endblock %} {% endcomment %}
+<style>
+    /* Styling Django Auto-generated Input Fields */
+    .login-input-wrapper input {
+        display: block;
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.85rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+    .login-input-wrapper input:focus {
+        background-color: #ffffff;
+        border-color: #14b8a6; /* Teal 500 */
+        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+    }
+</style>
+{% endblock %}
