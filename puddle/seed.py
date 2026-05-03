@@ -1,74 +1,81 @@
 import os
 import django
-import random
-import requests
-from faker import Faker
-from django.core.files.base import ContentFile
+from django.core.files import File
 
-# ১. Django এনভায়রনমেন্ট সেটআপ
+# ১. Django Setup
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'puddle.settings')
 django.setup()
 
 from item.models import Category, Item
 from django.contrib.auth.models import User
 
-fake = Faker()
+def clean_and_seed():
+    # ২. পুরনো সব ডেটা ডিলিট করা
+    print("বসের নির্দেশে পুরনো সব ডেটা ডিলিট করা হচ্ছে...")
+    Item.objects.all().delete()
+    Category.objects.all().delete()
+    print("ডাটাবেস এখন একদম ফ্রেশ।\n")
 
-def seed_production_ready_data():
-    # প্রথম ইউজারকে খুঁজে নেওয়া (মডেল অনুযায়ী 'user' ফিল্ডের জন্য)
+    # ৩. অ্যাডমিন ইউজার চেক
     target_user = User.objects.first()
-    
     if not target_user:
-        print("Error: No user found! Railway-তে আগে একটি superuser তৈরি করে নিন।")
+        print("Error: কোনো ইউজার পাওয়া যায়নি! আগে একটি সুপারইউজার তৈরি করুন।")
         return
 
-    # আপনার ১৩টি ক্যাটাগরি
-    categories_list = [
-        'Computing', 'Electronics', 'Skincare & Wellness', 
-        'Camping & Hiking', 'Photography', 'Bike Gear', 'Tactical Gear',
-        'Rifle', 'Pistol', 'Bike', 'Air Plane', 'Helicopter', 'Ship'
+    # ৪. আপনার ইমেজ ফোল্ডার অনুযায়ী ক্যাটাগরি ম্যাপিং
+    # এখানে ক্যাটাগরির নাম এবং আপনার ফাইলের নামের প্রিফিক্স দেওয়া হয়েছে
+    data_map = [
+        {"name": "Air Plane", "file_prefix": "airplane"},
+        {"name": "Arms", "file_prefix": "arms"},
+        {"name": "Bike", "file_prefix": "bike"},
+        {"name": "Car", "file_prefix": "car"},
+        {"name": "Helicopter", "file_prefix": "helicopter"},
+        {"name": "Ship", "file_prefix": "ship"},
+        # আপনার স্ক্রিনশটে এই ৬টি ক্যাটাগরির ৩০টি ছবি দেখা যাচ্ছে
     ]
 
-    print("--- Cloudinary Data Seeding Process Started ---")
+    # ৫. ইমেজের পাথ (রুট ডিরেক্টরির item_images ফোল্ডার)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    image_source_folder = os.path.join(base_dir, 'item_images')
 
-    for cat_name in categories_list:
-        category, created = Category.objects.get_or_create(name=cat_name)
+    print("নতুন ফেক ডেটা এবং আপনার দেওয়া ইমেজগুলো ইনসার্ট করা হচ্ছে...")
+
+    for entry in data_map:
+        # ক্যাটাগরি তৈরি
+        category = Category.objects.create(name=entry["name"])
         
-        # প্রতি ক্যাটাগরিতে ৩টি করে আইটেম (Cloudinary কোটা সাশ্রয়ের জন্য)
-        for i in range(3):
-            adjective = random.choice(['Premium', 'Advanced', 'Professional', 'Modern', 'Elite'])
-            item_name = f"{adjective} {fake.word().capitalize()}"
+        # প্রতি ক্যাটাগরিতে ৫টি করে আইটেম (যেহেতু আপনার ৫টি করে ছবি আছে)
+        for i in range(1, 6):
+            item_name = f"Premium {entry['name']} {i}"
             
-            # রেন্ডম ইমেজের জন্য Picsum URL
-            image_url = f"https://picsum.photos/seed/{random.randint(1, 9999)}/800/800"
-            
-            try:
-                # ইমেজ ডাউনলোড করে মেমরিতে রাখা
-                response = requests.get(image_url, timeout=10)
-                if response.status_code == 200:
-                    image_content = ContentFile(response.content)
-                    
-                    # আইটেম অবজেক্ট তৈরি
-                    item = Item(
-                        category=category,
-                        name=item_name,
-                        description=fake.paragraph(nb_sentences=5),
-                        price=random.uniform(1500.0, 75000.0),
-                        is_sold=False,
-                        user=target_user
-                    )
-                    
-                    # ইমেজের নাম দিয়ে সেভ করা (এটি অটোমেটিক Cloudinary-তে আপলোড হবে)
-                    file_name = f"{item_name.replace(' ', '_')}_{random.randint(1, 100)}.jpg"
-                    item.image.save(file_name, image_content, save=True)
-                    
-                    print(f"Success: {item_name} uploaded to Cloudinary in {cat_name}")
-                else:
-                    print(f"Skipped: Could not fetch image for {item_name}")
-            except Exception as e:
-                print(f"Error for {item_name}: {str(e)}")
+            item = Item(
+                category=category,
+                name=item_name,
+                description=f"এটি একটি অরিজিনাল {entry['name']}। আপনার শখের সংগ্রহের জন্য সেরা পছন্দ। কন্ডিশন একদম নতুনের মতো।",
+                price=5000 + (i * 1200), # জাস্ট একটা রেন্ডম প্রাইস
+                user=target_user,
+                is_sold=False
+            )
 
-    print("\n--- Mission Accomplished! Check your Railway site now. ---")
+            # আপনার ফাইলের নাম অনুযায়ী ছবি খোঁজা (যেমন: airplane1.jpg)
+            # নোট: যদি আপনার ফাইলগুলো .jpg না হয়ে .png হয়, তবে নিচে পরিবর্তন করে নিন
+            image_filename = f"{entry['file_prefix']}{i}.jpg" 
+            image_path = os.path.join(image_source_folder, image_filename)
 
-if __name__ == '__main__':
-    seed_production_ready_data()
+            # যদি .jpg নামে না পায়, তবে .png ট্রাই করবে
+            if not os.path.exists(image_path):
+                image_filename = f"{entry['file_prefix']}{i}.png"
+                image_path = os.path.join(image_source_folder, image_filename)
+
+            if os.path.exists(image_path):
+                with open(image_path, 'rb') as f:
+                    item.image.save(image_filename, File(f), save=True)
+                print(f"   [সফল] {item_name} ছবিসহ যোগ করা হয়েছে।")
+            else:
+                item.save()
+                print(f"   [!] {item_name} (ছবি '{image_filename}' খুঁজে পাওয়া যায়নি)")
+
+    print("\nঅভিনন্দন! আপনার সাইট এখন আপনার দেওয়া ইমেজগুলো দিয়ে সাজানো।")
+
+if __name__ == "__main__":
+    clean_and_seed()
