@@ -54,7 +54,8 @@ def inbox(request):
 @login_required
 def detail(request,pk):
     conversation = Conversation.objects.filter(members__in=[request.user.id]).get(pk=pk)
-
+    conversation.messages.filter(is_read=False).exclude(created_by=request.user).update(is_read=True)
+    
     if request.method == 'POST':
         form = ConversationMessagesForm(request.POST)
 

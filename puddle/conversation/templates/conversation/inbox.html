@@ -1,87 +1,71 @@
 {% extends "core/base.html" %}
-{% block title %}Inbox{% endblock %}
-
-{% block content %}
-<style>
-  .inbox-wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
-  .pg-title { font-size: 22px; font-weight: 500; margin-bottom: 1.25rem; color: #111; }
-  .conv-card { display: flex; align-items: center; gap: 12px; background: #fff; border: 0.5px solid #e8e8e8; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; text-decoration: none; transition: border-color 0.15s, background 0.12s; }
-  .conv-card:hover { border-color: #bbb; background: #fafafa; }
-  .conv-card img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-  .cinfo { flex: 1; min-width: 0; }
-  .r1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .r1 strong { font-size: 14px; font-weight: 500; color: #111; }
-  .time { font-size: 11px; color: #aaa; }
-  .iname { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-</style>
-
-<div class="inbox-wrap">
-  <h1 class="pg-title">Inbox</h1>
-
-  <div>
-    {% for conversation in conversations %}
-      <a href="{% url 'conversation:detail' conversation.id %}" class="conv-card">
-
-        <img src="{{ conversation.item.image.url }}" alt="{{ conversation.item.name }}">
-
-        <div class="cinfo">
-          {% for member in conversation.members.all %}
-            {% if member != request.user %}
-              <div class="r1">
-                <strong>{{ member.username }}</strong>
-                <span class="time">{{ conversation.modified_at|timesince }} ago</span>
-              </div>
-              <p class="iname">{{ conversation.item.name }}</p>
-            {% endif %}
-          {% endfor %}
-        </div>
-
-      </a>
-    {% endfor %}
-  </div>
-</div>
-{% endblock %}
-
-
-
-
-
-{% comment %} {% extends "core/base.html" %}
 
 {% block title %}Inbox{% endblock %}
 
-
 {% block content %}
+<div class="max-w-3xl mx-auto py-10 px-4">
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Inbox</h1>
+        <span class="bg-teal-100 text-teal-700 text-xs font-bold px-3 py-1 rounded-full">
+            {{ conversations|length }} Conversations
+        </span>
+    </div>
 
-<h1 class = "mb-6 text-3xl">Inbox</h1>
-
-
-<div class="space-y-6">
-    {% for conversation in conversations %}
-        <a href="{% url 'conversation:detail' conversation.id %}">
-
-
-
-            <div class="p-6 flex bg-grey-100 rounded-xl">
-                <div class="pr-6">
-                    <img src="{{ conversation.item.image.url }}" class="w-20 rounded-xl">
+    <!-- Conversations List -->
+    <div class="space-y-4">
+        {% for conversation in conversations %}
+            <a href="{% url 'conversation:detail' conversation.id %}" 
+               class="group flex items-center gap-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all duration-200">
+                
+                <!-- Item Image -->
+                <div class="relative">
+                    <img src="{{ conversation.item.image.url }}" 
+                         alt="{{ conversation.item.name }}" 
+                         class="w-16 h-16 rounded-xl object-cover shadow-inner group-hover:scale-105 transition-transform duration-200">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-teal-500 border-2 border-white rounded-full"></div>
                 </div>
 
-
-                <div>
+                <!-- Conversation Info -->
+                <div class="flex-1 min-w-0">
                     {% for member in conversation.members.all %}
                         {% if member != request.user %}
-                            <p class ="mb-4"><strong>{{ member.username }}</strong> | {{ conversation.modified_at }}</p>
-                            <p>{{ conversation.item.name }}</p>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="text-sm font-bold text-gray-900 group-hover:text-teal-600 transition-colors">
+                                    {{ member.username|title }}
+                                </h3>
+                                <span class="text-[11px] font-medium text-gray-400">
+                                    {{ conversation.modified_at|timesince }} ago
+                                </span>
+                            </div>
+                            
+                            <p class="text-xs font-semibold text-gray-500 truncate">
+                                Item: <span class="text-gray-700 font-normal">{{ conversation.item.name }}</span>
+                            </p>
                         {% endif %}
                     {% endfor %}
                 </div>
 
-
-
-
+                <!-- Arrow Icon -->
+                <div class="text-gray-300 group-hover:text-teal-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </a>
+        {% empty %}
+            <!-- Empty State -->
+            <div class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900">No messages yet</h3>
+                <p class="text-gray-500 text-sm mt-1">When you contact a seller, your conversations will appear here.</p>
+                <a href="{% url 'item:items' %}" class="inline-block mt-6 px-6 py-2 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-colors">Browse Items</a>
             </div>
-        </a>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
-{% endblock %} {% endcomment %}
+{% endblock %}
