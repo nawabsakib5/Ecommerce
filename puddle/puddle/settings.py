@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'Payment',
     'item',
     'dashboard',
     'conversation',
@@ -83,6 +84,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'puddle.wsgi.application'
 
+SSLC_STORE_ID = 'testbox'
+SSLC_STORE_PASS = 'qwerty'
+SSLC_IS_SANDBOX = True
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

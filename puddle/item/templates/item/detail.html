@@ -4,10 +4,8 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <!-- প্রোডাক্ট মেইন সেকশন -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
         
-        <!-- বাম পাশে বড় ইমেজ -->
         <div class="lg:col-span-3">
             <div class="relative group bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
                 <img src="{{ item.image.url }}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
@@ -19,7 +17,6 @@
             </div>
         </div>
 
-        <!-- ডান পাশে ইনফরমেশন কার্ড -->
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col justify-between">
                 <div>
@@ -41,13 +38,12 @@
                     {% endif %}
                 </div>
 
-                <!-- ইউজার অ্যাকশন বাটন -->
-                <div class="mt-10">
+                <div class="mt-10 space-y-4">
                     {% if request.user == item.user %}
                         <div class="p-6 bg-teal-50 rounded-2xl border border-teal-100">
                             <p class="text-teal-800 font-bold flex items-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                                 This is your listed item!
                             </p>
@@ -61,11 +57,18 @@
                             </div>
                         </div>
                     {% else %}
-                        <a href="{% url 'conversation:new' item.id %}" class="flex items-center justify-center w-full py-5 bg-teal-600 hover:bg-teal-700 text-white text-xl font-bold rounded-2xl transition-all transform hover:-translate-y-1 shadow-xl shadow-teal-100">
+                        <a href="{% url 'conversation:new' item.id %}" class="flex items-center justify-center w-full py-4 border-2 border-teal-600 text-teal-600 hover:bg-teal-50 text-lg font-bold rounded-2xl transition-all">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                             </svg>
                             Contact Seller
+                        </a>
+
+                        <a href="{% url 'payment:initiate' item.id %}" class="flex items-center justify-center w-full py-5 bg-teal-600 hover:bg-teal-700 text-white text-xl font-bold rounded-2xl transition-all transform hover:-translate-y-1 shadow-xl shadow-teal-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Buy It Now
                         </a>
                     {% endif %}
                 </div>
@@ -73,7 +76,6 @@
         </div>
     </div>
 
-    <!-- Related Items Section -->
     <div class="mt-20">
         <div class="flex items-center justify-between mb-10">
             <h2 class="text-3xl font-black text-gray-900">Related Items</h2>

@@ -3,22 +3,28 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.db.models import Q
+from django.core.paginator import Paginator
+
 
 def items(request):
     query = request.GET.get('query', '')
     category_id = request.GET.get('category', 0)
     categories = Category.objects.all()
-    items = Item.objects.filter(is_sold=False)
+    items_list = Item.objects.filter(is_sold=False)
 
     if category_id:
-        items = items.filter(category_id= category_id)
+        items_list = items.filter(category_id= category_id)
 
 
     if query:
-        items = items.filter(Q(name__icontains=query) | Q(description__icontains=query))
+        items_list = items.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+    paginator = Paginator(items_list, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'item/items.html', {
-        'items':items,
+        'items':page_obj,
         'query':query,
         'categories' : categories,
         'category_id' : int(category_id),

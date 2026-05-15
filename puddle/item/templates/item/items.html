@@ -6,9 +6,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         
-        <!-- বাম পাশের ফিল্টার সেকশন -->
         <div class="col-span-1 space-y-8">
-            <!-- সার্চ ফর্ম -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p class="font-bold text-gray-800 mb-4 text-lg">Search</p>
                 <form method="get" action="{% url 'item:items' %}" class="space-y-3">
@@ -23,7 +21,6 @@
                 </form>
             </div>
 
-            <!-- ক্যাটাগরি লিস্ট -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p class="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Categories</p>
                 <ul class="space-y-2">
@@ -38,7 +35,6 @@
                 </ul>
             </div>
 
-            <!-- ফিল্টার ক্লিয়ার বাটন -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p class="font-bold text-gray-800 mb-4 text-lg">Clear Filters</p>
                 <a href="{% url 'item:items' %}" 
@@ -51,7 +47,6 @@
             </div>
         </div>
 
-        <!-- ডান পাশের আইটেম গ্রিড -->
         <div class="col-span-1 md:col-span-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for item in items %}
@@ -85,6 +80,36 @@
                     </div>
                 {% endfor %}
             </div>
+
+            {% if items.has_other_pages %}
+            <div class="mt-12 flex justify-center items-center space-x-2">
+                {% if items.has_previous %}
+                    <a href="?page=1{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                        First
+                    </a>
+                    <a href="?page={{ items.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                        Previous
+                    </a>
+                {% endif %}
+
+                <div class="px-6 py-2 bg-teal-50 text-teal-700 font-bold rounded-xl border border-teal-100">
+                    Page {{ items.number }} of {{ items.paginator.num_pages }}
+                </div>
+
+                {% if items.has_next %}
+                    <a href="?page={{ items.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                        Next
+                    </a>
+                    <a href="?page={{ items.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                        Last
+                    </a>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
