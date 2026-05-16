@@ -54,7 +54,10 @@
                         <a href="{% url 'item:detail' item.id %}">
                             <div class="aspect-square overflow-hidden relative bg-gray-100">
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                    <img src="{{ item.image.url }}" 
+                                         alt="{{ item.name }}" 
+                                         loading="lazy" 
+                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                                 {% else %}
                                     <div class="flex items-center justify-center h-full text-gray-400">No Image</div>
                                 {% endif %}

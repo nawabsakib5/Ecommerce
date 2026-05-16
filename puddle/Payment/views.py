@@ -1,95 +1,77 @@
 import uuid
-import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from sslcommerz_lib import SSLCommerzPython
 from django.conf import settings
 from .models import Order
-from item.models import Item 
+from item.models import Item
 
-def sslcommerz_payment(request, item_id):
+def initiate_payment(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     user = request.user
     
-    # পেমেন্টের ক্রেডেনশিয়ালস (settings.py থেকে আসছে)
-    store_id = settings.SSLC_STORE_ID
-    store_pass = settings.SSLC_STORE_PASS
-    mypayment_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
+    # SSLCommerz সেটিংস (আপনার settings.py থেকে নিবে)
+    sslcz = SSLCommerzPython({
+        'store_id': settings.SSLCOMMERZ_STORE_ID,
+        'store_pass': settings.SSLCOMMERZ_STORE_PASS,
+        'issandbox': settings.SSLCOMMERZ_IS_SANDBOX,
+    })
 
-    # ট্রানজ্যাকশন আইডি তৈরি করা
-    tran_id = str(uuid.uuid4())[:10]
-
-    # ডাটাবেসে নতুন অর্ডার অবজেক্ট তৈরি করা
-    order = Order.objects.create(
-        user=user,
-        amount=item.price, 
-        transaction_id=tran_id,
-    )
-    order.items.add(item)
-    order.save()
-
-    # SSLCommerz এ পাঠানোর জন্য ডাটা পে-লোড
-    post_data = {
-        'store_id': store_id,
-        'store_passwd': store_pass,
+    transaction_id = str(uuid.uuid4())[:10]
+    
+    # পেমেন্ট ডাটা প্রস্তুত করা
+    post_body = {
         'total_amount': item.price,
-        'currency': 'BDT',
-        'tran_id': tran_id,
-        'success_url': "http://127.0.0.1:8000/payment/success/",
-        'fail_url': "http://127.0.0.1:8000/payment/fail/",
-        'cancel_url': "http://127.0.0.1:8000/payment/cancel/",
+        'currency': "BDT",
+        'tran_id': transaction_id,
+        'success_url': request.build_absolute_uri(f'/payment/success/{transaction_id}/{item.id}/'),
+        'fail_url': request.build_absolute_uri('/payment/fail/'),
+        'cancel_url': request.build_absolute_uri('/payment/cancel/'),
         'emi_option': 0,
         'cus_name': user.username,
-        'cus_email': user.email if user.email else "test@test.com",
-        'cus_phone': '01700000000',
-        'cus_add1': 'Dhaka',
+        'cus_email': user.email,
+        'cus_phone': '01700000000', 
+        'cus_add1': 'Customer Address',
         'cus_city': 'Dhaka',
         'cus_country': 'Bangladesh',
-        'shipping_method': 'NO',
-        'multi_card_name': 'mastercard,visacard,amexcard',
+        'shipping_method': "NO",
         'product_name': item.name,
-        'product_category': 'General',
-        'product_profile': 'general',
+        'product_category': item.category.name,
+        'product_profile': "general",
     }
 
-    response = requests.post(mypayment_url, data=post_data)
-    response_data = response.json()
-
-    if response_data.get('status') == 'SUCCESS':
-        return redirect(response_data['GatewayPageURL'])
     
-    return redirect('core:index')
+    Order.objects.create(
+        user=user,
+        item=item,
+        transaction_id=transaction_id,
+        total_amount=item.price,
+        status='Pending'
+    )
+
+    response = sslcz.init_payment(post_body)
+    return redirect(response['GatewayPageURL'])
 
 @csrf_exempt
-def payment_success(request):
-    if request.method == 'POST':
-        payment_data = request.POST
-        tran_id = payment_data.get('tran_id')
-        val_id = payment_data.get('val_id') 
-        
-        try:
-            
-            order = Order.objects.get(transaction_id=tran_id)
-            
-            
-            order.payment_status = True
-            order.val_id = val_id
-            order.status = 'Processing' 
-            order.save()
-            
-            return render(request, 'payment/success.html')
-            
-        except Order.DoesNotExist:
-            
-            return redirect('core:index') 
+def payment_success(request, tran_id, item_id):
+    # ট্রানজ্যাকশন আইডি দিয়ে অর্ডার খুঁজে বের করা
+    order = get_object_or_404(Order, transaction_id=tran_id)
+    item = get_object_or_404(Item, id=item_id)
 
-    return redirect('core:index')
+    if order.status == 'Pending':
+        order.status = 'Completed'
+        order.save()
+        
+        # আইটেমটি বিক্রি হয়ে গেছে হিসেবে মার্ক করা (স্লো-নেস ও লজিক সমাধান)
+        item.is_sold = True
+        item.save()
+
+    return render(request, 'payment/success.html', {'tran_id': tran_id})
 
 @csrf_exempt
 def payment_fail(request):
-    
     return render(request, 'payment/fail.html')
 
 @csrf_exempt
 def payment_cancel(request):
-    
     return render(request, 'payment/cancel.html')
