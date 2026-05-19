@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'conversation',
     'cloudinary',
     'cloudinary_storage',
-    'debug_toolbar',
+    # debug_toolbar রিমোভ করা হয়েছে
 ]
 
 MIDDLEWARE = [
@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # debug_toolbar middleware রিমোভ করা হয়েছে
 ]
 
 ROOT_URLCONF = 'puddle.urls'
@@ -58,7 +58,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'puddle.wsgi.application'
-
 
 
 DATABASES = {
@@ -99,6 +98,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
