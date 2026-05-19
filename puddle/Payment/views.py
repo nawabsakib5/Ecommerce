@@ -1,45 +1,44 @@
 import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from .models import Order
 from item.models import Item
 
-# ১. ইমপোর্ট এরর সমাধানের জন্য সবচেয়ে নিরাপদ পদ্ধতি
-try:
-    from sslcommerz_lib import SSLCommerz
-except ImportError:
-    try:
-        from sslcommerz_lib import SSLCommerzPython as SSLCommerz
-    except ImportError:
-        # যদি উপরের কোনটিই কাজ না করে তবে সরাসরি মডিউল ট্রাই করবে
-        import sslcommerz_lib as SSLCommerz
+# পাইথন ৩.১৪+ এর জন্য শতভাগ ক্র্যাশ-প্রুফ সেফ ইম্পোর্ট মেথড
+import sslcommerz_lib
+SSLCommerzPython = getattr(sslcommerz_lib, 'SSLCommerzPython', None) or getattr(sslcommerz_lib, 'SSLCommerz', None)
 
+@login_required
 def initiate_payment(request, item_id):
     item = get_object_or_404(Item, id=item_id)
     user = request.user
     
-    # ২. সেটিংস থেকে ক্রেডেনশিয়াল নেয়া
-    settings_data = {
+    # ক্রেডেনশিয়াল ডিকশনারি তৈরি
+    credentials = {
         'store_id': settings.SSLCOMMERZ_STORE_ID,
         'store_pass': settings.SSLCOMMERZ_STORE_PASS,
-        'issandbox': settings.SSLCOMMERZ_IS_SANDBOX,
+        'issandbox': settings.SSLCOMMERZ_IS_SANDBOX
     }
     
-    # ৩. অবজেক্ট তৈরি (সঠিক ক্লাস ব্যবহার করে)
-    # যদি আপনার লাইব্রেরিটি ফাংশন বেসড হয় তবে শুধু SSLCommerz ব্যবহার হবে
-    try:
-        sslcz = SSLCommerz(settings_data)
-    except TypeError:
-        # কিছু ভার্সনে সরাসরি মডিউল কল করতে হয়
-        from sslcommerz_lib import SSLCommerz
-        sslcz = SSLCommerz(settings_data)
+    # যদি কোনো কারণে ডাইরেক্ট ক্লাস না পাওয়া যায়, তবে ইন্টারনাল সাব-ফাইল অবজেক্ট নিয়ে আসা
+    if SSLCommerzPython is None:
+        try:
+            from sslcommerz_lib.sslcommerz_lib import SSLCommerzPython
+        except (ImportError, ModuleNotFoundError):
+            # একদম ব্যাকআপ হিসেবে রুট মডিউলটিকেই ব্যবহার করা
+            SSLCommerzPython = sslcommerz_lib
 
-    transaction_id = str(uuid.uuid4())[:10]
+    # SSLCommerz অবজেক্ট তৈরি
+    sslcz = SSLCommerzPython(credentials)
+
+    # ১০ ডিজিটের ইউনিক ট্রানজেকশন আইডি তৈরি করা
+    transaction_id = str(uuid.uuid4()).replace('-', '')[:10]
     
-    # ৪. পেমেন্ট ডাটা প্রস্তুত করা
+    # SSLCommerz পোস্ট বডি ডেটা
     post_body = {
-        'total_amount': float(item.price), # নিশ্চিত করতে float কনভার্ট করা হয়েছে
+        'total_amount': float(item.price), 
         'currency': "BDT",
         'tran_id': transaction_id,
         'success_url': request.build_absolute_uri(f'/payment/success/{transaction_id}/{item.id}/'),
@@ -58,7 +57,7 @@ def initiate_payment(request, item_id):
         'product_profile': "general",
     }
 
-    # ৫. ডাটাবেসে পেন্ডিং অর্ডার তৈরি
+    # ডেটাবেজে পেন্ডিং অর্ডার ট্র্যাক করা
     Order.objects.create(
         user=user,
         item=item,
@@ -67,15 +66,15 @@ def initiate_payment(request, item_id):
         status='Pending'
     )
 
-    # ৬. পেমেন্ট গেটওয়ে কল করা
-    response = sslcz.init_payment(post_body)
+    # সেশন তৈরি করে গেটওয়ে রেসপন্স নেওয়া
+    response = sslcz.createSession(post_body)
     
     # রেসপন্স চেক করে রিডাইরেক্ট করা
-    if response and 'GatewayPageURL' in response:
+    if response and isinstance(response, dict) and 'GatewayPageURL' in response:
         return redirect(response['GatewayPageURL'])
     else:
-        # গেটওয়েতে সমস্যা হলে ফেইল পেজে যাবে
-        return redirect('payment_fail')
+        return redirect('payment:fail')
+
 
 @csrf_exempt
 def payment_success(request, tran_id, item_id):
@@ -86,30 +85,7 @@ def payment_success(request, tran_id, item_id):
         order.status = 'Completed'
         order.save()
         
-        # আইটেম সোল্ড মার্ক করা
-        item.is_sold = True
-        item.save()
-
-    return render(request, 'payment/success.html', {'tran_id': tran_id})
-
-@csrf_exempt
-def payment_fail(request):
-    return render(request, 'payment/fail.html')
-
-@csrf_exempt
-def payment_cancel(request):
-    return render(request, 'payment/cancel.html')
-
-@csrf_exempt
-def payment_success(request, tran_id, item_id):
-    order = get_object_or_404(Order, transaction_id=tran_id)
-    item = get_object_or_404(Item, id=item_id)
-
-    if order.status == 'Pending':
-        order.status = 'Completed'
-        order.save()
-        
-       
+        # আইটেমটি বিক্রি হয়ে গেছে হিসেবে মার্ক করা
         item.is_sold = True
         item.save()
 

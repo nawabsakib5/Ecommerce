@@ -95,47 +95,6 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-800 flex items-center mb-8">
-                        <span class="w-2 h-8 bg-rose-500 rounded-full mr-3"></span>
-                        Recent Purchases
-                    </h3>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="text-gray-400 text-xs uppercase tracking-widest border-b border-gray-50">
-                                <tr>
-                                    <th class="pb-4 font-semibold">Transaction Date</th>
-                                    <th class="pb-4 font-semibold">Order ID</th>
-                                    <th class="pb-4 font-semibold">Total Amount</th>
-                                    <th class="pb-4 font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                {% for order in orders %}
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="py-5 text-sm font-medium text-gray-700">{{ order.ordered_date|date:"F d, Y" }}</td>
-                                    <td class="py-5 text-sm text-gray-500">#ORD-{{ order.id|stringformat:"04d" }}</td>
-                                    <td class="py-5 text-sm font-bold text-gray-900">${{ order.amount }}</td>
-                                    <td class="py-5">
-                                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider 
-                                            {% if order.status == 'Delivered' %} bg-green-100 text-green-700 
-                                            {% elif order.status == 'Shipped' %} bg-blue-100 text-blue-700
-                                            {% else %} bg-amber-100 text-amber-700 {% endif %}">
-                                            {{ order.status }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="py-10 text-center text-gray-400 italic text-sm">No transaction history found.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

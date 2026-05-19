@@ -5,7 +5,6 @@
 {% block content %}
 <div class="max-w-2xl mx-auto my-10 px-4">
     <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
-        <!-- হেডার সেকশন -->
         <div class="mb-8 text-center">
             <h1 class="text-3xl font-black text-gray-800">{{ title }}</h1>
             <p class="text-gray-500 mt-2">Please fill in the details below to proceed.</p>
@@ -14,7 +13,6 @@
         <form method="post" action="." enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
 
-            <!-- ফর্ম এরর হ্যান্ডলিং -->
             {% if form.errors or form.non_field_errors %}
                 <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
                     <div class="flex">
@@ -37,27 +35,40 @@
                 </div>
             {% endif %}
 
-            <!-- ইনপুট ফিল্ডস -->
             <div class="space-y-5">
                 {% for field in form %}
-                    <div class="flex flex-col">
-                        <label class="text-sm font-bold text-gray-700 mb-1 ml-1">
-                            {{ field.label }}
-                        </label>
-                        
-                        {# এখানে Django widget-এর সাথে Tailwind ক্লাস ইনজেক্ট করা হচ্ছে #}
-                        <div class="relative">
-                            {{ field }}
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                            <div class="flex items-center h-5">
+                                {{ field }}
+                            </div>
+                            <div class="ml-1 text-sm">
+                                <label for="{{ field.id_for_label }}" class="font-bold text-gray-700 cursor-pointer select-none">
+                                    {{ field.label }}
+                                </label>
+                                {% if field.help_text %}
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ field.help_text }}</p>
+                                {% endif %}
+                            </div>
                         </div>
+                    {% else %}
+                        <div class="flex flex-col">
+                            <label class="text-sm font-bold text-gray-700 mb-1 ml-1">
+                                {{ field.label }}
+                            </label>
+                            
+                            <div class="relative">
+                                {{ field }}
+                            </div>
 
-                        {% if field.help_text %}
-                            <p class="text-xs text-gray-400 mt-1 ml-1">{{ field.help_text }}</p>
-                        {% endif %}
-                    </div>
+                            {% if field.help_text %}
+                                <p class="text-xs text-gray-400 mt-1 ml-1">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
 
-            <!-- সাবমিট বাটন -->
             <div class="pt-4">
                 <button type="submit" class="w-full py-4 px-8 text-lg font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-2xl transition-all duration-300 transform hover:scale-[1.02] shadow-xl shadow-teal-100">
                     Save Changes
@@ -72,8 +83,8 @@
 </div>
 
 <style>
-    /* Django default widgets স্টাইল করার জন্য এই CSS টুকু যোগ করুন */
-    input, select, textarea {
+    /* ড্যাঙ্গোর ডিফল্ট ইনপুটগুলোর জন্য গ্লোবাল স্টাইল (টাইপ চেকবক্স বাদে) */
+    input:not([type="checkbox"]), select, textarea {
         width: 100%;
         padding: 0.75rem 1rem;
         background-color: #f9fafb;
@@ -82,7 +93,7 @@
         outline: none;
         transition: all 0.2s;
     }
-    input:focus, select:focus, textarea:focus {
+    input:not([type="checkbox"]):focus, select:focus, textarea:focus {
         border-color: #0d9488;
         background-color: #ffffff;
         box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
@@ -92,6 +103,12 @@
         border: 2px dashed #e5e7eb;
         padding: 2rem 1rem;
         text-align: center;
+        cursor: pointer;
+    }
+    /* চেকবক্সের জন্য আলাদা ফিক্সড সাইজ সাইজিং */
+    input[type="checkbox"] {
+        width: 1.25rem !important;
+        height: 1.25rem !important;
         cursor: pointer;
     }
 </style>
