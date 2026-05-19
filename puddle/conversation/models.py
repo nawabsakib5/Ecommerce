@@ -1,12 +1,10 @@
-
 from django.db import models
+from django.conf import settings # এটি যোগ করুন
 from item.models import Item
-from django.contrib.auth.models import User
-
 
 class Conversation(models.Model):
-    item = models.ForeignKey(Item,related_name='conversations' , on_delete=models.CASCADE)
-    members = models.ManyToManyField(User, related_name='conversations')
+    item = models.ForeignKey(Item, related_name='conversations', on_delete=models.CASCADE)
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -15,13 +13,9 @@ class Conversation(models.Model):
 
 
 
-
-
 class ConversationMessage(models.Model):
-    conversation = models.ForeignKey(Conversation, related_name= 'messages', on_delete=models.CASCADE)
+    conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE)
     content = models.TextField(max_length=500, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, related_name='created_messages', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_messages', on_delete=models.CASCADE)
     is_read = models.BooleanField(default=False)
-
-    
