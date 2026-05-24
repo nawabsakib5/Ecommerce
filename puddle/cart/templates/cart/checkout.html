@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-black text-gray-900 mb-8">Checkout</h1>
+
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 mb-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-6">Order Review</h2>
+
+    <div class="space-y-4 mb-6">
+      {% for cart_item in cart_items %}
+        <div class="flex items-center gap-4 py-3 border-b border-gray-100">
+          <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+            {% if cart_item.item.image %}
+              <img src="{{ cart_item.item.image.url }}" class="w-full h-full object-cover">
+            {% else %}
+              <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200" class="w-full h-full object-cover">
+            {% endif %}
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-gray-800">{{ cart_item.item.name }}</p>
+            <p class="text-sm text-gray-500">Qty: {{ cart_item.quantity }} × ${{ cart_item.item.price }}</p>
+          </div>
+          <p class="font-black text-gray-900">${{ cart_item.get_subtotal }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex justify-between text-xl font-black text-gray-900 pt-2">
+      <span>Total</span>
+      <span class="text-teal-600">${{ cart.get_total }}</span>
+    </div>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <button type="submit"
+            class="w-full py-5 bg-teal-600 hover:bg-teal-700 text-white text-xl font-bold rounded-2xl transition-all">
+      Place Order
+    </button>
+  </form>
+
+  <a href="{% url 'cart:detail' %}"
+     class="block text-center mt-4 text-gray-500 hover:text-gray-700 font-semibold transition">
+    ← Back to Cart
+  </a>
+</div>
+{% endblock %}

@@ -3,19 +3,19 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.core.cache import cache
+
 from .models import Item, Category
 from .forms import NewItemForm, EditItemForm
+
 
 def items(request):
     query = request.GET.get('query', '')
     category_id = request.GET.get('category', 0)
-    
-    
+
     categories = cache.get_or_set('all_categories', Category.objects.all(), 3600)
 
-    
-    items_list = Item.objects.filter(is_sold=False).only(
-        'name', 'price', 'image', 'category_id'
+    items_list = Item.objects.filter(
+        is_sold=False
     ).select_related('category').order_by('-id')
 
     if category_id and int(category_id) != 0:
@@ -31,29 +31,26 @@ def items(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'item/items.html', {
-        'items': page_obj, 
+        'items': page_obj,
         'query': query,
         'categories': categories,
         'category_id': int(category_id),
     })
 
+
 def detail(request, pk):
-    
-    item = get_object_or_404(
-        Item.objects.select_related('category', 'user'), pk=pk
-    )
+    # ✅ only() সরিয়ে দেওয়া হয়েছে — select_related conflict fix
+    item = get_object_or_404(Item, pk=pk)
 
     related_items = Item.objects.filter(
         category=item.category,
         is_sold=False
-    ).exclude(pk=pk).only('name', 'price', 'image').select_related('category')[:5]
+    ).exclude(pk=pk).select_related('category', 'user')[:3]
 
     return render(request, 'item/detail.html', {
         'item': item,
         'related_items': related_items,
     })
-
-
 
 
 @login_required

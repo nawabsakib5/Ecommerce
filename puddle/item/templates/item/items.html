@@ -5,15 +5,16 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        
+
+        <!-- Sidebar -->
         <div class="col-span-1 space-y-8">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p class="font-bold text-gray-800 mb-4 text-lg">Search</p>
                 <form method="get" action="{% url 'item:items' %}" class="space-y-3">
-                    <input name="query" 
-                           class="w-full py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none transition" 
-                           type="text" 
-                           value="{{ query }}" 
+                    <input name="query"
+                           class="w-full py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
+                           type="text"
+                           value="{{ query }}"
                            placeholder="Search for items...">
                     <button class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition shadow-md shadow-teal-100">
                         Search
@@ -26,8 +27,8 @@
                 <ul class="space-y-2">
                     {% for category in categories %}
                         <li>
-                            <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}" 
-                               class="block py-2 px-4 rounded-lg transition {% if category.id == category_id %} bg-teal-50 text-teal-700 font-bold border-l-4 border-teal-600 {% else %} text-gray-600 hover:bg-gray-50 hover:text-teal-600 {% endif %}">
+                            <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}"
+                               class="block py-2 px-4 rounded-lg transition {% if category.id == category_id %}bg-teal-50 text-teal-700 font-bold border-l-4 border-teal-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-teal-600{% endif %}">
                                 {{ category.name }}
                             </a>
                         </li>
@@ -37,30 +38,37 @@
 
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p class="font-bold text-gray-800 mb-4 text-lg">Clear Filters</p>
-                <a href="{% url 'item:items' %}" 
+                <a href="{% url 'item:items' %}"
                    class="flex items-center justify-center w-full py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-semibold rounded-xl transition border border-rose-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                     Clear All
                 </a>
             </div>
         </div>
 
+        <!-- Items Grid -->
         <div class="col-span-1 md:col-span-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for item in items %}
                     <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                         <a href="{% url 'item:detail' item.id %}">
                             <div class="aspect-square overflow-hidden relative bg-gray-100">
+
+                                <!-- ✅ picsum fallback যোগ করা হয়েছে -->
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" 
-                                         alt="{{ item.name }}" 
-                                         loading="lazy" 
+                                    <img src="{{ item.image.url }}"
+                                         alt="{{ item.name }}"
+                                         loading="lazy"
                                          class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                                 {% else %}
-                                    <div class="flex items-center justify-center h-full text-gray-400">No Image</div>
+                                    <img src="https://picsum.photos/seed/{{ item.id }}/400/400"
+                                         alt="{{ item.name }}"
+                                         loading="lazy"
+                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                                 {% endif %}
+
                                 <div class="absolute top-3 right-3">
                                     <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-teal-700 shadow-sm">
                                         {{ item.category.name }}
@@ -84,14 +92,15 @@
                 {% endfor %}
             </div>
 
+            <!-- Pagination -->
             {% if items.has_other_pages %}
             <div class="mt-12 flex justify-center items-center space-x-2">
                 {% if items.has_previous %}
-                    <a href="?page=1{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                    <a href="?page=1{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
                        class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
                         First
                     </a>
-                    <a href="?page={{ items.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                    <a href="?page={{ items.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
                        class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
                         Previous
                     </a>
@@ -102,11 +111,11 @@
                 </div>
 
                 {% if items.has_next %}
-                    <a href="?page={{ items.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                    <a href="?page={{ items.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
                        class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
                         Next
                     </a>
-                    <a href="?page={{ items.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}" 
+                    <a href="?page={{ items.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
                        class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
                         Last
                     </a>
@@ -114,6 +123,7 @@
             </div>
             {% endif %}
         </div>
+
     </div>
 </div>
 {% endblock content %}

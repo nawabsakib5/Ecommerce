@@ -6,69 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}{% endblock title %} | Cotton Web</title>
-    
-    <!-- Custom Font (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            scroll-behavior: smooth;
-        }
-        
-        /* Smooth Link Animation */
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .nav-link { position: relative; transition: all 0.3s ease; }
         .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -2px;
-            left: 0;
-            background-color: #0d9488;
-            transition: width 0.3s ease;
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -2px; left: 0; background-color: #0d9488; transition: width 0.3s ease;
         }
         .nav-link:hover::after { width: 100%; }
-        
-        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f8fafc; }
         ::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0f766e; }
+        .glass-nav { background: rgba(255,255,255,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .logo-container img { transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+        .logo-container:hover img { transform: scale(1.1) rotate(-3deg); }
+        a, button { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
 
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+        /* Dropdown */
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 100;
+            min-width: 200px;
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 8px;
+            margin-top: 8px;
+            max-height: 320px;
+            overflow-y: auto;
         }
-
-        /* Image hover effect for logo */
-        .logo-container img {
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .logo-container:hover img {
-            transform: scale(1.1) rotate(-3deg);
-        }
-
-        /* Custom Interaction */
-        a, button {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .dropdown-menu::-webkit-scrollbar { width: 4px; }
+        .dropdown-menu::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 10px; }
     </style>
 </head>
 
 <body class="bg-[#fcfcfc] flex flex-col min-h-screen text-gray-900 leading-tight">
-    
+
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 glass-nav border-b border-gray-100/80 py-4 px-6 md:px-12">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            
-            <!-- Logo & Brand Section -->
+
+            <!-- Logo -->
             <a href="/" class="group flex items-center gap-3">
                 <div class="logo-container relative w-12 h-12 flex items-center justify-center overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm group-hover:border-teal-200">
-                    <!-- Updated Image Path -->
-                    <img src="{% static 'images/logo.jpg' %}" 
-                         alt="Cotton Web Logo" 
+                    <img src="{% static 'images/logo.jpg' %}"
+                         alt="Cotton Web Logo"
                          class="w-full h-full object-contain p-1"
                          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0d9488&color=fff&bold=true'">
                 </div>
@@ -78,24 +68,63 @@
                 </div>
             </a>
 
-            <!-- Desktop Navigation -->
+            <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-10">
                 <div class="flex items-center gap-8">
-                    <a href="{% url 'item:items' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">Browse</a>
-                    <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">Add Item</a>
+
+                    <!-- Browse -->
+                    <a href="{% url 'item:items' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
+                        Browse
+                    </a>
+
+                    <!-- Categories Dropdown -->
+                    <div class="dropdown relative">
+                        <button class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide flex items-center gap-1">
+                            Categories
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'item:items' %}"
+                               class="block px-4 py-2.5 text-sm font-semibold text-gray-500 hover:bg-teal-50 hover:text-teal-600 rounded-xl transition-all">
+                                All Categories
+                            </a>
+                            <div class="my-1 border-t border-gray-100"></div>
+                            {% for category in all_categories %}
+                                <a href="{% url 'item:items' %}?category={{ category.id }}"
+                                   class="block px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-teal-50 hover:text-teal-600 rounded-xl transition-all">
+                                    {{ category.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add Item -->
+                    <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
+                        Add Item
+                    </a>
                 </div>
 
                 <div class="flex items-center gap-5 pl-8 border-l border-gray-200">
                     {% if request.user.is_authenticated %}
+
+                        <!-- Cart -->
+                        <a href="{% url 'cart:detail' %}" class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all" title="Cart">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 group-hover:text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </a>
+
                         <!-- Inbox -->
                         <a href="{% url 'conversation:inbox' %}" class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all" title="Messages">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 group-hover:text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
                             <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-pulse"></span>
                         </a>
 
-                        <!-- Dashboard Button -->
+                        <!-- Dashboard -->
                         <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white text-[13px] font-black uppercase tracking-widest rounded-2xl hover:bg-teal-600 transition-all shadow-lg active:scale-95">
                             Dashboard
                         </a>
@@ -104,33 +133,34 @@
                         <div class="flex gap-1.5 bg-gray-100 p-1.5 rounded-2xl border border-gray-200">
                             <a href="{% url 'core:changePass' %}" title="Change Password" class="p-2 text-gray-500 hover:bg-white hover:text-teal-600 rounded-xl transition-all shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             </a>
                             <a href="{% url 'core:logout' %}" title="Logout" class="p-2 text-red-500 hover:bg-white rounded-xl transition-all shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                 </svg>
                             </a>
                         </div>
+
                     {% else %}
                         <a href="{% url 'core:login' %}" class="text-[13px] font-black uppercase tracking-widest text-gray-600 hover:text-teal-600 px-4 transition-colors">Log In</a>
                         <a href="{% url 'core:signup' %}" class="px-8 py-3.5 text-[13px] font-black uppercase tracking-widest bg-teal-600 text-white rounded-2xl hover:bg-teal-700 shadow-xl shadow-teal-100 transition-all active:scale-95">Get Started</a>
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Mobile Toggle -->
             <button class="md:hidden p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-teal-50 hover:text-teal-600 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
                 </svg>
             </button>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-grow">
         <div class="max-w-7xl mx-auto px-6 py-8 md:py-12">
             {% block content %}
@@ -142,26 +172,24 @@
     <footer class="bg-white border-t border-gray-100 pt-20 pb-12 px-6 md:px-12 mt-auto">
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-16 mb-16">
-                <!-- Branding -->
                 <div class="md:col-span-5">
                     <a href="/" class="flex items-center gap-3 mb-6">
-                        <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web" class="w-10 h-10 object-contain rounded-xl shadow-sm border border-gray-100"
+                        <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web"
+                             class="w-10 h-10 object-contain rounded-xl shadow-sm border border-gray-100"
                              onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0d9488&color=fff'">
                         <span class="text-2xl font-black tracking-tighter text-gray-900">Cotton Web<span class="text-teal-500">.</span></span>
                     </a>
                     <p class="text-gray-400 leading-relaxed max-w-sm mb-8 font-medium">
-                        বাংলাদেশের প্রিমিয়াম অনলাইন ট্রেডিং প্ল্যাটফর্ম। যেখানে কেনা-বেচা হয় সহজ এবং নিরাপদভাবে। আমাদের সাথে যুক্ত হোন আজই।
+                        বাংলাদেশের প্রিমিয়াম অনলাইন ট্রেডিং প্ল্যাটফর্ম। যেখানে কেনা-বেচা হয় সহজ এবং নিরাপদভাবে।
                     </p>
-                    
-                    <!-- Social Icons -->
                     <div class="flex gap-4">
-                        <a href="https://www.facebook.com/cottonweb3/" target="_blank" class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white hover:-translate-y-1 transition-all shadow-sm">
+                        <a href="https://www.facebook.com/cottonweb3/" target="_blank"
+                           class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white hover:-translate-y-1 transition-all shadow-sm">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                         </a>
                     </div>
                 </div>
 
-                <!-- Links Column 1 -->
                 <div class="md:col-span-2 md:col-start-8">
                     <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gray-900 mb-6">Marketplace</h3>
                     <ul class="space-y-4 font-bold text-sm text-gray-400">
@@ -170,7 +198,6 @@
                     </ul>
                 </div>
 
-                <!-- Links Column 2 -->
                 <div class="md:col-span-2">
                     <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gray-900 mb-6">Support</h3>
                     <ul class="space-y-4 font-bold text-sm text-gray-400">
@@ -179,7 +206,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-[11px] font-black uppercase tracking-widest text-gray-300">
                     &copy; 2026 Cotton Web. All rights reserved.
