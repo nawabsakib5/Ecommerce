@@ -53,6 +53,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.categories',
                 'core.context_processors.is_seller', 
+                'core.context_processors.notification_count',
             ],
         },
     },

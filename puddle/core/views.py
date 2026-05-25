@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, update_session_auth_hash, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from item.models import Item, Category
 from .forms import SignupForm
+from .models import Notification
+
 
 def index(request):
     items = (
@@ -19,8 +21,10 @@ def index(request):
         'items': items,
     })
 
+
 def contact(request):
     return render(request, 'core/contact.html')
+
 
 def signup(request):
     if request.method == 'POST':
@@ -33,6 +37,7 @@ def signup(request):
         form = SignupForm()
 
     return render(request, 'core/signup.html', {'form': form})
+
 
 @login_required
 def changePass(request):
@@ -55,7 +60,31 @@ def changePass(request):
 
     return render(request, 'core/changePass.html')
 
+
 def logoutpage(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
     return redirect('core:login')
+
+
+
+@login_required
+def notifications(request):
+    notifs = Notification.objects.filter(user=request.user)
+
+    
+    notifs.filter(is_read=False).update(is_read=True)
+
+    return render(request, 'core/notifications.html', {
+        'notifications': notifs,
+    })
+
+
+@login_required
+def mark_notification_read(request, pk):
+    notif = get_object_or_404(Notification, pk=pk, user=request.user)
+    notif.is_read = True
+    notif.save()
+    if notif.link:
+        return redirect(notif.link)
+    return redirect('core:notifications')
