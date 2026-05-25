@@ -7,7 +7,6 @@ from django.core.cache import cache
 from .models import Item, Category
 from .forms import NewItemForm, EditItemForm
 
-
 def items(request):
     query = request.GET.get('query', '')
     category_id = request.GET.get('category', 0)
@@ -37,9 +36,7 @@ def items(request):
         'category_id': int(category_id),
     })
 
-
 def detail(request, pk):
-    # ✅ only() সরিয়ে দেওয়া হয়েছে — select_related conflict fix
     item = get_object_or_404(Item, pk=pk)
 
     related_items = Item.objects.filter(
@@ -51,7 +48,6 @@ def detail(request, pk):
         'item': item,
         'related_items': related_items,
     })
-
 
 @login_required
 def new(request):
@@ -70,7 +66,6 @@ def new(request):
         'title': 'New Item',
     })
 
-
 @login_required
 def edit(request, pk):
     item = get_object_or_404(Item, pk=pk, user=request.user)
@@ -87,7 +82,6 @@ def edit(request, pk):
         'form': form,
         'title': 'Edit Item',
     })
-
 
 @login_required
 def delete(request, pk):

@@ -5,4 +5,4 @@ class ItemConfig(AppConfig):
     name = 'item'
 
     def ready(self):
-        import item.signals  
+        import item.signals  # noqa: F401
