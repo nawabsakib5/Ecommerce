@@ -1,39 +1,34 @@
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from item.seed_helpers import (
-    create_items_per_category,
-    ensure_categories,
-    get_admin_user,
-    seed_admin_items,
-)
+from item.models import Item
+from item.seed_helpers import ensure_categories, get_admin_user, seed_admin_catalog
 
 class Command(BaseCommand):
-    help = 'Admin: ১০০০ আইটেম। --user দিলে ক্যাটাগরি প্রতি ২টি।'
+    help = 'Admin ক্যাটালগ: ৫০টি আইটেম (ছবি সহ) — সব ইউজার দেখতে পারবে।'
 
     def add_arguments(self, parser):
-        parser.add_argument('--user', type=str, help='ইউজারনেম')
+        parser.add_argument(
+            '--reset-admin',
+            action='store_true',
+            help='Admin-এর পুরনো ক্যাটালগ আইটেম মুছে ৫০টি নতুন বানাবে',
+        )
 
     def handle(self, *args, **options):
         ensure_categories()
-        added = seed_admin_items()
         admin = get_admin_user()
 
-        if admin:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f'Admin ({admin.username}): +{added}, মোট {admin.items.count()}'
-                )
-            )
-        else:
-            self.stdout.write(self.style.WARNING('Admin পাওয়া যায়নি।'))
+        if not admin:
+            self.stdout.write(self.style.WARNING('Admin/superuser পাওয়া যায়নি।'))
+            return
 
-        username = options.get('user')
-        if username:
-            User = get_user_model()
-            user = User.objects.filter(username=username).first()
-            if not user:
-                self.stdout.write(self.style.ERROR(f'"{username}" নেই।'))
-                return
-            n = create_items_per_category(user)
-            self.stdout.write(self.style.SUCCESS(f'{username}: +{n} আইটেম।'))
+        if options.get('reset_admin'):
+            deleted, _ = Item.objects.filter(user=admin).delete()
+            self.stdout.write(self.style.WARNING(f'Admin ক্যাটালগ মুছে ফেলা: {deleted}'))
+
+        added = seed_admin_catalog(admin)
+        total = admin.items.count()
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Admin ({admin.username}): +{added} নতুন, মোট {total} ক্যাটালগ আইটেম।'
+            )
+        )

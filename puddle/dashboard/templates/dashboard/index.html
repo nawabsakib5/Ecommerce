@@ -88,10 +88,11 @@
                                                  class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                                                  loading="lazy"
                                                  alt="{{ item.name }}"
-                                                 onerror="this.src='{% static 'images/default.png' %}'">
+                                                 onerror="this.src='https://picsum.photos/seed/{{ item.id }}/400/300'">
                                         {% else %}
-                                            <img src="{% static 'images/default.png' %}"
-                                                 class="w-full h-full object-cover"
+                                            <img src="https://picsum.photos/seed/{{ item.id }}/400/300"
+                                                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                                 loading="lazy"
                                                  alt="{{ item.name }}">
                                         {% endif %}
 

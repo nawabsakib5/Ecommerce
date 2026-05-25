@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -13,9 +14,11 @@ def items(request):
 
     categories = cache.get_or_set('all_categories', Category.objects.all(), 3600)
 
-    items_list = Item.objects.filter(
-        is_sold=False
-    ).select_related('category').order_by('-id')
+    items_list = (
+        Item.objects.filter(is_sold=False)
+        .select_related('category', 'user')
+        .order_by('-created_at')
+    )
 
     if category_id and int(category_id) != 0:
         items_list = items_list.filter(category_id=category_id)
@@ -37,7 +40,10 @@ def items(request):
     })
 
 def detail(request, pk):
-    item = get_object_or_404(Item, pk=pk)
+    item = get_object_or_404(
+        Item.objects.select_related('category', 'user'),
+        pk=pk,
+    )
 
     related_items = Item.objects.filter(
         category=item.category,
@@ -57,6 +63,11 @@ def new(request):
             item = form.save(commit=False)
             item.user = request.user
             item.save()
+            cache.delete('all_categories')
+            messages.success(
+                request,
+                'Your item is live — everyone can browse and add it to cart.',
+            )
             return redirect('item:detail', pk=item.id)
     else:
         form = NewItemForm()
