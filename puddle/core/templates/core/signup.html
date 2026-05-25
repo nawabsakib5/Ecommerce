@@ -5,7 +5,7 @@
 {% block content %}
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/60 border border-gray-100">
-        
+
         <div class="text-center">
             <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Create Account</h2>
             <p class="mt-2 text-sm text-gray-500">Join our community today</p>
@@ -13,31 +13,63 @@
 
         <form method="POST" action="." class="mt-8 space-y-5">
             {% csrf_token %}
-            
+
             {% for field in form %}
-                <div class="relative">
-                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">
-                        {{ field.label }}
-                    </label>
-                    
-                    <div class="w-full">
-                        {{ field }}
+                {% if field.name == 'user_type' %}
+                    <!-- ✅ Seller/Buyer — Radio button সুন্দরভাবে দেখাবে -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 ml-1">
+                            I want to
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="user_type" value="Seller" class="peer hidden"
+                                    {% if form.user_type.value == 'Seller' %}checked{% endif %}>
+                                <div class="flex flex-col items-center justify-center p-4 border-2 border-gray-200 rounded-2xl peer-checked:border-teal-500 peer-checked:bg-teal-50 transition-all">
+                                    <span class="text-2xl mb-1">🏪</span>
+                                    <span class="font-black text-gray-800 text-sm">Seller</span>
+                                    <span class="text-xs text-gray-400 mt-1">I want to sell</span>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="user_type" value="Buyer" class="peer hidden"
+                                    {% if form.user_type.value == 'Buyer' %}checked{% endif %}>
+                                <div class="flex flex-col items-center justify-center p-4 border-2 border-gray-200 rounded-2xl peer-checked:border-teal-500 peer-checked:bg-teal-50 transition-all">
+                                    <span class="text-2xl mb-1">🛒</span>
+                                    <span class="font-black text-gray-800 text-sm">Buyer</span>
+                                    <span class="text-xs text-gray-400 mt-1">I want to buy</span>
+                                </div>
+                            </label>
+                        </div>
+                        {% if field.errors %}
+                            <p class="mt-1 text-xs text-red-500 italic">{{ field.errors.0 }}</p>
+                        {% endif %}
                     </div>
 
-                    {% if field.errors %}
-                        <p class="mt-1 text-xs text-red-500 italic">{{ field.errors.0 }}</p>
-                    {% endif %}
-                </div>
+                {% else %}
+                    <div class="relative">
+                        <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">
+                            {{ field.label }}
+                        </label>
+                        <div class="w-full">
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <p class="mt-1 text-xs text-red-500 italic">{{ field.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                {% endif %}
             {% endfor %}
 
-            <button type="submit" class="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-sm text-sm font-black text-white bg-teal-600 hover:bg-teal-700 transition-all duration-200 transform hover:scale-[1.02] uppercase tracking-widest">
-                Sign Up
+            <button type="submit"
+                    class="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-sm text-sm font-black text-white bg-teal-600 hover:bg-teal-700 transition-all duration-200 transform hover:scale-[1.02] uppercase tracking-widest">
+                Create Account
             </button>
         </form>
 
         <div class="text-center mt-6">
             <p class="text-sm text-gray-600">
-                Already have an account? 
+                Already have an account?
                 <a href="{% url 'core:login' %}" class="font-bold text-teal-600 hover:text-teal-500 hover:underline">Log in</a>
             </p>
         </div>
@@ -45,8 +77,10 @@
 </div>
 
 <style>
-    /* Styling Django form widgets globally to match the premium theme */
-    input, select {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
         width: 100%;
         padding: 1rem 1.25rem;
         background-color: #f9fafb;
@@ -55,7 +89,10 @@
         transition: all 0.3s ease;
         font-size: 0.95rem;
     }
-    input:focus, select:focus {
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus {
         border-color: #0d9488;
         background-color: #ffffff;
         box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);

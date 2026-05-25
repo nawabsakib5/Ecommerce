@@ -1,11 +1,14 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Sum
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 
 from item.models import Item
+from item.seed_helpers import is_admin_user
+
+from .admin_stats import build_admin_dashboard_data
+from .forms import ProfileUpdateForm, UserUpdateForm
 from .models import Profile
-from .forms import UserUpdateForm, ProfileUpdateForm
 
 
 @login_required
@@ -44,3 +47,10 @@ def index(request):
         'profile': profile,
     }
     return render(request, 'dashboard/index.html', context)
+
+
+@login_required
+@user_passes_test(is_admin_user)
+def admin_dashboard(request):
+    context = build_admin_dashboard_data()
+    return render(request, 'dashboard/admin.html', context)

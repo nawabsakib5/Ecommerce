@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
 from item.models import Item
-from .models import Cart, CartItem
+
+from .models import Cart, CartItem, Sale
 
 
 def get_or_create_cart(user):
@@ -80,8 +82,20 @@ def checkout(request):
 
     if request.method == 'POST':
         for cart_item in cart_items:
-            cart_item.item.is_sold = True
-            cart_item.item.save()
+            item = cart_item.item
+            total = cart_item.get_subtotal()
+            commission = Sale.calc_commission(total)
+            Sale.objects.create(
+                item=item,
+                seller=item.user,
+                buyer=request.user,
+                quantity=cart_item.quantity,
+                unit_price=item.price,
+                total_amount=total,
+                commission_amount=commission,
+            )
+            item.is_sold = True
+            item.save()
         cart.cart_items.all().delete()
         messages.success(request, "Order placed successfully!")
         return redirect('item:items')
