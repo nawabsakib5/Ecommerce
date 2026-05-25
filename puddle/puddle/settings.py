@@ -53,7 +53,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.categories', 
+                'core.context_processors.categories',
+                'core.context_processors.site_admin',
             ],
         },
     },
@@ -103,3 +104,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 AUTH_USER_MODEL = 'core.CustomUserModel'
 
 AUTH_PASSWORD_VALIDATORS = []
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://cottonweb.up.railway.app',
+]
