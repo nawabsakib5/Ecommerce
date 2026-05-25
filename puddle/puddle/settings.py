@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f8)u5is$dth%*p^5d#bl)k-xx#0yzepnq42-fkj!28rk6tpa*n'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://web-production-30f2d.up.railway.app']
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
@@ -37,7 +36,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # debug_toolbar middleware রিমোভ করা হয়েছে
 ]
 
 ROOT_URLCONF = 'puddle.urls'
@@ -53,15 +51,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.categories',
-                'core.context_processors.site_admin',
+                'core.context_processors.categories',  # ✅ শুধু এটা
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'puddle.wsgi.application'
-
 
 DATABASES = {
     'default': {
@@ -70,12 +66,7 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -103,8 +94,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'core.CustomUserModel'
 
-AUTH_PASSWORD_VALIDATORS = []
-
 CSRF_TRUSTED_ORIGINS = [
     'https://cottonweb.up.railway.app',
+    'https://web-production-30f2d.up.railway.app',
 ]
