@@ -1,5 +1,4 @@
 import random
-from faker import Faker
 from django.core.cache import cache
 from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_migrate, post_save
@@ -9,7 +8,6 @@ from django.contrib.auth import get_user_model
 from .models import Item, Category
 from .seed_helpers import seed_admin_catalog
 
-fake = Faker()
 User = get_user_model()
 
 CATEGORY_NAMES = [
@@ -35,6 +33,13 @@ def get_or_create_categories():
 
 
 def create_items_per_category(user):
+    # ✅ Lazy import — Railway তে faker না থাকলেও crash হবে না
+    try:
+        from faker import Faker
+        fake = Faker()
+    except ImportError:
+        return
+
     categories = Category.objects.all()
     if not categories.exists():
         return
@@ -60,7 +65,6 @@ def create_items_per_category(user):
         print(f"[SEED] {user.username} — {len(items_to_create)} items created!")
 
 
-# ✅ Migration এর পরে admin catalog seed
 @receiver(post_migrate)
 def seed_after_migrate(sender, **kwargs):
     if sender.name != 'item':
@@ -68,19 +72,16 @@ def seed_after_migrate(sender, **kwargs):
     seed_admin_catalog()
 
 
-# ✅ Item save হলে category cache clear
 @receiver(post_save, sender=Item)
 def clear_category_cache(sender, **kwargs):
     cache.delete('all_categories')
 
 
-# ✅ User login করলে auto seed
 @receiver(user_logged_in)
 def seed_on_login(sender, request, user, **kwargs):
     create_items_per_category(user)
 
 
-# ✅ নতুন user signup করলে auto seed
 @receiver(post_save, sender=User)
 def seed_on_signup(sender, instance, created, **kwargs):
     if not created:
@@ -88,7 +89,6 @@ def seed_on_signup(sender, instance, created, **kwargs):
     create_items_per_category(instance)
 
 
-# ✅ Item sell হলে seller কে notification পাঠাবে
 @receiver(post_save, sender=Item)
 def notify_on_sale(sender, instance, created, **kwargs):
     if created:
