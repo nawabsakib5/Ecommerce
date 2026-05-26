@@ -51,7 +51,6 @@
     <nav class="sticky top-0 z-50 glass-nav border-b border-gray-100/80 py-4 px-6 md:px-12">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-            <!-- Logo -->
             <a href="/" class="group flex items-center gap-3">
                 <div class="logo-container relative w-12 h-12 flex items-center justify-center overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm group-hover:border-teal-200">
                     <img src="{% static 'images/logo.jpg' %}"
@@ -65,7 +64,6 @@
                 </div>
             </a>
 
-            <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-10">
                 <div class="flex items-center gap-8">
 
@@ -95,16 +93,19 @@
                         </div>
                     </div>
 
-                    <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
-                        Add Item
-                    </a>
+                    <!-- ✅ শুধু Seller আর Admin দেখবে -->
+                    {% if not request.user.is_authenticated or is_seller or request.user.is_staff %}
+                        <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
+                            Add Item
+                        </a>
+                    {% endif %}
+
                 </div>
 
                 <div class="flex items-center gap-3 pl-8 border-l border-gray-200">
                     {% if request.user.is_authenticated %}
 
                         {% if is_seller %}
-                            <!-- ✅ Seller — Email icon (inbox) -->
                             <a href="{% url 'conversation:inbox' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Inbox">
@@ -114,7 +115,6 @@
                             </a>
 
                         {% else %}
-                            <!-- ✅ Buyer — Cart icon -->
                             <a href="{% url 'cart:detail' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Cart">
@@ -123,7 +123,6 @@
                                 </svg>
                             </a>
 
-                            <!-- ✅ Buyer — Message icon -->
                             <a href="{% url 'conversation:inbox' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Messages">
@@ -133,7 +132,6 @@
                             </a>
                         {% endif %}
 
-                        <!-- ✅ Notification icon — সবার জন্য -->
                         <a href="{% url 'core:notifications' %}"
                            class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                            title="Notifications">
@@ -147,7 +145,6 @@
                             {% endif %}
                         </a>
 
-                        <!-- Dashboard -->
                         <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-5 py-3 bg-gray-900 text-white text-[13px] font-black uppercase tracking-widest rounded-2xl hover:bg-teal-600 transition-all shadow-lg active:scale-95">
                             Dashboard
                         </a>
@@ -158,7 +155,6 @@
                             </a>
                         {% endif %}
 
-                        <!-- Settings & Logout -->
                         <div class="flex gap-1.5 bg-gray-100 p-1.5 rounded-2xl border border-gray-200">
                             <a href="{% url 'core:changePass' %}" title="Change Password" class="p-2 text-gray-500 hover:bg-white hover:text-teal-600 rounded-xl transition-all shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Mobile Toggle -->
             <button class="md:hidden p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-teal-50 hover:text-teal-600 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
@@ -221,7 +216,9 @@
                     <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gray-900 mb-6">Marketplace</h3>
                     <ul class="space-y-4 font-bold text-sm text-gray-400">
                         <li><a href="{% url 'item:items' %}" class="hover:text-teal-600 transition-colors">All Items</a></li>
-                        <li><a href="{% url 'item:new' %}" class="hover:text-teal-600 transition-colors">Sell Something</a></li>
+                        {% if is_seller or request.user.is_staff %}
+                            <li><a href="{% url 'item:new' %}" class="hover:text-teal-600 transition-colors">Sell Something</a></li>
+                        {% endif %}
                     </ul>
                 </div>
 

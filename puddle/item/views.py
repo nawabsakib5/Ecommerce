@@ -8,6 +8,7 @@ from django.core.cache import cache
 from .models import Item, Category
 from .forms import NewItemForm, EditItemForm
 
+
 def items(request):
     query = request.GET.get('query', '')
     category_id = request.GET.get('category', 0)
@@ -39,6 +40,7 @@ def items(request):
         'category_id': int(category_id),
     })
 
+
 def detail(request, pk):
     item = get_object_or_404(
         Item.objects.select_related('category', 'user'),
@@ -55,8 +57,14 @@ def detail(request, pk):
         'related_items': related_items,
     })
 
+
 @login_required
 def new(request):
+    # ✅ Buyer item add করতে পারবে না
+    if request.user.user_type == 'Buyer':
+        messages.error(request, "Buyers cannot add items. Please create a Seller account.")
+        return redirect('item:items')
+
     if request.method == 'POST':
         form = NewItemForm(request.POST, request.FILES)
         if form.is_valid():
@@ -77,6 +85,7 @@ def new(request):
         'title': 'New Item',
     })
 
+
 @login_required
 def edit(request, pk):
     item = get_object_or_404(Item, pk=pk, user=request.user)
@@ -93,6 +102,7 @@ def edit(request, pk):
         'form': form,
         'title': 'Edit Item',
     })
+
 
 @login_required
 def delete(request, pk):
