@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from item.models import Item, Category
 from .forms import SignupForm
-from .models import Notification
+from .models import Notification, Wishlist, Review
 
 
 def index(request):
@@ -67,14 +67,10 @@ def logoutpage(request):
     return redirect('core:login')
 
 
-
 @login_required
 def notifications(request):
     notifs = Notification.objects.filter(user=request.user)
-
-    
     notifs.filter(is_read=False).update(is_read=True)
-
     return render(request, 'core/notifications.html', {
         'notifications': notifs,
     })
@@ -88,3 +84,32 @@ def mark_notification_read(request, pk):
     if notif.link:
         return redirect(notif.link)
     return redirect('core:notifications')
+
+
+@login_required
+def toggle_wishlist(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        user=request.user, item=item
+    )
+    if not created:
+        wishlist_item.delete()
+        messages.success(request, f"'{item.name}' removed from wishlist.")
+    else:
+        messages.success(request, f"'{item.name}' added to wishlist! ❤️")
+    return redirect('item:detail', pk=item_id)
+
+
+@login_required
+def add_review(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+    if request.method == 'POST':
+        rating = int(request.POST.get('rating', 5))
+        comment = request.POST.get('comment', '')
+        Review.objects.update_or_create(
+            user=request.user,
+            item=item,
+            defaults={'rating': rating, 'comment': comment}
+        )
+        messages.success(request, "Review submitted! ⭐")
+    return redirect('item:detail', pk=item_id)

@@ -12,7 +12,12 @@ class CustomUserModel(AbstractUser):
         ('Seller', 'Seller'),
         ('Buyer', 'Buyer'),
     ]
-    user_type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, null=True, blank=True)
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPE_CHOICES,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.username
@@ -47,3 +52,49 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.title}"
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='wishlist',
+        on_delete=models.CASCADE
+    )
+    item = models.ForeignKey(
+        'item.Item',
+        related_name='wishlisted_by',
+        on_delete=models.CASCADE
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'item')
+        ordering = ('-added_at',)
+
+    def __str__(self):
+        return f"{self.user.username} → {self.item.name}"
+
+
+class Review(models.Model):
+    RATING_CHOICES = [(i, i) for i in range(1, 6)]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='reviews',
+        on_delete=models.CASCADE
+    )
+    item = models.ForeignKey(
+        'item.Item',
+        related_name='reviews',
+        on_delete=models.CASCADE
+    )
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'item')
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.user.username} — {self.item.name} ({self.rating}★)"

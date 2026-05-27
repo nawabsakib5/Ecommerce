@@ -3,8 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from item.models import Item
-
-from .models import Cart, CartItem, Sale
+from .models import Cart, CartItem, Sale, Order, OrderItem
 
 
 def get_or_create_cart(user):
@@ -15,9 +14,7 @@ def get_or_create_cart(user):
 @login_required
 def cart_detail(request):
     cart = get_or_create_cart(request.user)
-    cart_items = cart.cart_items.select_related(
-        'item', 'item__category'
-    ).all()
+    cart_items = cart.cart_items.select_related('item', 'item__category').all()
     return render(request, 'cart/cart.html', {
         'cart': cart,
         'cart_items': cart_items,
@@ -30,11 +27,8 @@ def add_to_cart(request, item_id):
     cart = get_or_create_cart(request.user)
 
     cart_item, created = CartItem.objects.get_or_create(
-        cart=cart,
-        item=item,
-        defaults={'quantity': 1}
+        cart=cart, item=item, defaults={'quantity': 1}
     )
-
     if not created:
         cart_item.quantity += 1
         cart_item.save()
@@ -74,33 +68,69 @@ def update_quantity(request, item_id):
 @login_required
 def checkout(request):
     cart = get_or_create_cart(request.user)
-    cart_items = cart.cart_items.select_related('item').all()
+    cart_items = cart.cart_items.select_related('item', 'item__user').all()
 
     if not cart_items.exists():
         messages.warning(request, "Your cart is empty!")
         return redirect('cart:detail')
 
     if request.method == 'POST':
+        total = cart.get_total()
+
+        # ✅ Order তৈরি করো
+        order = Order.objects.create(
+            buyer=request.user,
+            total_amount=total,
+            status='pending',
+        )
+
         for cart_item in cart_items:
             item = cart_item.item
-            total = cart_item.get_subtotal()
-            commission = Sale.calc_commission(total)
+            subtotal = cart_item.get_subtotal()
+            commission = Sale.calc_commission(subtotal)
+
+            # ✅ OrderItem তৈরি
+            OrderItem.objects.create(
+                order=order,
+                item=item,
+                quantity=cart_item.quantity,
+                price=item.price,
+                seller=item.user,
+            )
+
+            # ✅ Sale record তৈরি
             Sale.objects.create(
                 item=item,
                 seller=item.user,
                 buyer=request.user,
                 quantity=cart_item.quantity,
                 unit_price=item.price,
-                total_amount=total,
+                total_amount=subtotal,
                 commission_amount=commission,
             )
+
+            # ✅ Item mark as sold
             item.is_sold = True
             item.save()
+
         cart.cart_items.all().delete()
-        messages.success(request, "Order placed successfully!")
-        return redirect('item:items')
+        messages.success(request, f"Order #{order.id} placed successfully! 🎉")
+        return redirect('cart:order_detail', pk=order.id)
 
     return render(request, 'cart/checkout.html', {
         'cart': cart,
         'cart_items': cart_items,
     })
+
+
+@login_required
+def order_detail(request, pk):
+    order = get_object_or_404(
+        Order.objects.prefetch_related(
+            'order_items__item',
+            'order_items__seller'
+        ),
+        pk=pk,
+        buyer=request.user
+    )
+    return render(request, 'cart/order_detail.html', {'order': order})
