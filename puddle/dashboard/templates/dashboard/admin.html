@@ -1,165 +1,386 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
-{% block title %}Admin Control Panel{% endblock %}
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-8 md:py-12 text-white">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
-            <div>
-                <p class="text-amber-400 text-sm font-bold uppercase tracking-widest mb-2">Cotton Web · Admin</p>
-                <h1 class="text-3xl md:text-4xl font-black tracking-tight">Control Panel</h1>
-                <p class="text-slate-400 mt-2 max-w-2xl">
-                    সব ইউজার, তাদের available আইটেম, বিক্রয় ও {{ commission_rate_pct }}% ওয়েবসাইট কমিশন এক জায়গায়।
-                </p>
-            </div>
-            <a href="{% url 'dashboard:index' %}"
-               class="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-2xl text-sm font-bold transition">
-                ← Seller Dashboard
-            </a>
+<style>
+:root {
+    --bg: #080b14;
+    --s1: #0e1220;
+    --s2: #141826;
+    --s3: #1c2138;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #eef0ff;
+    --muted: #5a6384;
+    --muted2: #8892b0;
+    --teal: #00e5b0;
+    --teal2: #00b88a;
+    --blue: #4d9fff;
+    --purple: #b06aff;
+    --orange: #ff7c3a;
+    --red: #ff4d6d;
+    --green: #00d68f;
+    --yellow: #ffd166;
+    --font: 'Plus Jakarta Sans', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+}
+
+.adm * { box-sizing: border-box; margin: 0; padding: 0; }
+.adm {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1.5rem 3rem;
+    margin: -2rem -1.5rem;
+}
+
+/* ── Header ── */
+.adm-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 2.5rem; gap: 1rem; flex-wrap: wrap;
+}
+.adm-header h1 {
+    font-size: 2rem; font-weight: 800; letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #fff 30%, var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.adm-header p { font-size: 0.8rem; color: var(--muted2); margin-top: 4px; }
+.live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,229,176,0.08); border: 1px solid rgba(0,229,176,0.2);
+    color: var(--teal); font-size: 0.72rem; font-weight: 600;
+    padding: 6px 14px; border-radius: 30px; white-space: nowrap;
+}
+.live-badge .dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--teal);
+    animation: blink 1.8s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+
+/* ── Stat Cards ── */
+.stats-row {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1rem; margin-bottom: 1.75rem;
+}
+@media(max-width:1100px){ .stats-row { grid-template-columns: repeat(3,1fr); } }
+@media(max-width:640px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
+
+.stat {
+    background: var(--s1); border: 1px solid var(--border);
+    border-radius: 18px; padding: 1.25rem 1.4rem;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.stat:hover { transform: translateY(-3px); border-color: var(--border2); }
+.stat::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--glow, transparent);
+    opacity: 0.06; pointer-events: none;
+}
+.stat-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; margin-bottom: 1rem;
+}
+.stat-num {
+    font-size: 1.85rem; font-weight: 800; letter-spacing: -0.04em;
+    font-family: var(--mono); line-height: 1;
+}
+.stat-lbl { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+.stat-sub { font-size: 0.72rem; color: var(--muted2); margin-top: 6px; }
+
+/* ── Panels ── */
+.grid2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; margin-bottom: 1.5rem; }
+@media(max-width:1024px){ .grid2 { grid-template-columns: 1fr; } }
+
+.panel {
+    background: var(--s1); border: 1px solid var(--border);
+    border-radius: 18px; overflow: hidden;
+}
+.panel-head {
+    padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.panel-title { font-size: 0.9rem; font-weight: 700; }
+.panel-sub { font-size: 0.72rem; color: var(--muted2); margin-top: 2px; }
+.panel-body { padding: 1.25rem 1.5rem; }
+
+/* ── Table ── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+    font-size: 0.65rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 0 1rem 0.9rem; text-align: left; white-space: nowrap;
+}
+.tbl td { padding: 0.85rem 1rem; border-top: 1px solid var(--border); font-size: 0.82rem; }
+.tbl tr:hover td { background: rgba(255,255,255,0.015); }
+.av {
+    width: 32px; height: 32px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+}
+.chip {
+    display: inline-block; padding: 2px 9px; border-radius: 6px;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em;
+}
+.chip-seller { background: rgba(0,229,176,0.1); color: var(--teal); }
+.chip-buyer  { background: rgba(77,159,255,0.1); color: var(--blue); }
+.chip-admin  { background: rgba(255,124,58,0.1); color: var(--orange); }
+.chip-none   { background: rgba(90,99,132,0.15); color: var(--muted2); }
+.mono { font-family: var(--mono); font-size: 0.8rem; font-weight: 500; }
+
+/* ── Recent Sales ── */
+.sale-list { max-height: 520px; overflow-y: auto; }
+.sale-list::-webkit-scrollbar { width: 3px; }
+.sale-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 3px; }
+.sale-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+}
+.sale-item:last-child { border-bottom: none; }
+.sale-thumb {
+    width: 40px; height: 40px; border-radius: 10px;
+    object-fit: cover; background: var(--s2); flex-shrink: 0;
+}
+.sale-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sale-meta { font-size: 0.68rem; color: var(--muted2); margin-top: 2px; }
+.sale-amount { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--teal); flex-shrink: 0; }
+
+/* ── Chart ── */
+.chart-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+.chart-wrap { position: relative; height: 240px; padding: 1.25rem 1.5rem; }
+</style>
+
+<div class="adm">
+
+    <div class="adm-header">
+        <div>
+            <h1>Cotton Web Admin</h1>
+            <p>Full platform monitoring — {{ total_users }} users · {{ grand_available }} listings · {{ grand_sold_qty }} sold</p>
         </div>
+        
+    </div>
 
-        <!-- Global stats -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Users</p>
-                <p class="text-3xl font-black mt-1 text-white">{{ total_users }}</p>
-            </div>
-            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Available Items</p>
-                <p class="text-3xl font-black mt-1 text-emerald-400">{{ grand_available }}</p>
-            </div>
-            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Units Sold</p>
-                <p class="text-3xl font-black mt-1 text-sky-400">{{ grand_sold_qty }}</p>
-            </div>
-            <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-5 shadow-lg shadow-amber-900/30">
-                <p class="text-xs font-bold text-amber-100 uppercase tracking-wider">Total Sales</p>
-                <p class="text-3xl font-black mt-1">${{ grand_sales }}</p>
-                <p class="text-amber-100/90 text-xs mt-2">Commission ({{ commission_rate_pct }}%): <span class="font-black">${{ grand_commission }}</span></p>
-            </div>
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--teal), transparent 70%);">
+            <div class="stat-icon" style="background:rgba(0,229,176,0.1);">👥</div>
+            <div class="stat-num" style="color:var(--teal);">{{ total_users }}</div>
+            <div class="stat-lbl">Total Users</div>
+            <div class="stat-sub">Registered accounts</div>
         </div>
+        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--blue), transparent 70%);">
+            <div class="stat-icon" style="background:rgba(77,159,255,0.1);">📦</div>
+            <div class="stat-num" style="color:var(--blue);">{{ grand_available }}</div>
+            <div class="stat-lbl">Active Listings</div>
+            <div class="stat-sub">Available for sale</div>
+        </div>
+        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--green), transparent 70%);">
+            <div class="stat-icon" style="background:rgba(0,214,143,0.1);">✅</div>
+            <div class="stat-num" style="color:var(--green);">{{ grand_sold_qty }}</div>
+            <div class="stat-lbl">Total Sold</div>
+            <div class="stat-sub">Platform wide</div>
+        </div>
+        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--orange), transparent 70%);">
+            <div class="stat-icon" style="background:rgba(255,124,58,0.1);">💰</div>
+            <div class="stat-num" style="color:var(--orange);">${{ grand_sales }}</div>
+            <div class="stat-lbl">Revenue</div>
+            <div class="stat-sub">Platform GMV</div>
+        </div>
+        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--purple), transparent 70%);">
+            <div class="stat-icon" style="background:rgba(176,106,255,0.1);">🏦</div>
+            <div class="stat-num" style="color:var(--purple);">${{ grand_commission }}</div>
+            <div class="stat-lbl">Commission</div>
+            <div class="stat-sub">{{ commission_rate_pct }}% rate</div>
+        </div>
+    </div>
 
-        <!-- Users table -->
-        <div class="bg-white rounded-3xl text-gray-900 shadow-2xl overflow-hidden mb-10">
-            <div class="px-6 md:px-8 py-6 border-b border-gray-100 bg-gray-50">
-                <h2 class="text-xl font-black">All Users &amp; Seller Stats</h2>
-                <p class="text-sm text-gray-500 mt-1">Expand a row to see available items</p>
+    <!-- Main Grid -->
+    <div class="grid2">
+
+        <!-- User Table -->
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <div class="panel-title">Seller Performance</div>
+                    <div class="panel-sub">All users — listings, sales & revenue</div>
+                </div>
+                <span class="chip chip-seller">{{ total_users }} users</span>
             </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-100 text-xs font-bold uppercase tracking-wider text-gray-500">
+            <div style="overflow-x:auto;">
+                <table class="tbl">
+                    <thead>
                         <tr>
-                            <th class="px-6 py-4">User</th>
-                            <th class="px-4 py-4">Type</th>
-                            <th class="px-4 py-4 text-center">Available</th>
-                            <th class="px-4 py-4 text-center">Sold</th>
-                            <th class="px-4 py-4 text-right">Sales ($)</th>
-                            <th class="px-4 py-4 text-right">Commission {{ commission_rate_pct }}% ($)</th>
-                            <th class="px-4 py-4"></th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Active</th>
+                            <th>Sold</th>
+                            <th>Revenue</th>
+                            <th>Commission</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody>
                         {% for row in user_rows %}
-                        <tr class="hover:bg-teal-50/50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-bold text-gray-900">{{ row.user.username }}</p>
-                                <p class="text-xs text-gray-400">{{ row.user.email }}</p>
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#000;">
+                                        {{ row.user.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.83rem;">{{ row.user.username }}</div>
+                                        <div style="font-size:0.68rem;color:var(--muted2);">{{ row.user.email }}</div>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-4 py-4">
-                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-600">
-                                    {{ row.user.user_type|default:"—" }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-4 text-center font-bold text-emerald-600">{{ row.available_count }}</td>
-                            <td class="px-4 py-4 text-center font-bold text-sky-600">{{ row.sold_count }}</td>
-                            <td class="px-4 py-4 text-right font-black">${{ row.revenue }}</td>
-                            <td class="px-4 py-4 text-right font-black text-amber-600">${{ row.commission }}</td>
-                            <td class="px-4 py-4 relative">
-                                {% if row.available_items %}
-                                <details class="group">
-                                    <summary class="cursor-pointer text-teal-600 font-bold text-xs hover:text-teal-700 list-none">
-                                        Items ▾
-                                    </summary>
-                                    <ul class="mt-3 space-y-2 min-w-[260px] absolute right-4 z-20 bg-white border border-gray-100 rounded-xl shadow-xl p-3">
-                                        {% for item in row.available_items %}
-                                        <li class="text-xs border-b border-gray-50 pb-2 last:border-0">
-                                            <a href="{% url 'item:detail' item.id %}" class="font-semibold text-gray-800 hover:text-teal-600">{{ item.name }}</a>
-                                            <span class="text-gray-400"> · {{ item.category.name }} · ${{ item.price }}</span>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </details>
+                            <td>
+                                {% if row.user.is_superuser %}
+                                    <span class="chip chip-admin">Admin</span>
+                                {% elif row.user.user_type == 'Seller' %}
+                                    <span class="chip chip-seller">Seller</span>
+                                {% elif row.user.user_type == 'Buyer' %}
+                                    <span class="chip chip-buyer">Buyer</span>
                                 {% else %}
-                                <span class="text-gray-300 text-xs">—</span>
+                                    <span class="chip chip-none">—</span>
                                 {% endif %}
                             </td>
+                            <td><span class="mono" style="color:var(--blue);">{{ row.available_count }}</span></td>
+                            <td><span class="mono" style="color:var(--green);">{{ row.sold_count }}</span></td>
+                            <td><span class="mono" style="color:var(--teal);">${{ row.revenue }}</span></td>
+                            <td><span class="mono" style="color:var(--purple);">${{ row.commission }}</span></td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">No users found.</td>
+                            <td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No users found</td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                    <tfoot class="bg-gray-900 text-white">
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 font-black uppercase text-xs tracking-wider">Platform Total</td>
-                            <td class="px-4 py-4 text-right font-black">${{ grand_sales }}</td>
-                            <td class="px-4 py-4 text-right font-black text-amber-400">${{ grand_commission }}</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
 
-        <!-- Recent sales -->
-        <div class="bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden">
-            <div class="px-6 py-5 border-b border-white/10">
-                <h2 class="text-lg font-black">Recent Sales</h2>
-                <p class="text-slate-400 text-sm">Checkout থেকে রেকর্ড — প্রতি sale-এ {{ commission_rate_pct }}% commission</p>
+        <!-- Recent Sales -->
+        <div class="panel">
+            <div class="panel-head">
+                <div>
+                    <div class="panel-title">Recent Sales</div>
+                    <div class="panel-sub">Last 20 transactions</div>
+                </div>
             </div>
-            {% if recent_sales %}
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs uppercase text-slate-400 border-b border-white/10">
-                        <tr>
-                            <th class="px-6 py-3">Product</th>
-                            <th class="px-4 py-3">Seller</th>
-                            <th class="px-4 py-3">Buyer</th>
-                            <th class="px-4 py-3 text-center">Qty</th>
-                            <th class="px-4 py-3 text-right">Total</th>
-                            <th class="px-4 py-3 text-right">Commission</th>
-                            <th class="px-4 py-3">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        {% for sale in recent_sales %}
-                        <tr class="hover:bg-white/5">
-                            <td class="px-6 py-3 font-semibold">{{ sale.item.name }}</td>
-                            <td class="px-4 py-3 text-teal-300">{{ sale.seller.username }}</td>
-                            <td class="px-4 py-3">{{ sale.buyer.username }}</td>
-                            <td class="px-4 py-3 text-center">{{ sale.quantity }}</td>
-                            <td class="px-4 py-3 text-right font-bold">${{ sale.total_amount }}</td>
-                            <td class="px-4 py-3 text-right font-bold text-amber-400">${{ sale.commission_amount }}</td>
-                            <td class="px-4 py-3 text-slate-400 text-xs">{{ sale.sold_at|date:"M d, Y H:i" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="panel-body">
+                <div class="sale-list">
+                    {% for sale in recent_sales %}
+                    <div class="sale-item">
+                        {% if sale.item.image %}
+                            <img src="{{ sale.item.image.url }}" class="sale-thumb" alt="{{ sale.item.name }}">
+                        {% else %}
+                            <img src="https://picsum.photos/seed/{{ sale.item.id }}/80/80" class="sale-thumb" alt="{{ sale.item.name }}">
+                        {% endif %}
+                        <div style="flex:1;min-width:0;">
+                            <div class="sale-name">{{ sale.item.name }}</div>
+                            <div class="sale-meta">{{ sale.seller.username }} → {{ sale.buyer.username }}</div>
+                            <div class="sale-meta">{{ sale.sold_at|date:"M d, H:i" }}</div>
+                        </div>
+                        <div class="sale-amount">${{ sale.total_amount }}</div>
+                    </div>
+                    {% empty %}
+                    <div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.85rem;">No sales yet</div>
+                    {% endfor %}
+                </div>
             </div>
-            {% else %}
-            <p class="px-6 py-10 text-slate-400 text-center">এখনো কোনো checkout sale রেকর্ড নেই। Order complete হলে এখানে দেখা যাবে।</p>
-            {% endif %}
         </div>
     </div>
+
+    <!-- Chart -->
+    <div class="chart-panel">
+        <div class="panel-head">
+            <div>
+                <div class="panel-title">Revenue & Commission Breakdown</div>
+                <div class="panel-sub">Per-seller overview</div>
+            </div>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
 </div>
 
-<style>
-    details summary::-webkit-details-marker { display: none; }
-    details[open] summary { color: #0f766e; }
-</style>
+<script>
+const labels = [{% for row in user_rows %}"{{ row.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const revenues = [{% for row in user_rows %}{{ row.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
+const commissions = [{% for row in user_rows %}{{ row.commission }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+const ctx = document.getElementById('revenueChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels,
+        datasets: [
+            {
+                label: 'Revenue',
+                data: revenues,
+                backgroundColor: 'rgba(0,229,176,0.7)',
+                borderRadius: 8,
+                borderSkipped: false,
+            },
+            {
+                label: 'Commission',
+                data: commissions,
+                backgroundColor: 'rgba(176,106,255,0.7)',
+                borderRadius: 8,
+                borderSkipped: false,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#8892b0',
+                    font: { family: 'Plus Jakarta Sans', size: 12 },
+                    usePointStyle: true,
+                    pointStyleWidth: 8,
+                }
+            },
+            tooltip: {
+                backgroundColor: '#0e1220',
+                borderColor: 'rgba(255,255,255,0.07)',
+                borderWidth: 1,
+                titleColor: '#eef0ff',
+                bodyColor: '#8892b0',
+                padding: 12,
+                callbacks: {
+                    label: ctx => ` $${ctx.raw.toLocaleString()}`
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: '#5a6384', font: { family: 'Plus Jakarta Sans' } },
+                grid: { color: 'rgba(255,255,255,0.03)' },
+                border: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y: {
+                ticks: {
+                    color: '#5a6384',
+                    font: { family: 'JetBrains Mono', size: 11 },
+                    callback: v => '$' + v.toLocaleString()
+                },
+                grid: { color: 'rgba(255,255,255,0.03)' },
+                border: { color: 'rgba(255,255,255,0.05)' }
+            }
+        }
+    }
+});
+</script>
+
 {% endblock %}

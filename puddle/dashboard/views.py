@@ -13,9 +13,13 @@ from .models import Profile
 
 @login_required
 def index(request):
-    # ✅ Seller আর Buyer আলাদা dashboard এ যাবে
+    # ✅ Admin/Superuser → Admin dashboard
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('dashboard:admin')
+    # ✅ Buyer → Buyer dashboard
     if request.user.user_type == 'Buyer':
         return redirect('dashboard:buyer')
+    # ✅ Seller → Seller dashboard
     return seller_dashboard(request)
 
 
@@ -73,7 +77,6 @@ def buyer_dashboard(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
 
-    # Buyer এর cart items
     from cart.models import Cart
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.cart_items.select_related('item', 'item__category').all()
