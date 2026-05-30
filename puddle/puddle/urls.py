@@ -10,4 +10,6 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('inbox/', include('conversation.urls')),
     path('cart/', include('cart.urls')),
+    
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

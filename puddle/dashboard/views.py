@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect
 
 from item.models import Item, Category
 from item.seed_helpers import is_admin_user
-
 from .admin_stats import build_admin_dashboard_data
 from .forms import ProfileUpdateForm, UserUpdateForm
 from .models import Profile
@@ -49,13 +48,13 @@ def seller_dashboard(request):
     sold_items = items.filter(is_sold=True)
     inventory_value = active_items.aggregate(total=Sum('price'))['total'] or 0
 
-    # ✅ Sales analytics
+    # Analytics
     sales = Sale.objects.filter(seller=request.user)
     total_revenue = round(sales.aggregate(t=Sum('total_amount'))['t'] or 0, 2)
     total_commission = round(sales.aggregate(t=Sum('commission_amount'))['t'] or 0, 2)
     net_income = round(total_revenue - total_commission, 2)
 
-    # ✅ Revenue by category
+    # Revenue by category
     revenue_by_cat = []
     for cat in Category.objects.all():
         cat_sales = sales.filter(item__category=cat)
@@ -64,19 +63,19 @@ def seller_dashboard(request):
             revenue_by_cat.append({'name': cat.name, 'revenue': rev})
     revenue_by_cat = sorted(revenue_by_cat, key=lambda x: x['revenue'], reverse=True)[:8]
 
-    # ✅ Top selling items
+    # Top selling items
     top_items = (
         sold_items.annotate(sale_count=Count('sales'))
         .order_by('-sale_count')[:5]
     )
 
-    # ✅ Customer messages count
+    # Messages count
     message_count = Conversation.objects.filter(members=request.user).count()
 
-    # ✅ Low stock alert — image নেই এমন items
+    # Low stock
     low_stock = active_items.filter(image='')[:5]
 
-    # ✅ Recent sales
+    # Recent sales
     recent_sales = sales.select_related('item', 'buyer').order_by('-sold_at')[:10]
 
     return render(request, 'dashboard/index.html', {
@@ -87,7 +86,6 @@ def seller_dashboard(request):
         'u_form': u_form,
         'p_form': p_form,
         'profile': profile,
-        # Analytics
         'total_revenue': total_revenue,
         'total_commission': total_commission,
         'net_income': net_income,
@@ -121,25 +119,20 @@ def buyer_dashboard(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.cart_items.select_related('item', 'item__category').all()
 
-    # ✅ Order history
     orders = Order.objects.filter(
         buyer=request.user
-    ).prefetch_related('order_items__item')
+    ).prefetch_related('order_items__item').order_by('-created_at')
 
-    # ✅ Total spent
     total_spent = round(sum(o.total_amount for o in orders), 2)
 
-    # ✅ Wishlist
     wishlist = Wishlist.objects.filter(
         user=request.user
     ).select_related('item', 'item__category')
 
-    # ✅ Reviews
     reviews = Review.objects.filter(
         user=request.user
     ).select_related('item')
 
-    # ✅ Recommended — wishlist category থেকে
     wishlist_categories = wishlist.values_list('item__category', flat=True)
     recommended = Item.objects.filter(
         category__in=wishlist_categories,

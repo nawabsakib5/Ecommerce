@@ -6,11 +6,20 @@ from item.models import Item
 from .models import Cart, CartItem, Sale, Order, OrderItem
 
 
+# 🟢 Order History
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(buyer=request.user).prefetch_related('order_items__item').order_by('-created_at')
+    return render(request, 'cart/order_history.html', {'orders': orders})
+
+
+# 🟢 Cart Utility
 def get_or_create_cart(user):
     cart, _ = Cart.objects.get_or_create(user=user)
     return cart
 
 
+# 🟢 Cart Detail
 @login_required
 def cart_detail(request):
     cart = get_or_create_cart(request.user)
@@ -21,6 +30,7 @@ def cart_detail(request):
     })
 
 
+# 🟢 Add to Cart
 @login_required
 def add_to_cart(request, item_id):
     item = get_object_or_404(Item, id=item_id)
@@ -39,6 +49,7 @@ def add_to_cart(request, item_id):
     return redirect('cart:detail')
 
 
+# 🟢 Remove from Cart
 @login_required
 def remove_from_cart(request, item_id):
     cart = get_or_create_cart(request.user)
@@ -48,6 +59,7 @@ def remove_from_cart(request, item_id):
     return redirect('cart:detail')
 
 
+# 🟢 Update Quantity
 @login_required
 def update_quantity(request, item_id):
     cart = get_or_create_cart(request.user)
@@ -65,6 +77,7 @@ def update_quantity(request, item_id):
     return redirect('cart:detail')
 
 
+# 🟢 Checkout
 @login_required
 def checkout(request):
     cart = get_or_create_cart(request.user)
@@ -77,7 +90,7 @@ def checkout(request):
     if request.method == 'POST':
         total = cart.get_total()
 
-        # ✅ Order তৈরি করো
+        # ✅ Create Order
         order = Order.objects.create(
             buyer=request.user,
             total_amount=total,
@@ -89,7 +102,7 @@ def checkout(request):
             subtotal = cart_item.get_subtotal()
             commission = Sale.calc_commission(subtotal)
 
-            # ✅ OrderItem তৈরি
+            # ✅ Create OrderItem
             OrderItem.objects.create(
                 order=order,
                 item=item,
@@ -98,7 +111,7 @@ def checkout(request):
                 seller=item.user,
             )
 
-            # ✅ Sale record তৈরি
+            # ✅ Create Sale record
             Sale.objects.create(
                 item=item,
                 seller=item.user,
@@ -109,7 +122,7 @@ def checkout(request):
                 commission_amount=commission,
             )
 
-            # ✅ Item mark as sold
+            # ✅ Mark item as sold
             item.is_sold = True
             item.save()
 
@@ -123,6 +136,7 @@ def checkout(request):
     })
 
 
+# 🟢 Order Detail
 @login_required
 def order_detail(request, pk):
     order = get_object_or_404(

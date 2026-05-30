@@ -42,10 +42,14 @@ class CartItem(models.Model):
 class Sale(models.Model):
     item = models.ForeignKey(Item, related_name='sales', on_delete=models.CASCADE)
     seller = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='sales_as_seller', on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        related_name='sales_as_seller',
+        on_delete=models.CASCADE
     )
     buyer = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='purchases', on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        related_name='purchases',
+        on_delete=models.CASCADE
     )
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.FloatField()
@@ -65,7 +69,6 @@ class Sale(models.Model):
         return round(total_amount * rate, 2)
 
 
-# ✅ Order model — buyer এর purchase history
 class Order(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

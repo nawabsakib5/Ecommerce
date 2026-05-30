@@ -71,6 +71,10 @@
                            class="flex items-center justify-center w-full py-4 bg-gray-900 hover:bg-gray-800 text-white text-lg font-bold rounded-2xl transition-all">
                             🛒 Add to Cart
                         </a>
+                        <a href="{% url 'wishlist:add' item.id %}"
+                           class="flex items-center justify-center w-full py-4 bg-pink-500 hover:bg-pink-600 text-white text-lg font-bold rounded-2xl transition-all">
+                            💖 Add to Wishlist
+                        </a>
                         <a href="{% url 'conversation:new' item.id %}"
                            class="flex items-center justify-center w-full py-4 bg-teal-600 hover:bg-teal-700 text-white text-lg font-bold rounded-2xl transition-all">
                             Contact Seller
