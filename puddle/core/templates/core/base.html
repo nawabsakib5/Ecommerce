@@ -11,10 +11,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .nav-link { position: relative; transition: all 0.3s ease; }
-        .nav-link::after {
-            content: ''; position: absolute; width: 0; height: 2px;
-            bottom: -2px; left: 0; background-color: #0d9488; transition: width 0.3s ease;
-        }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -2px; left: 0; background-color: #0d9488; transition: width 0.3s ease; }
         .nav-link:hover::after { width: 100%; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f8fafc; }
@@ -26,20 +23,10 @@
         a, button { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
         .dropdown:hover .dropdown-menu { display: block; }
         .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 100;
-            min-width: 200px;
-            background: white;
-            border: 1px solid #f1f5f9;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            padding: 8px;
-            margin-top: 8px;
-            max-height: 320px;
-            overflow-y: auto;
+            display: none; position: absolute; top: 100%; left: 0; z-index: 100;
+            min-width: 200px; background: white; border: 1px solid #f1f5f9;
+            border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 8px; margin-top: 8px; max-height: 320px; overflow-y: auto;
         }
         .dropdown-menu::-webkit-scrollbar { width: 4px; }
         .dropdown-menu::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 10px; }
@@ -51,10 +38,10 @@
     <nav class="sticky top-0 z-50 glass-nav border-b border-gray-100/80 py-4 px-6 md:px-12">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
 
+            <!-- Logo -->
             <a href="/" class="group flex items-center gap-3">
                 <div class="logo-container relative w-12 h-12 flex items-center justify-center overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm group-hover:border-teal-200">
-                    <img src="{% static 'images/logo.jpg' %}"
-                         alt="Cotton Web Logo"
+                    <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web Logo"
                          class="w-full h-full object-contain p-1"
                          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0d9488&color=fff&bold=true'">
                 </div>
@@ -64,13 +51,13 @@
                 </div>
             </a>
 
+            <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-10">
                 <div class="flex items-center gap-8">
 
-                    <a href="{% url 'item:items' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
-                        Browse
-                    </a>
+                    <a href="{% url 'item:items' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">Browse</a>
 
+                    <!-- Categories Dropdown -->
                     <div class="dropdown relative">
                         <button class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide flex items-center gap-1">
                             Categories
@@ -79,10 +66,7 @@
                             </svg>
                         </button>
                         <div class="dropdown-menu">
-                            <a href="{% url 'item:items' %}"
-                               class="block px-4 py-2.5 text-sm font-semibold text-gray-500 hover:bg-teal-50 hover:text-teal-600 rounded-xl transition-all">
-                                All Categories
-                            </a>
+                            <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-sm font-semibold text-gray-500 hover:bg-teal-50 hover:text-teal-600 rounded-xl transition-all">All Categories</a>
                             <div class="my-1 border-t border-gray-100"></div>
                             {% for category in all_categories %}
                                 <a href="{% url 'item:items' %}?category={{ category.id }}"
@@ -93,11 +77,9 @@
                         </div>
                     </div>
 
-                    <!-- ✅ শুধু Seller আর Admin দেখবে -->
-                    {% if not request.user.is_authenticated or is_seller or request.user.is_staff %}
-                        <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">
-                            Add Item
-                        </a>
+                    <!-- ✅ Add Item — Seller + Admin only -->
+                    {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
+                        <a href="{% url 'item:new' %}" class="nav-link text-[14px] font-bold text-gray-500 hover:text-teal-600 uppercase tracking-wide">Add Item</a>
                     {% endif %}
 
                 </div>
@@ -105,8 +87,9 @@
                 <div class="flex items-center gap-3 pl-8 border-l border-gray-200">
                     {% if request.user.is_authenticated %}
 
-                        {% if is_seller %}
-                            {% if request.user.user_type == 'Seller' %}
+                        {% if request.user.user_type == 'Seller' %}
+                            <!-- ✅ Seller — Email icon only -->
+                            <a href="{% url 'conversation:inbox' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Inbox">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 group-hover:text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,7 +97,8 @@
                                 </svg>
                             </a>
 
-                        {% else %}
+                        {% elif request.user.user_type == 'Buyer' %}
+                            <!-- ✅ Buyer — Cart + Message -->
                             <a href="{% url 'cart:detail' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Cart">
@@ -122,7 +106,16 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                             </a>
+                            <a href="{% url 'conversation:inbox' %}"
+                               class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
+                               title="Messages">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 group-hover:text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </a>
 
+                        {% else %}
+                            <!-- ✅ Admin — Message only -->
                             <a href="{% url 'conversation:inbox' %}"
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Messages">
@@ -132,6 +125,7 @@
                             </a>
                         {% endif %}
 
+                        <!-- ✅ Notification — সবার জন্য -->
                         <a href="{% url 'core:notifications' %}"
                            class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                            title="Notifications">
@@ -145,6 +139,7 @@
                             {% endif %}
                         </a>
 
+                        <!-- Dashboard -->
                         <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-5 py-3 bg-gray-900 text-white text-[13px] font-black uppercase tracking-widest rounded-2xl hover:bg-teal-600 transition-all shadow-lg active:scale-95">
                             Dashboard
                         </a>
@@ -155,6 +150,7 @@
                             </a>
                         {% endif %}
 
+                        <!-- Settings & Logout -->
                         <div class="flex gap-1.5 bg-gray-100 p-1.5 rounded-2xl border border-gray-200">
                             <a href="{% url 'core:changePass' %}" title="Change Password" class="p-2 text-gray-500 hover:bg-white hover:text-teal-600 rounded-xl transition-all shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,6 +172,7 @@
                 </div>
             </div>
 
+            <!-- Mobile Toggle -->
             <button class="md:hidden p-2.5 bg-gray-50 text-gray-600 rounded-xl hover:bg-teal-50 hover:text-teal-600 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
@@ -216,7 +213,7 @@
                     <h3 class="text-xs font-black uppercase tracking-[0.2em] text-gray-900 mb-6">Marketplace</h3>
                     <ul class="space-y-4 font-bold text-sm text-gray-400">
                         <li><a href="{% url 'item:items' %}" class="hover:text-teal-600 transition-colors">All Items</a></li>
-                        {% if is_seller or request.user.is_staff %}
+                        {% if request.user.user_type == 'Seller' or request.user.is_staff %}
                             <li><a href="{% url 'item:new' %}" class="hover:text-teal-600 transition-colors">Sell Something</a></li>
                         {% endif %}
                     </ul>
