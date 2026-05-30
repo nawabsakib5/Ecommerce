@@ -106,7 +106,7 @@
                     {% if request.user.is_authenticated %}
 
                         {% if is_seller %}
-                            <a href="{% url 'conversation:inbox' %}"
+                            {% if request.user.user_type == 'Seller' %}
                                class="group relative p-2.5 bg-gray-50 hover:bg-teal-50 rounded-2xl transition-all"
                                title="Inbox">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 group-hover:text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
