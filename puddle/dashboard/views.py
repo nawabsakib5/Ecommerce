@@ -12,10 +12,10 @@ from .models import Profile
 
 @login_required
 def index(request):
-    if request.user.is_superuser or request.user.is_staff:
-        return redirect('dashboard:admin')
     if request.user.user_type == 'Buyer':
         return redirect('dashboard:buyer')
+    if request.user.is_superuser or request.user.is_staff:
+        return redirect('dashboard:admin')
     return seller_dashboard(request)
 
 
