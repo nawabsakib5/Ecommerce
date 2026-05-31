@@ -84,7 +84,14 @@ class Order(models.Model):
         on_delete=models.CASCADE
     )
     total_amount = models.FloatField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    shipping_address = models.TextField(blank=True, default='')
+    phone = models.CharField(max_length=20, blank=True, default='')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

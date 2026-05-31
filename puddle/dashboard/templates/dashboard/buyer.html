@@ -4,297 +4,430 @@
 {% block title %}Buyer Dashboard{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-teal-50/30 -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <!-- Header -->
-    <div class="max-w-7xl mx-auto mb-10">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
-                <p class="text-teal-600 text-sm font-bold uppercase tracking-widest mb-2">Buyer Hub</p>
-                <h1 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
-                    Welcome back, <span class="text-teal-600">{{ user.username|capfirst }}</span>
-                </h1>
-                <p class="text-gray-500 mt-2 max-w-xl">Browse products, manage your cart, and track your orders.</p>
+    <!-- ✅ Header -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-black text-gray-900">
+            👋 Welcome, {{ request.user.username }}!
+        </h1>
+        <p class="text-gray-500 mt-1">Here's your shopping overview</p>
+    </div>
+
+    <!-- ✅ Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+        <!-- Total Orders -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Total Orders</span>
+                <span class="text-3xl">📦</span>
             </div>
-            <a href="{% url 'item:items' %}"
-               class="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 hover:bg-teal-600 text-white font-bold rounded-2xl shadow-lg transition-all">
-                🛒 Browse Products
-            </a>
+            <p class="text-3xl font-black text-gray-900">{{ orders.count }}</p>
         </div>
+
+        <!-- Total Spent -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Total Spent</span>
+                <span class="text-3xl">💰</span>
+            </div>
+            <p class="text-3xl font-black text-teal-600">${{ total_spent }}</p>
+        </div>
+
+        <!-- Wishlist -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">Wishlist Items</span>
+                <span class="text-3xl">💖</span>
+            </div>
+            <p class="text-3xl font-black text-pink-500">{{ wishlist.count }}</p>
+        </div>
+
+        <!-- Reviews -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-gray-500 text-sm font-medium">My Reviews</span>
+                <span class="text-3xl">⭐</span>
+            </div>
+            <p class="text-3xl font-black text-yellow-500">{{ reviews.count }}</p>
+        </div>
+
     </div>
 
-    {% if messages %}
-        <div class="max-w-7xl mx-auto mb-6 space-y-2">
-            {% for message in messages %}
-                <div class="px-5 py-3 rounded-2xl text-sm font-semibold {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-100{% else %}bg-teal-50 text-teal-800 border border-teal-100{% endif %}">
-                    {{ message }}
+    <!-- ✅ Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- LEFT SIDE → Orders + Cart -->
+        <div class="lg:col-span-2 space-y-8">
+
+            <!-- ✅ Order History -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h2 class="text-xl font-black text-gray-900">📦 Order History</h2>
+                    <span class="text-sm text-gray-400">{{ orders.count }} orders</span>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
-    <!-- Stats -->
-    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cart Items</p>
-            <p class="text-2xl font-black text-teal-600 mt-1">{{ cart_items|length }}</p>
-            <p class="text-xs text-gray-400 mt-1">In your cart</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Orders</p>
-            <p class="text-2xl font-black text-blue-600 mt-1">{{ orders|length }}</p>
-            <p class="text-xs text-gray-400 mt-1">Total orders</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Wishlist</p>
-            <p class="text-2xl font-black text-pink-500 mt-1">{{ wishlist|length }}</p>
-            <p class="text-xs text-gray-400 mt-1">Saved items</p>
-        </div>
-        <div class="bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl p-5 shadow-lg text-white">
-            <p class="text-xs font-bold text-teal-100 uppercase tracking-wider">Total Spent</p>
-            <p class="text-2xl font-black mt-1">${{ total_spent }}</p>
-            <p class="text-xs text-teal-100/70 mt-1">All time</p>
-        </div>
-    </div>
+                {% if orders %}
+                <div class="divide-y divide-gray-50">
+                    {% for order in orders %}
+                    <div class="p-6 hover:bg-gray-50 transition-all">
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-        <!-- Profile Card -->
-        <div class="lg:col-span-4">
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden sticky top-24">
-                <div class="h-32 bg-gradient-to-r from-blue-500 via-teal-500 to-emerald-500"></div>
-                <div class="px-6 pb-8 -mt-14 text-center">
-                    <div class="inline-block relative">
-                        {% if profile.image and profile.image.name != 'default.jpg' %}
-                            <img src="{{ profile.image.url }}" alt="{{ user.username }}"
-                                 class="w-28 h-28 rounded-2xl border-4 border-white shadow-xl object-cover mx-auto ring-4 ring-blue-100">
-                        {% else %}
-                            <div class="w-28 h-28 rounded-2xl border-4 border-white shadow-xl bg-gradient-to-br from-blue-100 to-teal-100 mx-auto flex items-center justify-center ring-4 ring-blue-100">
-                                <span class="text-4xl font-black text-teal-600">{{ user.username|slice:":1"|upper }}</span>
+                        <!-- Order Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <span class="text-sm font-bold text-gray-900">
+                                    Order #{{ order.id }}
+                                </span>
+                                <span class="text-xs text-gray-400 ml-2">
+                                    {{ order.created_at|date:"M d, Y" }}
+                                </span>
                             </div>
-                        {% endif %}
-                        <span class="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center">
-                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
+
+                            <!-- ✅ Status Badge -->
+                            {% if order.status == 'pending' %}
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 
+                                             text-xs font-bold rounded-full">
+                                    🕐 Pending
+                                </span>
+                            {% elif order.status == 'processing' %}
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 
+                                             text-xs font-bold rounded-full">
+                                    ⚙️ Processing
+                                </span>
+                            {% elif order.status == 'shipped' %}
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 
+                                             text-xs font-bold rounded-full">
+                                    🚚 Shipped
+                                </span>
+                            {% elif order.status == 'delivered' %}
+                                <span class="px-3 py-1 bg-green-100 text-green-700 
+                                             text-xs font-bold rounded-full">
+                                    ✅ Delivered
+                                </span>
+                            {% elif order.status == 'cancelled' %}
+                                <span class="px-3 py-1 bg-red-100 text-red-700 
+                                             text-xs font-bold rounded-full">
+                                    ❌ Cancelled
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="space-y-3 mb-4">
+                            {% for order_item in order.order_items.all %}
+                            <div class="flex items-center gap-4">
+                                <!-- Item Image -->
+                                <div class="w-14 h-14 rounded-xl overflow-hidden 
+                                            bg-gray-100 flex-shrink-0">
+                                    <img
+                                        src="{% if order_item.item.image %}{{ order_item.item.image.url }}{% else %}https://picsum.photos/seed/{{ order_item.item.id }}/100/100{% endif %}"
+                                        alt="{{ order_item.item.name }}"
+                                        class="w-full h-full object-cover"
+                                    >
+                                </div>
+                                <!-- Item Info -->
+                                <div class="flex-1 min-w-0">
+                                    <a href="{% url 'item:detail' order_item.item.id %}"
+                                       class="text-sm font-bold text-gray-800 
+                                              hover:text-teal-600 truncate block">
+                                        {{ order_item.item.name }}
+                                    </a>
+                                    <p class="text-xs text-gray-400">
+                                        Qty: {{ order_item.quantity }} × 
+                                        ${{ order_item.price }}
+                                    </p>
+                                </div>
+                                <!-- Subtotal -->
+                                <span class="text-sm font-black text-gray-900">
+                                    ${{ order_item.get_subtotal }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Order Footer -->
+                        <div class="flex items-center justify-between pt-4 
+                                    border-t border-gray-100">
+                            <span class="text-sm text-gray-500">
+                                {{ order.order_items.count }} item(s)
+                            </span>
+                            <span class="text-lg font-black text-teal-600">
+                                Total: ${{ order.total_amount }}
+                            </span>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <!-- ✅ Empty Orders -->
+                <div class="p-16 text-center">
+                    <div class="text-6xl mb-4">📭</div>
+                    <h3 class="text-lg font-bold text-gray-700 mb-2">
+                        No orders yet
+                    </h3>
+                    <p class="text-gray-400 mb-6">
+                        Start shopping to see your orders here!
+                    </p>
+                    <a href="{% url 'item:items' %}"
+                       class="inline-flex items-center px-6 py-3 bg-teal-600 
+                              hover:bg-teal-700 text-white font-bold rounded-xl 
+                              transition-all">
+                        🛒 Browse Items
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ✅ Current Cart -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h2 class="text-xl font-black text-gray-900">🛒 Current Cart</h2>
+                    <span class="text-sm text-gray-400">
+                        {{ cart_items.count }} items
+                    </span>
+                </div>
+
+                {% if cart_items %}
+                <div class="divide-y divide-gray-50">
+                    {% for cart_item in cart_items %}
+                    <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-all">
+                        <!-- Image -->
+                        <div class="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                            <img
+                                src="{% if cart_item.item.image %}{{ cart_item.item.image.url }}{% else %}https://picsum.photos/seed/{{ cart_item.item.id }}/100/100{% endif %}"
+                                alt="{{ cart_item.item.name }}"
+                                class="w-full h-full object-cover"
+                            >
+                        </div>
+                        <!-- Info -->
+                        <div class="flex-1 min-w-0">
+                            <a href="{% url 'item:detail' cart_item.item.id %}"
+                               class="text-sm font-bold text-gray-800 
+                                      hover:text-teal-600 truncate block">
+                                {{ cart_item.item.name }}
+                            </a>
+                            <p class="text-xs text-gray-400">
+                                Qty: {{ cart_item.quantity }} × ${{ cart_item.item.price }}
+                            </p>
+                        </div>
+                        <!-- Subtotal -->
+                        <span class="text-sm font-black text-gray-900">
+                            ${{ cart_item.get_subtotal }}
                         </span>
                     </div>
-                    <h2 class="mt-5 text-xl font-black text-gray-900">{{ user.username|capfirst }}</h2>
-                    <p class="text-sm text-gray-500">{{ user.email }}</p>
-                    <span class="inline-block mt-3 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full">Buyer</span>
+                    {% endfor %}
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" class="px-6 pb-8 space-y-4 border-t border-gray-100 pt-6 dashboard-form">
-                    {% csrf_token %}
-                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Account Settings</p>
-                    <div>
-                        <label class="dash-label">Email</label>
-                        {{ u_form.email }}
+                <!-- Cart Total -->
+                <div class="p-6 bg-gray-50 border-t border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="font-bold text-gray-700">Cart Total:</span>
+                        <span class="text-xl font-black text-teal-600">
+                            ${{ cart.get_total }}
+                        </span>
                     </div>
-                    <div>
-                        <label class="dash-label">Profile Photo</label>
-                        <div class="mt-1">{{ p_form.image }}</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="dash-label">Phone</label>
-                            {{ p_form.phone }}
-                        </div>
-                        <div>
-                            <label class="dash-label">Age</label>
-                            {{ p_form.age }}
-                        </div>
-                    </div>
-                    <div>
-                        <label class="dash-label">Shipping Address</label>
-                        {{ p_form.address }}
-                    </div>
-                    <button type="submit" class="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-100 transition-all">
-                        Save Changes
-                    </button>
-                </form>
+                    <a href="{% url 'cart:checkout' %}"
+                       class="flex items-center justify-center w-full py-3 
+                              bg-gray-900 hover:bg-gray-800 text-white 
+                              font-bold rounded-xl transition-all">
+                        Proceed to Checkout →
+                    </a>
+                </div>
+
+                {% else %}
+                <div class="p-10 text-center">
+                    <div class="text-5xl mb-3">🛒</div>
+                    <p class="text-gray-400">Your cart is empty</p>
+                    <a href="{% url 'item:items' %}"
+                       class="inline-flex items-center mt-4 px-5 py-2 
+                              bg-teal-600 hover:bg-teal-700 text-white 
+                              font-bold rounded-xl transition-all text-sm">
+                        Browse Items
+                    </a>
+                </div>
+                {% endif %}
             </div>
+
         </div>
 
-        <!-- Right Content -->
-        <div class="lg:col-span-8 space-y-8">
+        <!-- RIGHT SIDE → Profile + Wishlist + Reviews -->
+        <div class="space-y-8">
 
-            <!-- Cart -->
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                    <div>
-                        <h3 class="text-xl font-black text-gray-900">🛒 My Cart</h3>
-                        <p class="text-sm text-gray-500 mt-0.5">Items ready to checkout</p>
+            <!-- ✅ Profile Update -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-xl font-black text-gray-900">👤 My Profile</h2>
+                </div>
+                <div class="p-6">
+                    <!-- Avatar -->
+                    <div class="flex flex-col items-center mb-6">
+                        <div class="w-20 h-20 rounded-full overflow-hidden 
+                                    bg-gray-100 mb-3 ring-4 ring-teal-100">
+                            {% if profile.avatar %}
+                                <img src="{{ profile.avatar.url }}"
+                                     class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="w-full h-full flex items-center 
+                                            justify-center bg-teal-50">
+                                    <span class="text-3xl">👤</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <p class="font-bold text-gray-800">
+                            {{ request.user.username }}
+                        </p>
+                        <p class="text-sm text-gray-400">
+                            {{ request.user.email }}
+                        </p>
                     </div>
-                    {% if cart_items %}
-                        <a href="{% url 'cart:checkout' %}"
-                           class="px-4 py-2.5 text-sm font-bold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm">
-                            Checkout →
-                        </a>
-                    {% endif %}
+
+                    <!-- Profile Form -->
+                    <form method="post" enctype="multipart/form-data" class="space-y-4">
+                        {% csrf_token %}
+                        {% for field in u_form %}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                        {% for field in p_form %}
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                        </div>
+                        {% endfor %}
+                        <button type="submit"
+                                class="w-full py-3 bg-teal-600 hover:bg-teal-700 
+                                       text-white font-bold rounded-xl transition-all">
+                            Save Changes
+                        </button>
+                    </form>
                 </div>
-                <div class="p-6">
-                    {% if cart_items %}
-                        <div class="space-y-4">
-                            {% for cart_item in cart_items %}
-                                <div class="flex items-center gap-4 bg-gray-50 rounded-2xl p-4">
-                                    <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
-                                        {% if cart_item.item.image %}
-                                            <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="w-full h-full object-cover">
-                                        {% else %}
-                                            <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200" alt="{{ cart_item.item.name }}" class="w-full h-full object-cover">
-                                        {% endif %}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-xs font-semibold text-teal-600 uppercase">{{ cart_item.item.category.name }}</p>
-                                        <h4 class="font-bold text-gray-800 truncate">{{ cart_item.item.name }}</h4>
-                                        <p class="text-sm text-gray-500">${{ cart_item.item.price }} × {{ cart_item.quantity }}</p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0">
-                                        <p class="font-black text-gray-900">${{ cart_item.get_subtotal }}</p>
-                                        <a href="{% url 'cart:remove' cart_item.item.id %}"
-                                           class="text-xs text-rose-500 hover:text-rose-700 font-semibold">Remove</a>
-                                    </div>
-                                </div>
-                            {% endfor %}
+            </div>
+
+            <!-- ✅ Wishlist -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h2 class="text-xl font-black text-gray-900">💖 Wishlist</h2>
+                    <span class="text-sm text-gray-400">{{ wishlist.count }}</span>
+                </div>
+
+                {% if wishlist %}
+                <div class="divide-y divide-gray-50">
+                    {% for wish in wishlist %}
+                    <div class="p-4 flex items-center gap-3 hover:bg-gray-50 transition-all">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                            <img
+                                src="{% if wish.item.image %}{{ wish.item.image.url }}{% else %}https://picsum.photos/seed/{{ wish.item.id }}/100/100{% endif %}"
+                                alt="{{ wish.item.name }}"
+                                class="w-full h-full object-cover"
+                            >
                         </div>
-                        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-                            <span class="font-bold text-gray-700">Total</span>
-                            <span class="text-xl font-black text-teal-600">${{ cart.get_total }}</span>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-10">
-                            <p class="text-gray-400 text-sm mb-4">Your cart is empty</p>
-                            <a href="{% url 'item:items' %}"
-                               class="px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl transition">
-                                Browse Items
+                        <div class="flex-1 min-w-0">
+                            <a href="{% url 'item:detail' wish.item.id %}"
+                               class="text-sm font-bold text-gray-800 
+                                      hover:text-teal-600 truncate block">
+                                {{ wish.item.name }}
                             </a>
+                            <p class="text-xs text-teal-600 font-bold">
+                                ${{ wish.item.price }}
+                            </p>
                         </div>
-                    {% endif %}
+                        <a href="{% url 'core:toggle_wishlist' wish.item.id %}"
+                           class="text-rose-400 hover:text-rose-600 transition-all text-lg">
+                            🗑️
+                        </a>
+                    </div>
+                    {% endfor %}
                 </div>
+                {% else %}
+                <div class="p-10 text-center">
+                    <div class="text-5xl mb-3">💔</div>
+                    <p class="text-gray-400 text-sm">No wishlist items yet</p>
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Order History -->
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-xl font-black text-gray-900">📦 Order History</h3>
-                    <p class="text-sm text-gray-500 mt-0.5">Your past purchases</p>
+            <!-- ✅ My Reviews -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                    <h2 class="text-xl font-black text-gray-900">⭐ My Reviews</h2>
+                    <span class="text-sm text-gray-400">{{ reviews.count }}</span>
                 </div>
-                <div class="p-6">
-                    {% if orders %}
-                        <div class="space-y-4">
-                            {% for order in orders %}
-                                <div class="bg-gray-50 rounded-2xl p-4">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <div>
-                                            <p class="font-bold text-gray-800">Order #{{ order.id }}</p>
-                                            <p class="text-xs text-gray-400">{{ order.created_at|date:"M d, Y" }}</p>
-                                        </div>
-                                        <div class="text-right">
-                                            <p class="font-black text-teal-600">${{ order.total_amount }}</p>
-                                            <span class="text-xs font-bold px-2 py-1 rounded-full
-                                                {% if order.status == 'delivered' %}bg-emerald-100 text-emerald-700
-                                                {% elif order.status == 'shipped' %}bg-blue-100 text-blue-700
-                                                {% elif order.status == 'cancelled' %}bg-rose-100 text-rose-700
-                                                {% else %}bg-yellow-100 text-yellow-700{% endif %}">
-                                                {{ order.get_status_display }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {% for oi in order.order_items.all %}
-                                        <div class="flex items-center gap-3 text-sm text-gray-600">
-                                            <span>• {{ oi.item.name }} × {{ oi.quantity }}</span>
-                                            <span class="text-gray-400">${{ oi.get_subtotal }}</span>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-center text-gray-400 text-sm py-8">No orders yet</p>
-                    {% endif %}
-                </div>
-            </div>
 
-            <!-- Wishlist -->
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-xl font-black text-gray-900">💖 My Wishlist</h3>
-                    <p class="text-sm text-gray-500 mt-0.5">Items you saved</p>
-                </div>
-                <div class="p-6">
-                    {% if wishlist %}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {% for wi in wishlist %}
-                                <div class="flex items-center gap-3 bg-gray-50 rounded-2xl p-4">
-                                    <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
-                                        {% if wi.item.image %}
-                                            <img src="{{ wi.item.image.url }}" alt="{{ wi.item.name }}" class="w-full h-full object-cover">
-                                        {% else %}
-                                            <img src="https://picsum.photos/seed/{{ wi.item.id }}/100/100" alt="{{ wi.item.name }}" class="w-full h-full object-cover">
-                                        {% endif %}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="font-bold text-gray-800 truncate text-sm">{{ wi.item.name }}</p>
-                                        <p class="text-xs text-gray-500">${{ wi.item.price }}</p>
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        <a href="{% url 'item:detail' wi.item.id %}"
-                                           class="text-xs font-bold text-teal-600 hover:text-teal-700">View</a>
-                                        <a href="{% url 'core:toggle_wishlist' wi.item.id %}"
-                                           class="text-xs font-bold text-rose-500 hover:text-rose-700">Remove</a>
-                                    </div>
-                                </div>
+                {% if reviews %}
+                <div class="divide-y divide-gray-50">
+                    {% for review in reviews %}
+                    <div class="p-4 hover:bg-gray-50 transition-all">
+                        <a href="{% url 'item:detail' review.item.id %}"
+                           class="text-sm font-bold text-gray-800 
+                                  hover:text-teal-600 block mb-1">
+                            {{ review.item.name }}
+                        </a>
+                        <!-- Star Rating -->
+                        <div class="flex items-center gap-1 mb-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <span class="text-yellow-400 text-sm">★</span>
+                                {% else %}
+                                    <span class="text-gray-200 text-sm">★</span>
+                                {% endif %}
                             {% endfor %}
                         </div>
-                    {% else %}
-                        <p class="text-center text-gray-400 text-sm py-8">No items in wishlist yet</p>
-                    {% endif %}
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            {{ review.comment|truncatewords:15 }}
+                        </p>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-
-            <!-- Recommended -->
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                    <h3 class="text-xl font-black text-gray-900">✨ Recommended for You</h3>
-                    <p class="text-sm text-gray-500 mt-0.5">Based on your wishlist</p>
+                {% else %}
+                <div class="p-10 text-center">
+                    <div class="text-5xl mb-3">✍️</div>
+                    <p class="text-gray-400 text-sm">No reviews yet</p>
                 </div>
-                <div class="p-6">
-                    {% if recommended %}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {% for item in recommended %}
-                                <a href="{% url 'item:detail' item.id %}"
-                                   class="group bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:border-teal-200 hover:shadow-md transition-all">
-                                    <div class="aspect-video overflow-hidden">
-                                        {% if item.image %}
-                                            <img src="{{ item.image.url }}" alt="{{ item.name }}"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                        {% else %}
-                                            <img src="https://picsum.photos/seed/{{ item.id }}/300/200" alt="{{ item.name }}"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                        {% endif %}
-                                    </div>
-                                    <div class="p-4">
-                                        <p class="font-bold text-gray-800 truncate text-sm">{{ item.name }}</p>
-                                        <p class="text-teal-600 font-black text-sm mt-1">${{ item.price }}</p>
-                                    </div>
-                                </a>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-center text-gray-400 text-sm py-8">Add items to wishlist to get recommendations</p>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
 
         </div>
     </div>
-</div>
 
-<style>
-    .dash-label { display:block; font-size:0.7rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.35rem; }
-    .dashboard-form input[type="text"], .dashboard-form input[type="email"], .dashboard-form input[type="number"], .dashboard-form input[type="file"], .dashboard-form textarea { width:100%; padding:0.65rem 1rem; border-radius:0.75rem; border:1px solid #e5e7eb; background-color:#f9fafb; font-size:0.875rem; transition:border-color 0.2s, box-shadow 0.2s; }
-    .dashboard-form input:focus, .dashboard-form textarea:focus { outline:none; border-color:#0d9488; background-color:#fff; box-shadow:0 0 0 3px rgba(13,148,136,0.12); }
-    .dashboard-form textarea { min-height:4.5rem; resize:vertical; }
-</style>
+    <!-- ✅ Recommended Items -->
+    {% if recommended %}
+    <div class="mt-12">
+        <h2 class="text-2xl font-black text-gray-900 mb-6">
+            🎯 Recommended For You
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for rec in recommended %}
+            <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 
+                        overflow-hidden hover:shadow-xl transition-all">
+                <a href="{% url 'item:detail' rec.id %}">
+                    <div class="aspect-video overflow-hidden">
+                        <img
+                            src="{% if rec.image %}{{ rec.image.url }}{% else %}https://picsum.photos/seed/{{ rec.id }}/400/300{% endif %}"
+                            alt="{{ rec.name }}"
+                            class="w-full h-full object-cover 
+                                   group-hover:scale-110 transition duration-500"
+                        >
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-gray-800 truncate">{{ rec.name }}</h3>
+                        <p class="text-teal-600 font-black mt-1">${{ rec.price }}</p>
+                        <span class="text-xs text-gray-400">{{ rec.category.name }}</span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
 {% endblock %}

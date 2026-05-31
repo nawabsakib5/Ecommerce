@@ -60,7 +60,6 @@ def detail(request, pk):
 
 @login_required
 def new(request):
-    # ✅ Buyer item add করতে পারবে না
     if request.user.user_type == 'Buyer':
         messages.error(request, "Buyers cannot add items. Please create a Seller account.")
         return redirect('item:items')
@@ -88,12 +87,17 @@ def new(request):
 
 @login_required
 def edit(request, pk):
+    if request.user.user_type == 'Buyer':
+        messages.error(request, "Buyers cannot edit items.")
+        return redirect('item:items')
+
     item = get_object_or_404(Item, pk=pk, user=request.user)
 
     if request.method == 'POST':
         form = EditItemForm(request.POST, request.FILES, instance=item)
         if form.is_valid():
             form.save()
+            messages.success(request, "Item updated successfully!")
             return redirect('item:detail', pk=item.id)
     else:
         form = EditItemForm(instance=item)
@@ -106,10 +110,15 @@ def edit(request, pk):
 
 @login_required
 def delete(request, pk):
+    if request.user.user_type == 'Buyer':
+        messages.error(request, "Buyers cannot delete items.")
+        return redirect('item:items')
+
     item = get_object_or_404(Item, pk=pk, user=request.user)
 
     if request.method == 'POST':
         item.delete()
+        messages.success(request, "Item deleted successfully!")
         return redirect('dashboard:index')
 
     return render(request, 'item/delete_confirm.html', {

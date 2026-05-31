@@ -6,20 +6,13 @@ from item.models import Item
 from .models import Cart, CartItem, Sale, Order, OrderItem
 
 
-# 🟢 Order History
-@login_required
-def order_history(request):
-    orders = Order.objects.filter(buyer=request.user).prefetch_related('order_items__item').order_by('-created_at')
-    return render(request, 'cart/order_history.html', {'orders': orders})
 
-
-# 🟢 Cart Utility
 def get_or_create_cart(user):
     cart, _ = Cart.objects.get_or_create(user=user)
     return cart
 
 
-# 🟢 Cart Detail
+
 @login_required
 def cart_detail(request):
     cart = get_or_create_cart(request.user)
@@ -30,12 +23,24 @@ def cart_detail(request):
     })
 
 
-# 🟢 Add to Cart
+
 @login_required
 def add_to_cart(request, item_id):
     item = get_object_or_404(Item, id=item_id)
-    cart = get_or_create_cart(request.user)
 
+    if item.user == request.user:
+        messages.error(request, "You cannot buy your own item!")
+        return redirect('item:detail', pk=item_id)
+
+    if item.is_sold:
+        messages.error(request, "Sorry, this item is already sold!")
+        return redirect('item:detail', pk=item_id)
+
+    if request.user.user_type != 'Buyer':
+        messages.error(request, "Only buyers can add items to cart!")
+        return redirect('item:detail', pk=item_id)
+
+    cart = get_or_create_cart(request.user)
     cart_item, created = CartItem.objects.get_or_create(
         cart=cart, item=item, defaults={'quantity': 1}
     )
@@ -49,7 +54,7 @@ def add_to_cart(request, item_id):
     return redirect('cart:detail')
 
 
-# 🟢 Remove from Cart
+
 @login_required
 def remove_from_cart(request, item_id):
     cart = get_or_create_cart(request.user)
@@ -59,7 +64,7 @@ def remove_from_cart(request, item_id):
     return redirect('cart:detail')
 
 
-# 🟢 Update Quantity
+
 @login_required
 def update_quantity(request, item_id):
     cart = get_or_create_cart(request.user)
@@ -77,24 +82,56 @@ def update_quantity(request, item_id):
     return redirect('cart:detail')
 
 
-# 🟢 Checkout
+
 @login_required
 def checkout(request):
+    if request.user.user_type != 'Buyer':
+        messages.error(request, "Only buyers can checkout!")
+        return redirect('dashboard:index')
+
     cart = get_or_create_cart(request.user)
     cart_items = cart.cart_items.select_related('item', 'item__user').all()
 
+    
     if not cart_items.exists():
         messages.warning(request, "Your cart is empty!")
         return redirect('cart:detail')
 
+    
+    sold_items = [ci for ci in cart_items if ci.item.is_sold]
+    if sold_items:
+        for ci in sold_items:
+            messages.error(request, f"'{ci.item.name}' is already sold! Removed from cart.")
+            ci.delete()
+        return redirect('cart:detail')
+
     if request.method == 'POST':
+        
+        shipping_address = request.POST.get('shipping_address', '').strip()
+        phone = request.POST.get('phone', '').strip()
+
+        if not shipping_address:
+            messages.error(request, "Shipping address is required!")
+            return render(request, 'cart/checkout.html', {
+                'cart': cart,
+                'cart_items': cart_items,
+            })
+
+        if not phone:
+            messages.error(request, "Phone number is required!")
+            return render(request, 'cart/checkout.html', {
+                'cart': cart,
+                'cart_items': cart_items,
+            })
+
         total = cart.get_total()
 
-        # ✅ Create Order
         order = Order.objects.create(
             buyer=request.user,
             total_amount=total,
             status='pending',
+            shipping_address=shipping_address,
+            phone=phone,
         )
 
         for cart_item in cart_items:
@@ -126,25 +163,49 @@ def checkout(request):
             item.is_sold = True
             item.save()
 
+            
+            try:
+                from core.models import Notification
+                Notification.objects.create(
+                    user=item.user,
+                    message=f"🎉 '{item.name}' has been sold to {request.user.username}!",
+                )
+            except Exception:
+                pass
+
+        
         cart.cart_items.all().delete()
+
         messages.success(request, f"Order #{order.id} placed successfully! 🎉")
         return redirect('cart:order_detail', pk=order.id)
 
     return render(request, 'cart/checkout.html', {
         'cart': cart,
         'cart_items': cart_items,
+        'total': cart.get_total(),
     })
 
 
-# 🟢 Order Detail
+
 @login_required
 def order_detail(request, pk):
     order = get_object_or_404(
         Order.objects.prefetch_related(
             'order_items__item',
-            'order_items__seller'
+            'order_items__seller',
         ),
         pk=pk,
-        buyer=request.user
+        buyer=request.user,
     )
     return render(request, 'cart/order_detail.html', {'order': order})
+
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(
+        buyer=request.user
+    ).prefetch_related(
+        'order_items__item'
+    ).order_by('-created_at')
+
+    return render(request, 'cart/order_history.html', {'orders': orders})
