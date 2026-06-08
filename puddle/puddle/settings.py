@@ -3,9 +3,9 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-f8)u5is$dth%*p^5d#bl)k-xx#0yzepnq42-fkj!28rk6tpa*n'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-f8)u5is$dth%*p^5d#bl)k-xx#0yzepnq42-fkj!28rk6tpa*n')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
@@ -53,7 +53,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.categories',
-                'core.context_processors.is_seller', 
+                'core.context_processors.is_seller',
                 'core.context_processors.notification_count',
             ],
         },
@@ -100,4 +100,5 @@ AUTH_USER_MODEL = 'core.CustomUserModel'
 CSRF_TRUSTED_ORIGINS = [
     'https://cottonweb.up.railway.app',
     'https://web-production-30f2d.up.railway.app',
+    'https://cottonweb.onrender.com',
 ]
