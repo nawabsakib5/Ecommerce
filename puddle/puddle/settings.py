@@ -100,5 +100,5 @@ AUTH_USER_MODEL = 'core.CustomUserModel'
 CSRF_TRUSTED_ORIGINS = [
     'https://cottonweb.up.railway.app',
     'https://web-production-30f2d.up.railway.app',
-    'https://cottonweb.onrender.com',
+    'https://ecommerce-iyil.onrender.com',
 ]
