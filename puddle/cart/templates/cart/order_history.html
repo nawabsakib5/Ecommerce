@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Order History{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .bazaar-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+    }
+</style>
+
+<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16 animate-fade-in">
+    
+    <!-- Page Header -->
+    <div class="mb-10 text-left">
+        <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">Order History</h1>
+        <p class="text-slate-500 text-xs font-semibold mt-2">Track and view invoices for all your past purchases.</p>
+    </div>
+
+    <!-- History list wrapper -->
+    <div class="space-y-6">
+        {% for order in orders %}
+            <div class="bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:shadow-md duration-300">
+                
+                <!-- Order ID and timeline metadata -->
+                <div class="space-y-1">
+                    <div class="flex items-center gap-3">
+                        <h3 class="font-extrabold text-[#0f172a] text-base">Order #{{ order.id }}</h3>
+                        
+                        <!-- Status indicator chips -->
+                        {% if order.status == 'pending' %}
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-wider rounded-md">🕐 Pending</span>
+                        {% elif order.status == 'processing' %}
+                            <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-wider rounded-md">⚙️ Processing</span>
+                        {% elif order.status == 'shipped' %}
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-wider rounded-md">🚚 Shipped</span>
+                        {% elif order.status == 'delivered' %}
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider rounded-md">✅ Delivered</span>
+                        {% else %}
+                            <span class="px-2.5 py-1 bg-rose-50 text-rose-700 text-[10px] font-black uppercase tracking-wider rounded-md">❌ Cancelled</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-stone-400 font-bold">Placed on {{ order.created_at|date:"M d, Y" }}</p>
+                    
+                    <!-- Preview of purchased items -->
+                    <div class="flex items-center gap-2 pt-3">
+                        {% for order_item in order.order_items.all %}
+                            {% if forloop.counter <= 3 %}
+                                <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-0.5" title="{{ order_item.item.name }}">
+                                    {% if order_item.item.image %}
+                                        <img src="{{ order_item.item.image.url }}" class="max-w-full max-h-full object-contain">
+                                    {% else %}
+                                        <img src="https://picsum.photos/seed/{{ order_item.item.id }}/50/50" class="max-w-full max-h-full object-contain">
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if order.order_items.count > 3 %}
+                            <span class="text-[10px] font-bold text-slate-400 pl-1">+{{ order.order_items.count|add:"-3" }} more</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Price Breakdown & View Actions -->
+                <div class="w-full md:w-auto flex items-center justify-between md:justify-end gap-6 pt-4 md:pt-0 border-t border-slate-50 md:border-0">
+                    <div class="text-left md:text-right">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Total Spent</span>
+                        <p class="text-xl font-black text-[#e94560] mt-0.5">${{ order.total_amount }}</p>
+                    </div>
+
+                    <a href="{% url 'cart:order_detail' order.id %}" class="px-5 py-3 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-[10px] rounded-xl shadow-xs transition duration-300">
+                        View Invoice
+                    </a>
+                </div>
+
+            </div>
+        {% empty %}
+            <!-- Empty history view -->
+            <div class="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs">
+                <span class="text-5xl block mb-4">📭</span>
+                <h3 class="bazaar-title text-2xl font-black text-[#0f172a]">No orders placed yet</h3>
+                <p class="text-[#6a6a6a] text-xs font-bold mt-2 max-w-sm mx-auto leading-relaxed">Your order history is currently empty. Explore the marketplace to make your first purchase!</p>
+                <a href="{% url 'item:items' %}" class="inline-block mt-6 px-8 py-3.5 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-extrabold uppercase tracking-widest rounded-full shadow-md transition duration-300">Browse Items</a>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,20 +1,20 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Conversation{% endblock %}
 
 {% block content %}
-<!-- Google Fonts for Furni's Premium Typography -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<!-- Google Fonts for Bazaar's Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
 <style>
-    .furni-container {
+    .bazaar-container {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    .furni-title {
+    .bazaar-title {
         font-family: 'Playfair Display', serif;
     }
     
-    /* Custom thin scrollbar */
     .custom-scrollbar::-webkit-scrollbar {
         width: 4px;
     }
@@ -22,11 +22,11 @@
         background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #eff2f1;
+        background: #f1f5f9;
         border-radius: 10px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #cbd2d0;
+        background: #cbd5e1;
     }
 
     /* Input text area styling for Django widget */
@@ -36,60 +36,60 @@
         max-height: 150px;
         padding: 14px 20px;
         background-color: white;
-        border: 1px solid rgba(59, 93, 80, 0.2); /* Teal tint border */
+        border: 1px solid #e2e8f0;
         border-radius: 1.25rem;
         outline: none;
         resize: none;
         font-size: 0.875rem;
         transition: all 0.3s ease-in-out;
-        color: #2f2f2f;
+        color: #0f172a;
     }
     #id_content:focus {
-        border-color: #3b5d50;
+        border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(59, 93, 80, 0.12);
+        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
     
     form p { margin: 0; width: 100%; }
     form p label { display: none; }
 </style>
 
-<div class="furni-container min-h-screen bg-[#eff2f1] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+<div class="bazaar-container min-h-screen bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
     <div class="max-w-3xl mx-auto">
         
-        <!-- Chat Header Panel in Deep Forest Teal -->
-        <div class="bg-[#3b5d50] rounded-t-3xl p-5 flex items-center gap-4 shadow-md border-b border-white/10">
-            <div class="w-12 h-12 rounded-2xl bg-[#f9bf29] flex items-center justify-center text-[#2f2f2f] font-black text-xl shadow-md border-2 border-white/10">
+        <!-- Header Panel with Product Details -->
+        <div class="bg-[#0f172a] rounded-t-3xl p-5 flex items-center gap-4 shadow-md border-b border-white/5">
+            <div class="w-12 h-12 rounded-2xl bg-[#e94560] flex items-center justify-center text-white font-black text-xl shadow-md border-2 border-white/10">
                 {{ conversation.item.name|first|upper }}
             </div>
-            <div class="flex-1">
-                <h1 class="furni-title text-white font-black text-base md:text-lg leading-tight">{{ conversation.item.name }}</h1>
+            <div class="flex-1 min-w-0">
+                <h1 class="bazaar-title text-white font-black text-base md:text-lg leading-tight truncate">{{ conversation.item.name }}</h1>
                 <div class="flex items-center gap-2 mt-1">
-                    <span class="w-1.5 h-1.5 bg-[#f9bf29] rounded-full animate-pulse"></span>
-                    <p class="text-[#eff2f1]/80 text-[10px] font-black uppercase tracking-widest">Direct Message</p>
+                    <span class="w-1.5 h-1.5 bg-[#e94560] rounded-full animate-pulse"></span>
+                    <p class="text-slate-300 text-[10px] font-black uppercase tracking-widest pl-0.5">Direct Message</p>
                 </div>
             </div>
-            <a href="{% url 'conversation:inbox' %}" class="p-2 text-stone-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
+            <a href="{% url 'conversation:inbox' %}" class="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300" title="Back to Inbox">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </a>
         </div>
 
-        <!-- Scrollable Messages Body -->
-        <div id="chat-body" class="bg-white border-x border-[#eff2f1] h-[500px] overflow-y-auto p-6 space-y-6 flex flex-col shadow-inner custom-scrollbar">
+        <!-- Scrollable Chat Stream Box -->
+        <div id="chat-body" class="bg-white border-x border-slate-100 h-[500px] overflow-y-auto p-6 space-y-6 flex flex-col shadow-inner custom-scrollbar">
             {% for message in conversation.messages.all %}
                 <div class="flex flex-col {% if message.created_by == request.user %}items-end{% else %}items-start{% endif %} group">
                     {% if message.created_by != request.user %}
                         <span class="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-1.5 ml-1">{{ message.created_by.username }}</span>
                     {% endif %}
 
-                    <!-- Dynamic Message Bubble colors -->
+                    <!-- Bubble style -->
                     <div class="max-w-[85%] md:max-w-[70%] px-5 py-3 rounded-2xl shadow-xs transition-all duration-300 hover:shadow-md
                         {% if message.created_by == request.user %}
-                            bg-[#3b5d50] text-white rounded-br-none
+                            bg-[#e94560] text-white rounded-br-none
                         {% else %}
-                            bg-[#eff2f1]/60 text-[#2f2f2f] rounded-bl-none border border-stone-200/50
+                            bg-[#f1f5f9] text-[#0f172a] rounded-bl-none border border-slate-100
                         {% endif %}">
                         <p class="text-sm font-medium leading-relaxed">{{ message.content }}</p>
                     </div>
@@ -101,14 +101,50 @@
             {% endfor %}
         </div>
 
-        <!-- Message Composition Input Bar with Furni Gold Accent -->
-        <div class="bg-[#FAF8F5] border border-[#eff2f1] rounded-b-3xl p-4 shadow-sm">
+        <!-- Chat Message composition panel with Quick Aids -->
+        <div class="bg-[#FAF8F5] border border-slate-100 rounded-b-3xl p-4 shadow-sm relative">
+            
+            <!-- Dynamic Emoji Picker Container (Hidden by default) -->
+            <div id="emoji-picker" class="hidden absolute bottom-24 left-4 bg-white border border-slate-100 p-3 rounded-2xl shadow-xl z-30 max-w-xs grid grid-cols-6 gap-2">
+                <button type="button" onclick="insertEmoji('😊')" class="text-lg hover:scale-125 transition">😊</button>
+                <button type="button" onclick="insertEmoji('👍')" class="text-lg hover:scale-125 transition">👍</button>
+                <button type="button" onclick="insertEmoji('🤝')" class="text-lg hover:scale-125 transition">🤝</button>
+                <button type="button" onclick="insertEmoji('🌱')" class="text-lg hover:scale-125 transition">🌱</button>
+                <button type="button" onclick="insertEmoji('📦')" class="text-lg hover:scale-125 transition">📦</button>
+                <button type="button" onclick="insertEmoji('💵')" class="text-lg hover:scale-125 transition">💵</button>
+                <button type="button" onclick="insertEmoji('❓')" class="text-lg hover:scale-125 transition">❓</button>
+                <button type="button" onclick="insertEmoji('⭐')" class="text-lg hover:scale-125 transition">⭐</button>
+                <button type="button" onclick="insertEmoji('🎉')" class="text-lg hover:scale-125 transition">🎉</button>
+                <button type="button" onclick="insertEmoji('❤️')" class="text-lg hover:scale-125 transition">❤️</button>
+                <button type="button" onclick="insertEmoji('🙌')" class="text-lg hover:scale-125 transition">🙌</button>
+                <button type="button" onclick="insertEmoji('✅')" class="text-lg hover:scale-125 transition">✅</button>
+            </div>
+
+            <!-- Quick Inquiry Buttons -->
+            <div class="flex flex-wrap gap-1.5 mb-3 border-b border-slate-100 pb-3">
+                <button type="button" onclick="insertQuickReply('What is the shipping cost?')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 text-stone-600 text-[10px] font-bold rounded-lg transition active:scale-95">
+                    Shipping cost?
+                </button>
+                <button type="button" onclick="insertQuickReply('Can you send it today?')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 text-stone-600 text-[10px] font-bold rounded-lg transition active:scale-95">
+                    Ship today?
+                </button>
+                <button type="button" onclick="insertQuickReply('Is the price negotiable?')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:border-slate-300 text-stone-600 text-[10px] font-bold rounded-lg transition active:scale-95">
+                    Negotiable?
+                </button>
+            </div>
+
             <form id="chat-form" method="POST" action="." class="flex items-end gap-3">
                 {% csrf_token %}
+                
+                <!-- Emoji toggle button -->
+                <button type="button" onclick="toggleEmojiPicker()" class="p-3 bg-white hover:bg-slate-100 border border-slate-200 text-[#0f172a] rounded-2xl transition flex-shrink-0 active:scale-95" title="Insert Emoji">
+                    😊
+                </button>
+
                 <div class="flex-1 relative">
                     {{ form.content }}
                 </div>
-                <button type="submit" class="p-4 bg-[#f9bf29] hover:bg-[#e0ab20] text-[#2f2f2f] rounded-2xl shadow-md shadow-[#f9bf29]/10 flex-shrink-0 transition-all duration-300 transform active:scale-95">
+                <button type="submit" class="p-4 bg-[#e94560] hover:bg-[#d23f57] text-white rounded-2xl shadow-md shadow-[#e94560]/10 flex-shrink-0 transition-all duration-300 transform active:scale-95">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="rotate-45">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -124,16 +160,41 @@
     const chatBody = document.getElementById('chat-body');
     const messageInput = document.getElementById('id_content');
     const chatForm = document.getElementById('chat-form');
+    const emojiPicker = document.getElementById('emoji-picker');
 
-    // Smoothly focus scroll viewport to bottom
+    // Auto-Scroll to Bottom
     chatBody.scrollTop = chatBody.scrollHeight;
 
-    // Trigger form submit when pressing Enter (without shift active)
+    // Fast-submit keys on pressing Enter (without shift active)
     messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             chatForm.submit();
         }
     });
+
+    // Toggle Emoji Picker UI
+    function toggleEmojiPicker() {
+        if (emojiPicker) {
+            emojiPicker.classList.toggle('hidden');
+        }
+    }
+
+    // Insert Emoji to Textarea
+    function insertEmoji(emoji) {
+        if (messageInput) {
+            messageInput.value += emoji;
+            messageInput.focus();
+            if (emojiPicker) emojiPicker.classList.add('hidden');
+        }
+    }
+
+    // Insert Quick Reply Template to Textarea
+    function insertQuickReply(text) {
+        if (messageInput) {
+            messageInput.value = text;
+            messageInput.focus();
+        }
+    }
 </script>
 {% endblock %}

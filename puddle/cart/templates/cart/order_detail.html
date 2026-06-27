@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} Detail{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .bazaar-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+    }
+</style>
+
+<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16 animate-fade-in">
+    
+    <!-- Receipt Card Component -->
+    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-100/60 p-8 md:p-12 relative overflow-hidden">
+        
+        <!-- Top aesthetic ribbon -->
+        <div class="absolute top-0 left-0 right-0 h-2 bg-[#e94560]"></div>
+
+        <!-- Receipt Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-10 pb-8 border-b border-slate-100">
+            <div>
+                <span class="text-xs font-extrabold text-[#e94560] uppercase tracking-wider mb-2 block">Order Invoice</span>
+                <h1 class="bazaar-title text-3xl font-black text-[#0f172a] tracking-tight">Order #{{ order.id }}</h1>
+                <p class="text-xs text-slate-400 font-bold mt-1">Placed on {{ order.created_at|date:"M d, Y, H:i" }}</p>
+            </div>
+            
+            <!-- Dynamic Status Badge matching views.py parameters -->
+            <div>
+                {% if order.status == 'pending' %}
+                    <span class="px-4 py-2 bg-amber-50 border border-amber-100 text-amber-700 text-xs font-black uppercase tracking-wider rounded-xl">🕐 Pending</span>
+                {% elif order.status == 'processing' %}
+                    <span class="px-4 py-2 bg-blue-50 border border-blue-100 text-blue-700 text-xs font-black uppercase tracking-wider rounded-xl">⚙️ Processing</span>
+                {% elif order.status == 'shipped' %}
+                    <span class="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-black uppercase tracking-wider rounded-xl">🚚 Shipped</span>
+                {% elif order.status == 'delivered' %}
+                    <span class="px-4 py-2 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-black uppercase tracking-wider rounded-xl">✅ Delivered</span>
+                {% else %}
+                    <span class="px-4 py-2 bg-rose-50 border border-rose-100 text-rose-700 text-xs font-black uppercase tracking-wider rounded-xl">❌ Cancelled</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Shipping and billing grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 pb-8 border-b border-slate-100">
+            <div>
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-[#e94560] mb-3">Shipping Address</h3>
+                <p class="text-slate-700 text-sm font-semibold leading-relaxed">{{ order.shipping_address }}</p>
+            </div>
+            <div>
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-[#e94560] mb-3">Contact Information</h3>
+                <p class="text-slate-700 text-sm font-semibold mb-1">Buyer: <span class="text-[#0f172a] font-extrabold">{{ order.buyer.username|title }}</span></p>
+                <p class="text-slate-700 text-sm font-semibold">Phone: <span class="text-[#0f172a] font-extrabold">{{ order.phone }}</span></p>
+            </div>
+        </div>
+
+        <!-- Itemized summary list -->
+        <div class="mb-10">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Itemized Items</h3>
+            <div class="space-y-4">
+                {% for order_item in order.order_items.all %}
+                    <div class="flex items-center justify-between gap-4 py-2">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-1 flex-shrink-0">
+                                {% if order_item.item.image %}
+                                    <img src="{{ order_item.item.image.url }}" class="max-w-full max-h-full object-contain">
+                                {% else %}
+                                    <img src="https://picsum.photos/seed/{{ order_item.item.id }}/100/100" class="max-w-full max-h-full object-contain">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="font-extrabold text-[#0f172a] text-sm">{{ order_item.item.name }}</p>
+                                <p class="text-xs text-slate-400 font-bold mt-1">Qty: {{ order_item.quantity }} × ${{ order_item.price }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <!-- Safe subtotal calculations -->
+                            <p class="font-black text-[#0f172a] text-sm">${{ order_item.price }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Bottom Total Row -->
+        <div class="flex justify-between items-center pt-6 border-t border-slate-100">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Total Charged</span>
+            <span class="text-3xl font-black text-[#e94560]">${{ order.total_amount }}</span>
+        </div>
+
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-10">
+        <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">
+            Continue Shopping
+        </a>
+        <a href="{% url 'cart:order_history' %}" class="inline-flex items-center justify-center px-8 py-4 bg-white border border-slate-100 hover:bg-slate-50 text-[#0f172a] text-xs font-black uppercase tracking-widest rounded-xl transition">
+            View Order History
+        </a>
+    </div>
+
+</div>
+{% endblock %}

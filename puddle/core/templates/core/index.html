@@ -1,276 +1,280 @@
+{% extends 'core/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %}{% endblock title %} | Cotton Web</title>
-    
-    <!-- Google Fonts for Ultra-Modern Premium Look -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-    
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            scroll-behavior: smooth; 
-        }
-        .bazaar-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 800;
-        }
-        /* Navigation Links hover transition */
-        .nav-link { 
-            transition: color 0.25s ease-in-out; 
-        }
-        
-        /* Premium custom thin scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f6f9fc; }
-        ::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #1e293b; }
-        
-        /* Categories Dropdown Menu */
-        .dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-menu {
-            display: none; 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            z-index: 100;
-            min-width: 240px; 
-            background: #ffffff; 
-            border: 1px solid #f1f5f9;
-            border-radius: 1rem; 
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-            padding: 0.5rem; 
-            margin-top: 0.5rem; 
-            max-height: 320px; 
-            overflow-y: auto;
-        }
-        .dropdown-menu::-webkit-scrollbar { width: 4px; }
-        .dropdown-menu::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
-    </style>
-</head>
 
-<body class="bg-[#f6f9fc] flex flex-col min-h-screen text-[#0f172a] leading-tight">
+{% block title %}Home | Cotton Web{% endblock %}
 
-    <!-- ✅ Section 1: Narrow Dark Topbar (Exactly like screenshot) -->
-    <div class="bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="bg-[#e94560] text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase">HOT</span>
-                <span class="text-white/80">Free Express Shipping on all orders!</span>
-            </div>
-            <div class="flex items-center gap-6 text-white/80">
-                <span class="hover:text-white cursor-pointer transition">EN v</span>
-                <div class="flex items-center gap-3">
-                    <a href="#" class="hover:text-white transition">𝕏</a>
-                    <a href="#" class="hover:text-white transition">fb</a>
-                    <a href="#" class="hover:text-white transition">ig</a>
+{% block content %}
+<!-- Google Fonts for Modern Look -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Smooth hover transitions for card layouts */
+    .deal-card img {
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .deal-card:hover img {
+        transform: scale(1.05);
+    }
+    /* Hide horizontal scrollbar for flash deals track */
+    #flash-deals-track::-webkit-scrollbar {
+        display: none;
+    }
+    #flash-deals-track {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+
+<div class="bazaar-container max-w-7xl mx-auto px-6 py-6 md:py-10">
+
+    <!-- ✅ Row 1: Categories selector + Extensive Search Bar -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
+        <!-- Categories selector dropdown button -->
+        <div class="md:col-span-3">
+            <div class="dropdown relative w-full h-full">
+                <button class="w-full flex items-center justify-between px-5 py-4 bg-white border border-slate-100 rounded-2xl text-xs font-black text-[#0f172a] uppercase tracking-wider shadow-xs hover:border-slate-300 transition">
+                    <span class="flex items-center gap-2">
+                        <span>☰</span> Categories
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <div class="dropdown-menu w-full">
+                    <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-[#0f172a] rounded-xl transition-all">All Categories</a>
+                    <div class="my-1 border-t border-slate-100"></div>
+                    {% for category in categories %}
+                        <option value="{% url 'item:items' %}?category={{ category.id }}" class="block px-4 py-2.5 text-xs font-bold text-[#0f172a] hover:bg-slate-50 rounded-xl transition-all">{{ category.name }}</option>
+                    {% endfor %}
                 </div>
             </div>
+        </div>
+
+        <!-- Real-time search bar -->
+        <div class="md:col-span-9">
+            <form method="get" action="{% url 'item:items' %}" class="relative w-full h-full">
+                <input name="query" 
+                       type="text" 
+                       placeholder="Searching for..." 
+                       value="{{ query }}"
+                       class="w-full h-full pl-5 pr-12 py-4 bg-white border border-slate-100 rounded-2xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition duration-300 shadow-xs">
+                <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0f172a] transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- ✅ Section 2: Premium Bazaar Navbar -->
-    <nav class="sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm transition-all duration-300">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-
-            <!-- Elegant typographic logo with shopping icon -->
-            <a href="/" class="group flex items-center gap-2.5">
-                <div class="logo-container relative w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl bg-slate-50 border border-slate-100 group-hover:border-slate-300 transition-all">
-                    <!-- Clean minimal shopping bag SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5 text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                </div>
-                <div class="flex flex-col">
-                    <span class="bazaar-title text-xl font-black tracking-tight text-[#0f172a] leading-none">bazaar</span>
-                </div>
-            </a>
-
-            <!-- Navigation Links -->
-            <div class="hidden md:flex items-center gap-8">
-                <div class="flex items-center gap-8">
-                    <a href="/" class="nav-link text-xs font-bold text-[#0f172a] hover:text-[#e94560] uppercase tracking-wider">Home</a>
-                    <a href="{% url 'item:items' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Browse</a>
-
-                    <!-- Categories Dropdown menu -->
-                    <div class="dropdown relative">
-                        <button class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider flex items-center gap-1">
-                            Categories
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">All Categories</a>
-                            <div class="my-1 border-t border-slate-100"></div>
-                            {% for category in all_categories %}
-                                <a href="{% url 'item:items' %}?category={{ category.id }}"
-                                   class="block px-4 py-2.5 text-xs font-bold text-[#0f172a] hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">
-                                    {{ category.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <!-- Add Item check -->
-                    {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
-                        <a href="{% url 'item:new' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Add Item</a>
-                    {% endif %}
-                </div>
-
-                <!-- Right Controls and User indicators -->
-                <div class="flex items-center gap-4 pl-8 border-l border-slate-100">
-                    {% if request.user.is_authenticated %}
-
-                        {% if request.user.user_type == 'Seller' %}
-                            <!-- Seller Inbox -->
-                            <a href="{% url 'conversation:inbox' %}"
-                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
-                               title="Inbox">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                            </a>
-
-                        {% elif request.user.user_type == 'Buyer' %}
-                            <!-- Buyer Cart -->
-                            <a href="{% url 'cart:detail' %}"
-                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
-                               title="Cart">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            </a>
-                            <a href="{% url 'conversation:inbox' %}"
-                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
-                               title="Messages">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                            </a>
-                        {% endif %}
-
-                        <!-- Universal Notifications -->
-                        <a href="{% url 'core:notifications' %}"
-                           class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
-                           title="Notifications">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                            </svg>
-                            {% if unread_notification_count > 0 %}
-                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-[#0f172a] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">
-                                    {{ unread_notification_count }}
-                                </span>
-                            {% endif %}
-                        </a>
-
-                        <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95">
-                            Dashboard
-                        </a>
-
-                        {% if is_site_admin %}
-                            <a href="{% url 'dashboard:admin' %}" class="flex items-center gap-2 px-5 py-3 bg-amber-500 text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-amber-600 transition-all shadow-md active:scale-95">
-                                Admin
-                            </a>
-                        {% endif %}
-
-                        <!-- Settings & exit cluster -->
-                        <div class="flex gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                            <a href="{% url 'core:changePass' %}" title="Change Password" class="p-2 text-slate-500 hover:bg-white hover:text-[#0f172a] rounded-xl transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                            </a>
-                            <a href="{% url 'core:logout' %}" title="Logout" class="p-2 text-rose-500 hover:bg-white rounded-xl transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                </svg>
-                            </a>
-                        </div>
-
-                    {% else %}
-                        <a href="{% url 'core:login' %}" class="text-[11px] font-black uppercase tracking-widest text-[#0f172a] hover:text-[#e94560] px-4 transition-colors">Log In</a>
-                        <a href="{% url 'core:signup' %}" class="px-8 py-3.5 text-[11px] font-black uppercase tracking-widest bg-[#0f172a] text-white rounded-full hover:bg-slate-800 shadow-md transition-all duration-300 active:scale-95">Get Started</a>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Mobile Toggle -->
-            <button class="md:hidden p-2.5 bg-slate-50 text-[#0f172a] rounded-xl hover:bg-slate-100 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
-                </svg>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Main Content Slot (Spacings managed cleanly) -->
-    <main class="flex-grow">
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <!-- ✅ Redesigned Bottom Footer in Dark Navy -->
-    <footer class="bg-[#0f172a] text-[#f6f9fc] pt-20 pb-12 px-6 md:px-12 mt-auto">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-16 mb-16">
-                
-                <div class="md:col-span-5">
-                    <a href="/" class="flex items-center gap-3 mb-6">
-                        <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web"
-                             class="w-10 h-10 object-contain rounded-xl border border-white/10 shadow-xs"
-                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0f172a&color=fff'">
-                        <span class="bazaar-title text-2xl font-black text-white">bazaar<span class="text-[#e94560]">.</span></span>
-                    </a>
-                    <p class="text-slate-400 leading-relaxed max-w-sm mb-8 font-medium text-sm">
-                        Bangladesh's premium online trading platform. Powered by Bazaar design structures. Easy, secure, and fully reliable.
+    <!-- ✅ Row 2: Premium Bazaar Dynamic Slider (Fully Functional) -->
+    <div class="relative bg-white rounded-3xl mb-16 border border-slate-100 shadow-xs overflow-hidden min-h-[420px] md:min-h-[480px]">
+        
+        <!-- Slider Container Track -->
+        <div id="carousel-track" class="flex transition-transform duration-700 ease-in-out w-full h-full" style="transform: translateX(0%);">
+            
+            <!-- Slide 1: Earbuds (Exactly like input_file_5.png) -->
+            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
+                <!-- Left Text Details -->
+                <div class="md:col-span-6 text-left max-w-lg">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
+                        50% Off For Your First Shopping
+                    </h1>
+                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
+                        Get Free Shipping on all orders over $99.00
                     </p>
-                    <div class="flex gap-4">
-                        <a href="https://www.facebook.com/cottonweb3/" target="_blank"
-                           class="w-10 h-10 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-white transition-all shadow-xs">
-                            <svg class="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                        </a>
-                    </div>
+                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
+                        Shop Now
+                    </a>
                 </div>
-
-                <div class="md:col-span-2 md:col-start-8">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Marketplace</h3>
-                    <ul class="space-y-4 font-bold text-xs text-slate-400">
-                        <li><a href="{% url 'item:items' %}" class="hover:text-white transition-colors">All Items</a></li>
-                        {% if request.user.user_type == 'Seller' or request.user.is_staff %}
-                            <li><a href="{% url 'item:new' %}" class="hover:text-white transition-colors">Sell Something</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-
-                <div class="md:col-span-2">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Support</h3>
-                    <ul class="space-y-4 font-bold text-xs text-slate-400">
-                        <li><a href="{% url 'core:contact' %}" class="hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    </ul>
+                <!-- Right Image Showcase -->
+                <div class="md:col-span-6 flex justify-center items-center">
+                    <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=800" 
+                         alt="Wireless Earbuds" 
+                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
                 </div>
             </div>
 
-            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    &copy; 2026 Cotton Web. All rights reserved.
-                </p>
-                <div class="flex gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 bg-[#e94560] rounded-full animate-pulse"></span>
-                        Live System
-                    </span>
-                    <span class="text-slate-500">Build By Sakib</span>
+            <!-- Slide 2: Modern Backpack (Exactly like input_file_6.png structure) -->
+            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
+                <!-- Left Text Details -->
+                <div class="md:col-span-6 text-left max-w-lg">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
+                        50% Off For Your First Shopping
+                    </h1>
+                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
+                        Get Free Shipping on all orders over $99.00
+                    </p>
+                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
+                        Shop Now
+                    </a>
                 </div>
+                <!-- Right Image Showcase -->
+                <div class="md:col-span-6 flex justify-center items-center">
+                    <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800" 
+                         alt="Premium Backpack" 
+                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
+                </div>
+            </div>
+
+            <!-- Slide 3: Smart Ecosystem Watch -->
+            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
+                <!-- Left Text Details -->
+                <div class="md:col-span-6 text-left max-w-lg">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
+                        50% Off For Your First Shopping
+                    </h1>
+                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
+                        Get Free Shipping on all orders over $99.00
+                    </p>
+                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
+                        Shop Now
+                    </a>
+                </div>
+                <!-- Right Image Showcase -->
+                <div class="md:col-span-6 flex justify-center items-center">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800" 
+                         alt="Sleek Smartwatch" 
+                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Active dots paginator panel -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
+            <button onclick="goToSlide(0)" class="carousel-dot w-6 h-1.5 bg-[#0f172a] rounded-full transition-all duration-300" title="Slide 1"></button>
+            <button onclick="goToSlide(1)" class="carousel-dot w-2 h-1.5 bg-slate-300 rounded-full transition-all duration-300" title="Slide 2"></button>
+            <button onclick="goToSlide(2)" class="carousel-dot w-2 h-1.5 bg-slate-300 rounded-full transition-all duration-300" title="Slide 3"></button>
+        </div>
+    </div>
+
+    <!-- ✅ Row 3: Listings / Flash Deals (Interactive Carousel List) -->
+    <div>
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-black text-[#0f172a]">Flash Deals</h2>
+                <p class="text-slate-400 text-xs font-bold mt-1">Explore hot deals from Cotton Web marketplace</p>
+            </div>
+            <!-- Slider navigation buttons -->
+            <div class="flex items-center gap-2">
+                <button onclick="scrollFlashDeals('left')" class="w-10 h-10 border border-slate-100 hover:border-slate-300 bg-white text-[#0f172a] rounded-full flex items-center justify-center transition active:scale-95">
+                    ←
+                </button>
+                <button onclick="scrollFlashDeals('right')" class="w-10 h-10 bg-[#0f172a] hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md active:scale-95">
+                    →
+                </button>
             </div>
         </div>
-    </footer>
 
-</body>
-</html>
+        <!-- Horizontal scroll list -->
+        <div id="flash-deals-track" class="flex gap-8 overflow-x-auto scroll-smooth pb-6 snap-x snap-mandatory">
+            {% for item in items %}
+                <div class="deal-card min-w-[285px] md:min-w-[340px] flex-shrink-0 snap-start bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-xl hover:border-slate-200 transition-all duration-300 relative flex flex-col justify-between">
+                    
+                    <!-- Floating tags & Price overlay -->
+                    <div class="relative aspect-square w-full bg-slate-50/50 flex items-center justify-center p-6">
+                        {% if item.image and item.image.url %}
+                            <img src="{{ item.image.url }}" 
+                                 alt="{{ item.name }}" 
+                                 loading="lazy" 
+                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
+                        {% else %}
+                            <img src="https://picsum.photos/seed/{{ item.id }}/400/400" 
+                                 alt="{{ item.name }}" 
+                                 loading="lazy" 
+                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
+                        {% endif %}
+                        
+                        <span class="absolute top-4 left-4 bg-slate-900 text-white px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
+                            {{ item.category.name }}
+                        </span>
+                    </div>
+
+                    <!-- Details and pricing -->
+                    <div class="p-6">
+                        <h3 class="font-bold text-[#0f172a] text-base md:text-lg truncate mb-1">
+                            {{ item.name }}
+                        </h3>
+                        <p class="text-[10px] text-slate-400 font-bold mb-4">
+                            By <span class="text-slate-600 font-extrabold">{{ item.user.username }}</span>
+                        </p>
+                        
+                        <div class="flex items-center justify-between border-t border-slate-50 pt-4">
+                            <span class="text-2xl font-black text-[#e94560]">${{ item.price }}</span>
+                            <a href="{% url 'item:detail' item.id %}" 
+                               class="px-5 py-2.5 bg-slate-50 hover:bg-slate-900 hover:text-white text-[#0f172a] font-bold text-xs rounded-xl transition duration-300">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            {% empty %}
+                <div class="col-span-full py-20 text-center w-full bg-white rounded-3xl border border-slate-100 shadow-xs">
+                    <span class="text-4xl block mb-2">🎁</span>
+                    <p class="text-slate-400 font-bold text-sm italic">No active flash deals listed today.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Carousel & horizontal scroller Logic Scripts -->
+<script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    const track = document.getElementById('carousel-track');
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    // Slide Manual Navigation
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+    }
+
+    // Auto sliding interval setup (Every 5 seconds)
+    let autoSlide = setInterval(() => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    }, 5000);
+
+    function updateCarousel() {
+        // Translate track
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update DOT indicator styles
+        dots.forEach((dot, index) => {
+            if (index === currentSlide) {
+                dot.classList.add('w-6', 'bg-[#0f172a]');
+                dot.classList.remove('w-2', 'bg-slate-300');
+            } else {
+                dot.classList.add('w-2', 'bg-slate-300');
+                dot.classList.remove('w-6', 'bg-[#0f172a]');
+            }
+        });
+        
+        // Reset auto timer interval on manual interaction
+        clearInterval(autoSlide);
+        autoSlide = setInterval(() => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }, 5000);
+    }
+
+    // Smooth horizontal scrolling configuration for Flash Deals
+    function scrollFlashDeals(direction) {
+        const scroller = document.getElementById('flash-deals-track');
+        const scrollAmount = 360; // Card width + gap size
+        if (direction === 'left') {
+            scroller.scrollLeft -= scrollAmount;
+        } else {
+            scroller.scrollLeft += scrollAmount;
+        }
+    }
+</script>
+{% endblock %}
