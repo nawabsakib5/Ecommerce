@@ -4,30 +4,25 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Google Fonts for High-End Organic Aesthetics -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root {
-    --bg: #080b14;
-    --s1: #0e1220;
-    --s2: #141826;
-    --s3: #1c2138;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #eef0ff;
-    --muted: #5a6384;
-    --muted2: #8892b0;
-    --teal: #00e5b0;
-    --teal2: #00b88a;
-    --blue: #4d9fff;
-    --purple: #b06aff;
-    --orange: #ff7c3a;
-    --red: #ff4d6d;
-    --green: #00d68f;
-    --yellow: #ffd166;
+    --bg: #F7F9F3; /* Soft, fresh sage-tinted background */
+    --s1: #ffffff; /* Crisp white card background */
+    --s2: #FAF8F5; /* Cozy warm alabaster details */
+    --s3: #EAF1DB; /* Soft green highlight tint */
+    --border: rgba(114, 161, 15, 0.15); /* Light organic border line */
+    --border2: rgba(114, 161, 15, 0.3); /* Accentuated border line */
+    --text: #2C3E14; /* Deep forest olive for major headings */
+    --muted: #7A846A; /* Earthy muted gray */
+    --muted2: #8E987E; /* Soft sage details */
+    --primary: #72A10F; /* Classic Organic Green */
+    --accent: #E5A93C; /* Honey amber gold for secondary stats */
     --font: 'Plus Jakarta Sans', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Playfair Display', serif;
 }
 
 .adm * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,166 +31,174 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 2rem 1.5rem 3rem;
+    padding: 2.5rem 1.5rem 4rem;
     margin: -2rem -1.5rem;
 }
 
-/* ── Header ── */
+/* ── Header Banner ── */
 .adm-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 2.5rem; gap: 1rem; flex-wrap: wrap;
+    background: linear-gradient(135deg, #2C3E14 0%, #4A6B22 100%);
+    border-radius: 2rem;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 25px -5px rgba(44,62,20,0.1);
+    position: relative;
+    overflow: hidden;
+}
+.adm-header::before {
+    content: ''; position: absolute; right: 0; bottom: 0;
+    width: 200px; height: 200px; opacity: 0.08; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M17 8C15.3 8 13.6 8.7 12.4 10C11.1 8.7 9.4 8 7.7 8C4 8 1 11.2 1 15C1 18.8 4 22 7.7 22C10.7 22 13 19 13 19S15.3 22 18.3 22C22 22 25 18.8 25 15C25 11.2 22 8 18.3 8Z'/%3E%3C/svg%3E");
+    background-size: contain; background-repeat: no-repeat;
 }
 .adm-header h1 {
-    font-size: 2rem; font-weight: 800; letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #fff 30%, var(--teal));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-family: var(--serif);
+    font-size: 2.5rem; font-weight: 800; color: #ffffff;
+    letter-spacing: -0.02em;
 }
-.adm-header p { font-size: 0.8rem; color: var(--muted2); margin-top: 4px; }
-.live-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(0,229,176,0.08); border: 1px solid rgba(0,229,176,0.2);
-    color: var(--teal); font-size: 0.72rem; font-weight: 600;
-    padding: 6px 14px; border-radius: 30px; white-space: nowrap;
-}
-.live-badge .dot {
-    width: 7px; height: 7px; border-radius: 50%; background: var(--teal);
-    animation: blink 1.8s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+.adm-header p { font-size: 0.85rem; color: #E2EBD3; margin-top: 6px; font-weight: 500; }
 
 /* ── Stat Cards ── */
 .stats-row {
     display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 1rem; margin-bottom: 1.75rem;
+    gap: 1.25rem; margin-bottom: 2rem;
 }
 @media(max-width:1100px){ .stats-row { grid-template-columns: repeat(3,1fr); } }
 @media(max-width:640px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
 
 .stat {
     background: var(--s1); border: 1px solid var(--border);
-    border-radius: 18px; padding: 1.25rem 1.4rem;
+    border-radius: 1.25rem; padding: 1.4rem 1.5rem;
     position: relative; overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
-.stat:hover { transform: translateY(-3px); border-color: var(--border2); }
-.stat::before {
-    content: ''; position: absolute; inset: 0;
-    background: var(--glow, transparent);
-    opacity: 0.06; pointer-events: none;
+.stat:hover { 
+    transform: translateY(-4px); 
+    border-color: var(--primary); 
+    box-shadow: 0 10px 15px -3px rgba(114, 161, 15, 0.08);
 }
 .stat-icon {
-    width: 42px; height: 42px; border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; margin-bottom: 1rem;
+    font-size: 1.3rem; margin-bottom: 1.1rem;
+    background: var(--s2);
+    border: 1px solid var(--border);
 }
 .stat-num {
-    font-size: 1.85rem; font-weight: 800; letter-spacing: -0.04em;
-    font-family: var(--mono); line-height: 1;
+    font-size: 2rem; font-weight: 800; letter-spacing: -0.03em;
+    line-height: 1; color: var(--text);
 }
-.stat-lbl { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+.stat-lbl { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
 .stat-sub { font-size: 0.72rem; color: var(--muted2); margin-top: 6px; }
 
 /* ── Panels ── */
-.grid2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; margin-bottom: 1.5rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.75rem; margin-bottom: 1.75rem; }
 @media(max-width:1024px){ .grid2 { grid-template-columns: 1fr; } }
 
 .panel {
     background: var(--s1); border: 1px solid var(--border);
-    border-radius: 18px; overflow: hidden;
+    border-radius: 1.5rem; overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
 .panel-head {
-    padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    background: var(--s2);
 }
-.panel-title { font-size: 0.9rem; font-weight: 700; }
-.panel-sub { font-size: 0.72rem; color: var(--muted2); margin-top: 2px; }
-.panel-body { padding: 1.25rem 1.5rem; }
+.panel-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 800; color: var(--text); }
+.panel-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.panel-body { padding: 1.5rem 1.75rem; }
 
 /* ── Table ── */
 .tbl { width: 100%; border-collapse: collapse; }
 .tbl th {
-    font-size: 0.65rem; font-weight: 700; color: var(--muted);
+    font-size: 0.7rem; font-weight: 700; color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.07em;
-    padding: 0 1rem 0.9rem; text-align: left; white-space: nowrap;
+    padding: 0.9rem 1.25rem; text-align: left; white-space: nowrap;
+    background: var(--s2);
 }
-.tbl td { padding: 0.85rem 1rem; border-top: 1px solid var(--border); font-size: 0.82rem; }
-.tbl tr:hover td { background: rgba(255,255,255,0.015); }
+.tbl td { padding: 1rem 1.25rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text); }
+.tbl tr:hover td { background: var(--s2); }
 .av {
-    width: 32px; height: 32px; border-radius: 9px;
+    width: 34px; height: 34px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+    font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
 }
 .chip {
-    display: inline-block; padding: 2px 9px; border-radius: 6px;
-    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em;
+    display: inline-block; padding: 3px 10px; border-radius: 8px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em;
+    border: 1px solid transparent;
 }
-.chip-seller { background: rgba(0,229,176,0.1); color: var(--teal); }
-.chip-buyer  { background: rgba(77,159,255,0.1); color: var(--blue); }
-.chip-admin  { background: rgba(255,124,58,0.1); color: var(--orange); }
-.chip-none   { background: rgba(90,99,132,0.15); color: var(--muted2); }
-.mono { font-family: var(--mono); font-size: 0.8rem; font-weight: 500; }
+.chip-seller { background: #EAF1DB; color: #556B2F; border-color: rgba(114, 161, 15, 0.2); }
+.chip-buyer  { background: #E0F2FE; color: #0369A1; border-color: rgba(14, 165, 233, 0.15); }
+.chip-admin  { background: #FEF3C7; color: #B45309; border-color: rgba(245, 158, 11, 0.2); }
+.chip-none   { background: #F5F5F4; color: #78716C; }
+.mono { font-weight: 700; font-size: 0.85rem; }
 
 /* ── Recent Sales ── */
-.sale-list { max-height: 520px; overflow-y: auto; }
-.sale-list::-webkit-scrollbar { width: 3px; }
-.sale-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 3px; }
+.sale-list { max-height: 520px; overflow-y: auto; padding-right: 4px; }
+.sale-list::-webkit-scrollbar { width: 4px; }
+.sale-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 4px; }
 .sale-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+    transition: background-color 0.2s;
 }
 .sale-item:last-child { border-bottom: none; }
 .sale-thumb {
-    width: 40px; height: 40px; border-radius: 10px;
+    width: 44px; height: 44px; border-radius: 12px;
     object-fit: cover; background: var(--s2); flex-shrink: 0;
+    border: 1px solid var(--border);
 }
-.sale-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sale-meta { font-size: 0.68rem; color: var(--muted2); margin-top: 2px; }
-.sale-amount { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--teal); flex-shrink: 0; }
+.sale-name { font-size: 0.85rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sale-meta { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+.sale-amount { font-size: 0.9rem; font-weight: 800; color: var(--primary); flex-shrink: 0; }
 
 /* ── Chart ── */
-.chart-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
-.chart-wrap { position: relative; height: 240px; padding: 1.25rem 1.5rem; }
+.chart-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+.chart-wrap { position: relative; height: 260px; padding: 1.5rem 1.75rem; }
 </style>
 
 <div class="adm">
 
+    <!-- Header Banner -->
     <div class="adm-header">
         <div>
             <h1>Cotton Web Admin</h1>
-            <p>Full platform monitoring — {{ total_users }} users · {{ grand_available }} listings · {{ grand_sold_qty }} sold</p>
+            <p>Full platform monitoring — {{ total_users }} users · {{ grand_available }} listings · {{ grand_sold_qty }} sold items</p>
         </div>
-        
     </div>
 
     <!-- Stats -->
     <div class="stats-row">
-        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--teal), transparent 70%);">
-            <div class="stat-icon" style="background:rgba(0,229,176,0.1);">👥</div>
-            <div class="stat-num" style="color:var(--teal);">{{ total_users }}</div>
+        <div class="stat">
+            <div class="stat-icon">👥</div>
+            <div class="stat-num" style="color:var(--text);">{{ total_users }}</div>
             <div class="stat-lbl">Total Users</div>
             <div class="stat-sub">Registered accounts</div>
         </div>
-        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--blue), transparent 70%);">
-            <div class="stat-icon" style="background:rgba(77,159,255,0.1);">📦</div>
-            <div class="stat-num" style="color:var(--blue);">{{ grand_available }}</div>
+        <div class="stat">
+            <div class="stat-icon">📦</div>
+            <div class="stat-num" style="color:var(--primary);">{{ grand_available }}</div>
             <div class="stat-lbl">Active Listings</div>
             <div class="stat-sub">Available for sale</div>
         </div>
-        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--green), transparent 70%);">
-            <div class="stat-icon" style="background:rgba(0,214,143,0.1);">✅</div>
-            <div class="stat-num" style="color:var(--green);">{{ grand_sold_qty }}</div>
+        <div class="stat">
+            <div class="stat-icon">✅</div>
+            <div class="stat-num" style="color:var(--primary);">{{ grand_sold_qty }}</div>
             <div class="stat-lbl">Total Sold</div>
             <div class="stat-sub">Platform wide</div>
         </div>
-        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--orange), transparent 70%);">
-            <div class="stat-icon" style="background:rgba(255,124,58,0.1);">💰</div>
-            <div class="stat-num" style="color:var(--orange);">${{ grand_sales }}</div>
+        <div class="stat">
+            <div class="stat-icon">💰</div>
+            <div class="stat-num" style="color:var(--accent);">${{ grand_sales }}</div>
             <div class="stat-lbl">Revenue</div>
             <div class="stat-sub">Platform GMV</div>
         </div>
-        <div class="stat" style="--glow: radial-gradient(circle at 0 0, var(--purple), transparent 70%);">
-            <div class="stat-icon" style="background:rgba(176,106,255,0.1);">🏦</div>
-            <div class="stat-num" style="color:var(--purple);">${{ grand_commission }}</div>
+        <div class="stat">
+            <div class="stat-icon">🏦</div>
+            <div class="stat-num" style="color:var(--text);">${{ grand_commission }}</div>
             <div class="stat-lbl">Commission</div>
             <div class="stat-sub">{{ commission_rate_pct }}% rate</div>
         </div>
@@ -209,33 +212,33 @@
             <div class="panel-head">
                 <div>
                     <div class="panel-title">Seller Performance</div>
-                    <div class="panel-sub">All users — listings, sales & revenue</div>
+                    <div class="panel-sub">All users — listings, sales & revenue stats</div>
                 </div>
-                <span class="chip chip-seller">{{ total_users }} users</span>
+                <span class="chip chip-seller font-bold">{{ total_users }} active members</span>
             </div>
             <div style="overflow-x:auto;">
                 <table class="tbl">
                     <thead>
                         <tr>
-                            <th>User</th>
-                            <th>Type</th>
-                            <th>Active</th>
-                            <th>Sold</th>
-                            <th>Revenue</th>
-                            <th>Commission</th>
+                            <th>User Details</th>
+                            <th>Role</th>
+                            <th>Active Listings</th>
+                            <th>Sold Items</th>
+                            <th>Total Revenue</th>
+                            <th>Commission Earned</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for row in user_rows %}
                         <tr>
                             <td>
-                                <div style="display:flex;align-items:center;gap:10px;">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--teal),var(--blue));color:#000;">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div class="av" style="background:linear-gradient(135deg, var(--s3), var(--border)); color: var(--text);">
                                         {{ row.user.username|slice:":1"|upper }}
                                     </div>
                                     <div>
-                                        <div style="font-weight:600;font-size:0.83rem;">{{ row.user.username }}</div>
-                                        <div style="font-size:0.68rem;color:var(--muted2);">{{ row.user.email }}</div>
+                                        <div style="font-weight:700;font-size:0.88rem;color:var(--text);">{{ row.user.username }}</div>
+                                        <div style="font-size:0.72rem;color:var(--muted);">{{ row.user.email }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -250,14 +253,14 @@
                                     <span class="chip chip-none">—</span>
                                 {% endif %}
                             </td>
-                            <td><span class="mono" style="color:var(--blue);">{{ row.available_count }}</span></td>
-                            <td><span class="mono" style="color:var(--green);">{{ row.sold_count }}</span></td>
-                            <td><span class="mono" style="color:var(--teal);">${{ row.revenue }}</span></td>
-                            <td><span class="mono" style="color:var(--purple);">${{ row.commission }}</span></td>
+                            <td><span class="mono" style="color:var(--muted);">{{ row.available_count }}</span></td>
+                            <td><span class="mono" style="color:var(--primary);">{{ row.sold_count }}</span></td>
+                            <td><span class="mono" style="color:var(--text);">${{ row.revenue }}</span></td>
+                            <td><span class="mono" style="color:var(--accent);">${{ row.commission }}</span></td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">No users found</td>
+                            <td colspan="6" style="text-align:center;color:var(--muted);padding:3rem;font-family:var(--serif);font-size:1.1rem;">No users found in the register</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -269,8 +272,8 @@
         <div class="panel">
             <div class="panel-head">
                 <div>
-                    <div class="panel-title">Recent Sales</div>
-                    <div class="panel-sub">Last 20 transactions</div>
+                    <div class="panel-title">Recent Transactions</div>
+                    <div class="panel-sub">Latest marketplace actions</div>
                 </div>
             </div>
             <div class="panel-body">
@@ -284,13 +287,13 @@
                         {% endif %}
                         <div style="flex:1;min-width:0;">
                             <div class="sale-name">{{ sale.item.name }}</div>
-                            <div class="sale-meta">{{ sale.seller.username }} → {{ sale.buyer.username }}</div>
+                            <div class="sale-meta" style="font-weight:500;">{{ sale.seller.username }} ➔ {{ sale.buyer.username }}</div>
                             <div class="sale-meta">{{ sale.sold_at|date:"M d, H:i" }}</div>
                         </div>
                         <div class="sale-amount">${{ sale.total_amount }}</div>
                     </div>
                     {% empty %}
-                    <div style="text-align:center;color:var(--muted);padding:2rem;font-size:0.85rem;">No sales yet</div>
+                    <div style="text-align:center;color:var(--muted);padding:3rem;font-family:var(--serif);">No transactions recorded yet</div>
                     {% endfor %}
                 </div>
             </div>
@@ -302,7 +305,7 @@
         <div class="panel-head">
             <div>
                 <div class="panel-title">Revenue & Commission Breakdown</div>
-                <div class="panel-sub">Per-seller overview</div>
+                <div class="panel-sub">Performance per unique seller</div>
             </div>
         </div>
         <div class="chart-wrap">
@@ -326,14 +329,14 @@ new Chart(ctx, {
             {
                 label: 'Revenue',
                 data: revenues,
-                backgroundColor: 'rgba(0,229,176,0.7)',
+                backgroundColor: 'rgba(114, 161, 15, 0.8)', /* Leaf Green to match ThemeWagon Organic */
                 borderRadius: 8,
                 borderSkipped: false,
             },
             {
                 label: 'Commission',
                 data: commissions,
-                backgroundColor: 'rgba(176,106,255,0.7)',
+                backgroundColor: 'rgba(229, 169, 60, 0.8)', /* Muted Amber Gold */
                 borderRadius: 8,
                 borderSkipped: false,
             }
@@ -345,19 +348,22 @@ new Chart(ctx, {
         plugins: {
             legend: {
                 labels: {
-                    color: '#8892b0',
-                    font: { family: 'Plus Jakarta Sans', size: 12 },
+                    color: '#7A846A',
+                    font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
                     usePointStyle: true,
                     pointStyleWidth: 8,
                 }
             },
             tooltip: {
-                backgroundColor: '#0e1220',
-                borderColor: 'rgba(255,255,255,0.07)',
+                backgroundColor: '#ffffff',
+                borderColor: 'rgba(114, 161, 15, 0.15)',
                 borderWidth: 1,
-                titleColor: '#eef0ff',
-                bodyColor: '#8892b0',
+                titleColor: '#2C3E14',
+                bodyColor: '#7A846A',
+                titleFont: { family: 'Plus Jakarta Sans', weight: '700' },
+                bodyFont: { family: 'Plus Jakarta Sans' },
                 padding: 12,
+                boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
                 callbacks: {
                     label: ctx => ` $${ctx.raw.toLocaleString()}`
                 }
@@ -365,18 +371,18 @@ new Chart(ctx, {
         },
         scales: {
             x: {
-                ticks: { color: '#5a6384', font: { family: 'Plus Jakarta Sans' } },
-                grid: { color: 'rgba(255,255,255,0.03)' },
-                border: { color: 'rgba(255,255,255,0.05)' }
+                ticks: { color: '#7A846A', font: { family: 'Plus Jakarta Sans', weight: '500' } },
+                grid: { color: 'rgba(114, 161, 15, 0.04)' },
+                border: { color: 'rgba(114, 161, 15, 0.08)' }
             },
             y: {
                 ticks: {
-                    color: '#5a6384',
-                    font: { family: 'JetBrains Mono', size: 11 },
+                    color: '#7A846A',
+                    font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
                     callback: v => '$' + v.toLocaleString()
                 },
-                grid: { color: 'rgba(255,255,255,0.03)' },
-                border: { color: 'rgba(255,255,255,0.05)' }
+                grid: { color: 'rgba(114, 161, 15, 0.04)' },
+                border: { color: 'rgba(114, 161, 15, 0.08)' }
             }
         }
     }
