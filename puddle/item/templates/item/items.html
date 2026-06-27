@@ -6,29 +6,32 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 
-        <!-- Sidebar -->
+        <!-- Sidebar (Search & Filter Column) -->
         <div class="col-span-1 space-y-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <p class="font-bold text-gray-800 mb-4 text-lg">Search</p>
+            
+            <!-- Search Panel -->
+            <div class="bg-white p-6 rounded-[2rem] shadow-xs border border-[#EAF1DB]/80 animate-fade-in">
+                <p class="font-extrabold text-[#2C3E14] mb-4 text-base uppercase tracking-wider pl-0.5">Search Market</p>
                 <form method="get" action="{% url 'item:items' %}" class="space-y-3">
                     <input name="query"
-                           class="w-full py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none transition"
+                           class="w-full py-3.5 px-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:ring-4 focus:ring-[#72A10F]/10 focus:border-[#72A10F] focus:outline-none transition-all duration-300 text-stone-800 text-sm font-semibold"
                            type="text"
                            value="{{ query }}"
                            placeholder="Search for items...">
-                    <button class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition shadow-md shadow-teal-100">
+                    <button class="w-full py-3.5 bg-[#72A10F] hover:bg-[#5C830A] text-white font-extrabold uppercase tracking-widest text-[11px] rounded-2xl transition duration-300 shadow-md shadow-[#72A10F]/10 transform active:scale-95">
                         Search
                     </button>
                 </form>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <p class="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Categories</p>
-                <ul class="space-y-2">
+            <!-- Categories Selection List -->
+            <div class="bg-white p-6 rounded-[2rem] shadow-xs border border-[#EAF1DB]/80">
+                <p class="font-extrabold text-[#2C3E14] mb-4 text-base uppercase tracking-wider pb-2 border-b border-[#EAF1DB]/60 pl-0.5">Categories</p>
+                <ul class="space-y-1.5">
                     {% for category in categories %}
                         <li>
                             <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}"
-                               class="block py-2 px-4 rounded-lg transition {% if category.id == category_id %}bg-teal-50 text-teal-700 font-bold border-l-4 border-teal-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-teal-600{% endif %}">
+                               class="block py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-300 {% if category.id == category_id %}bg-[#EAF1DB] text-[#556B2F] font-black border-l-4 border-[#72A10F]{% else %}text-stone-400 hover:bg-[#FAF8F5] hover:text-[#72A10F]{% endif %}">
                                 {{ category.name }}
                             </a>
                         </li>
@@ -36,11 +39,12 @@
                 </ul>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <p class="font-bold text-gray-800 mb-4 text-lg">Clear Filters</p>
+            <!-- Reset Filter Control -->
+            <div class="bg-white p-6 rounded-[2rem] shadow-xs border border-[#EAF1DB]/80">
+                <p class="font-extrabold text-[#2C3E14] mb-4 text-base uppercase tracking-wider pl-0.5">Reset Filters</p>
                 <a href="{% url 'item:items' %}"
-                   class="flex items-center justify-center w-full py-3 bg-rose-50 text-rose-600 hover:bg-rose-100 font-semibold rounded-xl transition border border-rose-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                   class="flex items-center justify-center w-full py-3.5 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold uppercase tracking-widest text-[10px] rounded-2xl transition duration-300 border border-rose-100 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                     Clear All
@@ -48,75 +52,79 @@
             </div>
         </div>
 
-        <!-- Items Grid -->
+        <!-- Items Display Grid Column -->
         <div class="col-span-1 md:col-span-3">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {% for item in items %}
-                    <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <!-- Single Marketplace Organic Card -->
+                    <div class="group bg-white rounded-[2.5rem] border border-[#EAF1DB]/80 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1">
                         <a href="{% url 'item:detail' item.id %}">
-                            <div class="aspect-square overflow-hidden relative bg-gray-100">
+                            <div class="aspect-square overflow-hidden relative bg-stone-50 border-b border-[#EAF1DB]/40">
 
-                                <!-- ✅ picsum fallback যোগ করা হয়েছে -->
+                                <!-- Image with Fallback setup -->
                                 {% if item.image %}
                                     <img src="{{ item.image.url }}"
                                          alt="{{ item.name }}"
                                          loading="lazy"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 {% else %}
                                     <img src="https://picsum.photos/seed/{{ item.id }}/400/400"
                                          alt="{{ item.name }}"
                                          loading="lazy"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 {% endif %}
 
-                                <div class="absolute top-3 right-3">
-                                    <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-teal-700 shadow-sm">
+                                <div class="absolute top-4 right-4">
+                                    <span class="bg-white/95 backdrop-blur px-3 py-1.5 rounded-xl text-[10px] font-black text-[#72A10F] uppercase tracking-wider shadow-sm">
                                         {{ item.category.name }}
                                     </span>
                                 </div>
                             </div>
 
-                            <div class="p-5">
-                                <h2 class="text-xl font-bold text-gray-800 group-hover:text-teal-600 transition truncate">{{ item.name }}</h2>
-                                <div class="mt-3 flex items-center justify-between">
-                                    <p class="text-2xl font-black text-gray-900">${{ item.price }}</p>
-                                    <span class="text-sm text-teal-600 font-semibold group-hover:underline">View Details →</span>
+                            <div class="p-6">
+                                <h2 class="text-lg font-extrabold text-[#2C3E14] group-hover:text-[#72A10F] transition duration-200 truncate">{{ item.name }}</h2>
+                                <div class="mt-4 pt-3 border-t border-stone-50 flex items-center justify-between">
+                                    <p class="text-2xl font-black text-[#72A10F]">${{ item.price }}</p>
+                                    <span class="text-xs font-bold text-[#556B2F] group-hover:text-[#72A10F] flex items-center gap-1">Details ➔</span>
                                 </div>
                             </div>
                         </a>
                     </div>
                 {% empty %}
-                    <div class="col-span-full py-20 text-center">
-                        <p class="text-gray-400 text-xl italic">No items found matching your criteria.</p>
+                    <!-- Empty State Configuration -->
+                    <div class="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-[#EAF1DB]/80 shadow-xs">
+                        <span class="text-4xl block mb-2">🌾</span>
+                        <p class="text-stone-400 font-bold italic">No items found matching your filter criteria.</p>
                     </div>
                 {% endfor %}
             </div>
 
-            <!-- Pagination -->
+            <!-- Pagination Control Group -->
             {% if items.has_other_pages %}
-            <div class="mt-12 flex justify-center items-center space-x-2">
+            <div class="mt-12 flex flex-wrap justify-center items-center gap-2">
                 {% if items.has_previous %}
                     <a href="?page=1{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
-                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                       class="px-4 py-2.5 bg-white border border-[#EAF1DB] text-stone-500 text-xs font-bold rounded-xl hover:bg-[#72A10F] hover:text-white hover:border-[#72A10F] transition-all duration-200 shadow-xs">
                         First
                     </a>
                     <a href="?page={{ items.previous_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
-                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                       class="px-4 py-2.5 bg-white border border-[#EAF1DB] text-stone-500 text-xs font-bold rounded-xl hover:bg-[#72A10F] hover:text-white hover:border-[#72A10F] transition-all duration-200 shadow-xs">
                         Previous
                     </a>
                 {% endif %}
 
-                <div class="px-6 py-2 bg-teal-50 text-teal-700 font-bold rounded-xl border border-teal-100">
+                <!-- Current Indicator Pill -->
+                <div class="px-5 py-2.5 bg-[#EAF1DB] text-[#556B2F] font-black text-xs rounded-xl border border-[#72A10F]/20">
                     Page {{ items.number }} of {{ items.paginator.num_pages }}
                 </div>
 
                 {% if items.has_next %}
                     <a href="?page={{ items.next_page_number }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
-                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                       class="px-4 py-2.5 bg-white border border-[#EAF1DB] text-stone-500 text-xs font-bold rounded-xl hover:bg-[#72A10F] hover:text-white hover:border-[#72A10F] transition-all duration-200 shadow-xs">
                         Next
                     </a>
                     <a href="?page={{ items.paginator.num_pages }}{% if query %}&query={{ query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}"
-                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl hover:bg-teal-600 hover:text-white transition shadow-sm">
+                       class="px-4 py-2.5 bg-white border border-[#EAF1DB] text-stone-500 text-xs font-bold rounded-xl hover:bg-[#72A10F] hover:text-white hover:border-[#72A10F] transition-all duration-200 shadow-xs">
                         Last
                     </a>
                 {% endif %}

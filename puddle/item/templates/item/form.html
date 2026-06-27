@@ -4,25 +4,28 @@
 
 {% block content %}
 <div class="max-w-2xl mx-auto my-10 px-4">
-    <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+    <!-- Main Card Container with Premium Organic Borders and Soft Shadows -->
+    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#EAF1DB] shadow-xl shadow-[#72A10F]/5">
         <div class="mb-8 text-center">
-            <h1 class="text-3xl font-black text-gray-800">{{ title }}</h1>
-            <p class="text-gray-500 mt-2">Please fill in the details below to proceed.</p>
+            <span class="inline-block text-3xl mb-2">🌿</span>
+            <h1 class="text-3xl font-black text-[#2C3E14]" style="font-family: 'Playfair Display', serif;">{{ title }}</h1>
+            <p class="text-stone-400 text-xs font-bold mt-2">Please fill in the details below to proceed.</p>
         </div>
 
         <form method="post" action="." enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
 
+            <!-- Form Validation Errors -->
             {% if form.errors or form.non_field_errors %}
-                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-2xl">
                     <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm text-red-700 font-medium">
+                            <p class="text-xs font-bold text-rose-800 leading-relaxed">
                                 {% for field in form %}
                                     {% if field.errors %}
                                         {{ field.label }}: {{ field.errors|striptags }}<br>
@@ -35,25 +38,28 @@
                 </div>
             {% endif %}
 
+            <!-- Dynamic Input Fields Loop -->
             <div class="space-y-5">
                 {% for field in form %}
                     {% if field.field.widget.input_type == 'checkbox' %}
-                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                        <!-- Organic Styled Checkbox Container -->
+                        <div class="flex items-center space-x-3 p-4 bg-[#FAF8F5] rounded-2xl border border-stone-200/60">
                             <div class="flex items-center h-5">
                                 {{ field }}
                             </div>
-                            <div class="ml-1 text-sm">
-                                <label for="{{ field.id_for_label }}" class="font-bold text-gray-700 cursor-pointer select-none">
+                            <div class="ml-1.5 text-xs font-bold">
+                                <label for="{{ field.id_for_label }}" class="text-stone-700 cursor-pointer select-none">
                                     {{ field.label }}
                                 </label>
                                 {% if field.help_text %}
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ field.help_text }}</p>
+                                    <p class="text-[10px] text-stone-400 font-medium mt-0.5">{{ field.help_text }}</p>
                                 {% endif %}
                             </div>
                         </div>
                     {% else %}
+                        <!-- Text / Selection / File Fields -->
                         <div class="flex flex-col">
-                            <label class="text-sm font-bold text-gray-700 mb-1 ml-1">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] mb-2 ml-1">
                                 {{ field.label }}
                             </label>
                             
@@ -62,19 +68,20 @@
                             </div>
 
                             {% if field.help_text %}
-                                <p class="text-xs text-gray-400 mt-1 ml-1">{{ field.help_text }}</p>
+                                <p class="text-[10px] text-stone-400 font-bold mt-1.5 ml-1">{{ field.help_text }}</p>
                             {% endif %}
                         </div>
                     {% endif %}
                 {% endfor %}
             </div>
 
-            <div class="pt-4">
-                <button type="submit" class="w-full py-4 px-8 text-lg font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-2xl transition-all duration-300 transform hover:scale-[1.02] shadow-xl shadow-teal-100">
+            <!-- Submission Actions -->
+            <div class="pt-4 space-y-4">
+                <button type="submit" class="w-full py-4 px-8 text-xs font-extrabold uppercase tracking-widest text-white bg-[#72A10F] hover:bg-[#5C830A] rounded-2xl shadow-md shadow-[#72A10F]/10 transition-all duration-300 transform active:scale-95">
                     Save Changes
                 </button>
                 
-                <a href="{% url 'dashboard:index' %}" class="block text-center mt-4 text-sm text-gray-500 hover:text-gray-700 underline">
+                <a href="{% url 'dashboard:index' %}" class="block text-center text-xs font-bold text-[#7A846A] hover:text-[#2C3E14] underline transition-colors duration-200">
                     Cancel and go back
                 </a>
             </div>
@@ -83,33 +90,41 @@
 </div>
 
 <style>
-    /* ড্যাঙ্গোর ডিফল্ট ইনপুটগুলোর জন্য গ্লোবাল স্টাইল (টাইপ চেকবক্স বাদে) */
+    /* Styling for all Django-generated form controls except checkboxes */
     input:not([type="checkbox"]), select, textarea {
         width: 100%;
-        padding: 0.75rem 1rem;
-        background-color: #f9fafb;
-        border: 1px solid #e5e7eb;
+        padding: 0.9rem 1.25rem;
+        background-color: #FAF8F5; /* Alabaster warm cream background */
+        border: 1px solid rgba(114, 161, 15, 0.2); /* Muted leaf border tint */
         border-radius: 1rem;
         outline: none;
-        transition: all 0.2s;
+        transition: all 0.3s ease-in-out;
+        color: #2C3E14;
+        font-size: 0.875rem;
     }
     input:not([type="checkbox"]):focus, select:focus, textarea:focus {
-        border-color: #0d9488;
+        border-color: #72A10F;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        box-shadow: 0 0 0 4px rgba(114, 161, 15, 0.12);
     }
+    /* Dashed styling wrapper for dynamic Django file fields */
     input[type="file"] {
         background-color: transparent;
-        border: 2px dashed #e5e7eb;
-        padding: 2rem 1rem;
+        border: 2px dashed rgba(114, 161, 15, 0.2);
+        padding: 2rem 1.25rem;
         text-align: center;
         cursor: pointer;
     }
-    /* চেকবক্সের জন্য আলাদা ফিক্সড সাইজ সাইজিং */
+    input[type="file"]:hover {
+        border-color: #72A10F;
+        background-color: #FAF8F5;
+    }
+    /* Checkbox widget customization dimensions */
     input[type="checkbox"] {
-        width: 1.25rem !important;
-        height: 1.25rem !important;
+        width: 1.2rem !important;
+        height: 1.2rem !important;
         cursor: pointer;
+        accent-color: #72A10F; /* Matches brand color on modern browsers */
     }
 </style>
 {% endblock content %}

@@ -2,59 +2,65 @@
 {% block title %}Notifications{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-10">
+<div class="max-w-3xl mx-auto py-10 px-4 sm:px-6">
+    <!-- Header Section -->
     <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-black text-gray-900">Notifications</h1>
-        <span class="text-sm text-gray-400 font-semibold">{{ notifications|length }} total</span>
+        <h1 class="text-3xl font-black text-[#2C3E14]" style="font-family: 'Playfair Display', serif;">Notifications</h1>
+        <span class="text-xs font-bold text-[#556B2F] bg-[#EAF1DB] px-3 py-1 rounded-full">{{ notifications|length }} total</span>
     </div>
 
     {% if notifications %}
-        <div class="space-y-3">
+        <div class="space-y-4">
             {% for notif in notifications %}
-                <div class="bg-white rounded-2xl border {% if not notif.is_read %}border-teal-200 bg-teal-50/30{% else %}border-gray-100{% endif %} p-5 flex items-start gap-4 shadow-sm">
+                <!-- Single Notification Item -->
+                <div class="bg-white rounded-2xl border p-5 flex items-start gap-4 shadow-xs transition-all duration-300 hover:shadow-md
+                    {% if not notif.is_read %}border-[#72A10F]/40 bg-[#EAF1DB]/10{% else %}border-stone-200/60{% endif %}">
 
-                    <!-- Icon -->
-                    <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
-                        {% if notif.notification_type == 'message' %}bg-blue-100
-                        {% elif notif.notification_type == 'sale' %}bg-green-100
-                        {% elif notif.notification_type == 'admin' %}bg-amber-100
-                        {% else %}bg-gray-100{% endif %}">
+                    <!-- Notification Type Specific Soft Pastel Icon -->
+                    <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border
+                        {% if notif.notification_type == 'message' %}bg-blue-50 border-blue-100 text-blue-600
+                        {% elif notif.notification_type == 'sale' %}bg-[#EAF1DB]/50 border-[#72A10F]/20 text-[#72A10F]
+                        {% elif notif.notification_type == 'admin' %}bg-amber-50 border-amber-100 text-amber-600
+                        {% else %}bg-stone-50 border-stone-100 text-stone-500{% endif %}">
+                        
                         {% if notif.notification_type == 'message' %}
-                            <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
                         {% elif notif.notification_type == 'sale' %}
-                            <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         {% elif notif.notification_type == 'admin' %}
-                            <svg class="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                             </svg>
                         {% else %}
-                            <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         {% endif %}
                     </div>
 
-                    <!-- Content -->
+                    <!-- Notification Text Details -->
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
-                            <p class="font-bold text-gray-800">{{ notif.title }}</p>
+                            <p class="font-bold text-stone-800 text-sm md:text-base leading-tight">{{ notif.title }}</p>
                             {% if not notif.is_read %}
-                                <span class="flex-shrink-0 w-2 h-2 rounded-full bg-teal-500 mt-2"></span>
+                                <span class="flex-shrink-0 w-2 h-2 rounded-full bg-[#72A10F] mt-1.5 animate-pulse"></span>
                             {% endif %}
                         </div>
-                        <p class="text-sm text-gray-500 mt-1">{{ notif.message }}</p>
-                        <p class="text-xs text-gray-400 mt-2">{{ notif.created_at|timesince }} ago</p>
+                        <p class="text-xs md:text-sm text-stone-400 font-medium mt-1 leading-relaxed">{{ notif.message }}</p>
+                        <p class="text-[10px] text-stone-400 font-bold mt-2 flex items-center gap-1">
+                            <span>🕒</span> {{ notif.created_at|timesince }} ago
+                        </p>
                     </div>
 
-                    <!-- Link -->
+                    <!-- Direct Action Link Button -->
                     {% if notif.link %}
                         <a href="{% url 'core:notification_read' notif.pk %}"
-                           class="flex-shrink-0 px-4 py-2 text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 rounded-xl transition-all">
-                            View →
+                           class="flex-shrink-0 px-4 py-2 text-xs font-bold text-[#72A10F] bg-[#FAF8F5] hover:bg-[#EAF1DB] border border-[#EAF1DB] rounded-xl transition-all duration-200">
+                            View Details
                         </a>
                     {% endif %}
                 </div>
@@ -62,11 +68,10 @@
         </div>
 
     {% else %}
-        <div class="text-center py-20 bg-white rounded-3xl border border-gray-100">
-            <svg class="w-16 h-16 text-gray-200 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-            </svg>
-            <p class="text-gray-400 text-lg font-semibold">No notifications yet</p>
+        <!-- Empty State with Soft Organic Elements -->
+        <div class="text-center py-20 bg-white rounded-[2.5rem] border border-[#EAF1DB]/80 shadow-sm">
+            <span class="text-5xl block mb-4">🌾</span>
+            <p class="text-stone-400 text-sm font-bold">Your inbox is clear! No notifications found.</p>
         </div>
     {% endif %}
 </div>
