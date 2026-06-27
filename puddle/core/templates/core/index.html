@@ -1,178 +1,276 @@
-{% extends 'core/base.html' %}
 {% load static %}
-
-{% block title %}Home | Cotton Web{% endblock %}
-
-{% block content %}
-<!-- Google Fonts for Furni's Modern Look -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-
-<style>
-    .furni-container {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .furni-title {
-        font-family: 'Playfair Display', serif;
-    }
-    /* Dot matrix pattern behind sofa image */
-    .dot-pattern {
-        background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
-        background-size: 16px 16px;
-    }
-    /* Hover scale-up for catalog cards */
-    .furni-card img {
-        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .furni-card:hover img {
-        transform: translateY(-12px) scale(1.03);
-    }
-    /* Sofa subtle floating micro-animation */
-    @keyframes floatSofa {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
-    }
-    .floating-sofa {
-        animation: floatSofa 6s ease-in-out infinite;
-    }
-</style>
-
-<div class="furni-container max-w-7xl mx-auto py-6">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}{% endblock title %} | Cotton Web</title>
     
-    <!-- ✅ 1. Furni Hero Banner Section -->
-    <div class="relative bg-[#3b5d50] rounded-[3rem] p-10 md:p-16 mb-16 overflow-hidden shadow-xl shadow-[#3b5d50]/15">
-        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <!-- Left Info Panel -->
-            <div class="lg:col-span-5 max-w-xl text-left">
-                <span class="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md text-[#f9bf29] text-[10px] font-black uppercase tracking-widest rounded-full mb-6">
-                    🌱 Welcome to Cotton Web
-                </span>
-                <h1 class="furni-title text-4xl md:text-6xl font-black text-white leading-tight mb-6">
-                    Modern Interior Design Studio
-                </h1>
-                <p class="text-[#eff2f1]/80 text-xs md:text-sm mb-8 leading-relaxed font-medium">
-                    Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-8 py-3.5 bg-[#f9bf29] hover:bg-[#e0ab20] text-[#2f2f2f] text-xs font-extrabold uppercase tracking-widest rounded-full shadow-md shadow-[#f9bf29]/10 transition-all duration-300 transform active:scale-95">
-                        Shop Now
-                    </a>
-                    <a href="{% url 'item:new' %}" class="inline-flex items-center justify-center px-8 py-3.5 bg-[#3b5d50] border border-white/20 text-white text-xs font-extrabold uppercase tracking-widest rounded-full hover:bg-white/10 transition-all duration-300">
-                        Explore
-                    </a>
-                </div>
-
-                <!-- Category selector within Hero -->
-                <div class="max-w-sm mt-6 pt-6 border-t border-white/10">
-                    <label for="home-category" class="block text-[#eff2f1]/80 text-[10px] font-black uppercase tracking-widest mb-2.5 pl-0.5">
-                        Browse by Category
-                    </label>
-                    <select id="home-category"
-                            class="w-full py-3.5 px-5 rounded-2xl border-0 bg-white/15 text-white font-bold placeholder-white/50 focus:ring-4 focus:ring-[#f9bf29]/30 outline-none cursor-pointer text-xs transition-all duration-300"
-                            style="color-scheme: dark;"
-                            onchange="if (this.value) window.location.href = this.value;">
-                        <option value="" class="bg-[#3b5d50] text-white">— Select a category —</option>
-                        <option value="{% url 'item:items' %}" class="bg-[#3b5d50] text-white">All Categories</option>
-                        {% for category in categories %}
-                            <option value="{% url 'item:items' %}?category={{ category.id }}" class="bg-[#3b5d50] text-white">{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <!-- Right Sofa Illustration Panel -->
-            <div class="lg:col-span-7 relative flex justify-center items-center h-full min-h-[300px]">
-                <!-- Matrix Dot Overlay -->
-                <div class="absolute right-0 top-6 w-48 h-48 dot-pattern opacity-40 pointer-events-none rounded-2xl"></div>
-                <!-- Clean Green Sofa Image Mockup matching screenshot -->
-                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800" 
-                     alt="Sofa Showcase" 
-                     class="floating-sofa w-full max-w-md md:max-w-xl object-contain drop-shadow-2xl relative z-10">
-            </div>
-
-        </div>
-    </div>
-
-    <!-- ✅ 2. Shop by Category Block -->
-    <div class="mb-16 bg-white rounded-[2.5rem] border border-stone-200/50 p-8 md:p-10 shadow-xs">
-        <h2 class="furni-title text-2xl font-black text-[#2f2f2f] mb-2">Shop by Category</h2>
-        <p class="text-[#6a6a6a] text-xs font-bold mb-6">Discover direct catalog listings submitted by our seller network.</p>
+    <!-- Google Fonts for Ultra-Modern Premium Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            scroll-behavior: smooth; 
+        }
+        .bazaar-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+        }
+        /* Navigation Links hover transition */
+        .nav-link { 
+            transition: color 0.25s ease-in-out; 
+        }
         
-        <label for="home-category-main" class="block text-[10px] font-black text-[#556B2F] uppercase tracking-wider mb-2 pl-0.5">Category Selector</label>
-        <select id="home-category-main"
-                class="w-full max-w-lg py-4 px-5 rounded-2xl border border-stone-200/60 bg-[#FAF8F5] text-[#2f2f2f] font-bold focus:ring-4 focus:ring-[#3b5d50]/10 focus:border-[#3b5d50] outline-none cursor-pointer transition-all duration-300 text-xs"
-                onchange="if (this.value) window.location.href = this.value;">
-            <option value="">— Select a category —</option>
-            <option value="{% url 'item:items' %}">All Categories</option>
-            {% for category in categories %}
-                <option value="{% url 'item:items' %}?category={{ category.id }}">{{ category.name }}</option>
-            {% endfor %}
-        </select>
+        /* Premium custom thin scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f6f9fc; }
+        ::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1e293b; }
+        
+        /* Categories Dropdown Menu */
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu {
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            z-index: 100;
+            min-width: 240px; 
+            background: #ffffff; 
+            border: 1px solid #f1f5f9;
+            border-radius: 1rem; 
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+            padding: 0.5rem; 
+            margin-top: 0.5rem; 
+            max-height: 320px; 
+            overflow-y: auto;
+        }
+        .dropdown-menu::-webkit-scrollbar { width: 4px; }
+        .dropdown-menu::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
+    </style>
+</head>
+
+<body class="bg-[#f6f9fc] flex flex-col min-h-screen text-[#0f172a] leading-tight">
+
+    <!-- ✅ Section 1: Narrow Dark Topbar (Exactly like screenshot) -->
+    <div class="bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="bg-[#e94560] text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase">HOT</span>
+                <span class="text-white/80">Free Express Shipping on all orders!</span>
+            </div>
+            <div class="flex items-center gap-6 text-white/80">
+                <span class="hover:text-white cursor-pointer transition">EN v</span>
+                <div class="flex items-center gap-3">
+                    <a href="#" class="hover:text-white transition">𝕏</a>
+                    <a href="#" class="hover:text-white transition">fb</a>
+                    <a href="#" class="hover:text-white transition">ig</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- ✅ 3. Latest Listings Section (Styled to match Furni product gallery) -->
-    <div>
-        <div class="flex items-center justify-between mb-12">
-            <div>
-                <h2 class="furni-title text-3xl md:text-4xl font-black text-[#2f2f2f]">Latest Listings</h2>
-                <p class="text-[#6a6a6a] text-xs font-bold mt-2">Crafted with premium quality and materials</p>
-            </div>
-            <a href="{% url 'item:items' %}" class="text-[#3b5d50] font-black hover:text-[#2d473d] transition duration-200 text-xs uppercase tracking-widest pl-1">View All Listings ➔</a>
-        </div>
+    <!-- ✅ Section 2: Premium Bazaar Navbar -->
+    <nav class="sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-        <!-- Furni Styled Showcase Product Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for item in items %}
-                <div class="furni-card group flex flex-col items-center text-center p-6 bg-white border border-stone-200/50 rounded-[2.5rem] relative transition-all duration-300 hover:shadow-lg hover:border-[#3b5d50]/20">
-                    
-                    <!-- Product Image Container -->
-                    <div class="aspect-square w-full rounded-2xl overflow-hidden bg-[#eff2f1]/60 flex items-center justify-center p-4 relative border border-stone-100">
-                        {% if item.image and item.image.url %}
-                            <img src="{{ item.image.url }}" 
-                                 alt="{{ item.name }}" 
-                                 loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
-                        {% else %}
-                            <img src="https://picsum.photos/seed/{{ item.id }}/400/400" 
-                                 alt="{{ item.name }}" 
-                                 loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
-                        {% endif %}
-                        
-                        <!-- Floating Category Label badge -->
-                        <span class="absolute top-4 left-4 bg-white/95 px-3 py-1.5 rounded-xl text-[9px] font-black text-[#3b5d50] uppercase tracking-wider shadow-xs">
-                            {{ item.category.name }}
-                        </span>
+            <!-- Elegant typographic logo with shopping icon -->
+            <a href="/" class="group flex items-center gap-2.5">
+                <div class="logo-container relative w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl bg-slate-50 border border-slate-100 group-hover:border-slate-300 transition-all">
+                    <!-- Clean minimal shopping bag SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5 text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="bazaar-title text-xl font-black tracking-tight text-[#0f172a] leading-none">bazaar</span>
+                </div>
+            </a>
 
-                        <!-- Action Plus Icon appearing on hover -->
-                        <a href="{% url 'item:detail' item.id %}" 
-                           class="absolute bottom-4 right-4 w-10 h-10 bg-[#3b5d50] hover:bg-[#2d473d] text-white flex items-center justify-center rounded-full shadow-md transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
-                           title="View details">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center gap-8">
+                <div class="flex items-center gap-8">
+                    <a href="/" class="nav-link text-xs font-bold text-[#0f172a] hover:text-[#e94560] uppercase tracking-wider">Home</a>
+                    <a href="{% url 'item:items' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Browse</a>
+
+                    <!-- Categories Dropdown menu -->
+                    <div class="dropdown relative">
+                        <button class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider flex items-center gap-1">
+                            Categories
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                             </svg>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">All Categories</a>
+                            <div class="my-1 border-t border-slate-100"></div>
+                            {% for category in all_categories %}
+                                <a href="{% url 'item:items' %}?category={{ category.id }}"
+                                   class="block px-4 py-2.5 text-xs font-bold text-[#0f172a] hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">
+                                    {{ category.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add Item check -->
+                    {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
+                        <a href="{% url 'item:new' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Add Item</a>
+                    {% endif %}
+                </div>
+
+                <!-- Right Controls and User indicators -->
+                <div class="flex items-center gap-4 pl-8 border-l border-slate-100">
+                    {% if request.user.is_authenticated %}
+
+                        {% if request.user.user_type == 'Seller' %}
+                            <!-- Seller Inbox -->
+                            <a href="{% url 'conversation:inbox' %}"
+                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
+                               title="Inbox">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </a>
+
+                        {% elif request.user.user_type == 'Buyer' %}
+                            <!-- Buyer Cart -->
+                            <a href="{% url 'cart:detail' %}"
+                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
+                               title="Cart">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'conversation:inbox' %}"
+                               class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
+                               title="Messages">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+
+                        <!-- Universal Notifications -->
+                        <a href="{% url 'core:notifications' %}"
+                           class="group relative p-2.5 bg-slate-50 hover:bg-slate-100 rounded-full transition-all"
+                           title="Notifications">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#0f172a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            {% if unread_notification_count > 0 %}
+                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-[#0f172a] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">
+                                    {{ unread_notification_count }}
+                                </span>
+                            {% endif %}
+                        </a>
+
+                        <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95">
+                            Dashboard
+                        </a>
+
+                        {% if is_site_admin %}
+                            <a href="{% url 'dashboard:admin' %}" class="flex items-center gap-2 px-5 py-3 bg-amber-500 text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-amber-600 transition-all shadow-md active:scale-95">
+                                Admin
+                            </a>
+                        {% endif %}
+
+                        <!-- Settings & exit cluster -->
+                        <div class="flex gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                            <a href="{% url 'core:changePass' %}" title="Change Password" class="p-2 text-slate-500 hover:bg-white hover:text-[#0f172a] rounded-xl transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'core:logout' %}" title="Logout" class="p-2 text-rose-500 hover:bg-white rounded-xl transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                    {% else %}
+                        <a href="{% url 'core:login' %}" class="text-[11px] font-black uppercase tracking-widest text-[#0f172a] hover:text-[#e94560] px-4 transition-colors">Log In</a>
+                        <a href="{% url 'core:signup' %}" class="px-8 py-3.5 text-[11px] font-black uppercase tracking-widest bg-[#0f172a] text-white rounded-full hover:bg-slate-800 shadow-md transition-all duration-300 active:scale-95">Get Started</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="md:hidden p-2.5 bg-slate-50 text-[#0f172a] rounded-xl hover:bg-slate-100 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Slot (Spacings managed cleanly) -->
+    <main class="flex-grow">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- ✅ Redesigned Bottom Footer in Dark Navy -->
+    <footer class="bg-[#0f172a] text-[#f6f9fc] pt-20 pb-12 px-6 md:px-12 mt-auto">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-16 mb-16">
+                
+                <div class="md:col-span-5">
+                    <a href="/" class="flex items-center gap-3 mb-6">
+                        <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web"
+                             class="w-10 h-10 object-contain rounded-xl border border-white/10 shadow-xs"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0f172a&color=fff'">
+                        <span class="bazaar-title text-2xl font-black text-white">bazaar<span class="text-[#e94560]">.</span></span>
+                    </a>
+                    <p class="text-slate-400 leading-relaxed max-w-sm mb-8 font-medium text-sm">
+                        Bangladesh's premium online trading platform. Powered by Bazaar design structures. Easy, secure, and fully reliable.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://www.facebook.com/cottonweb3/" target="_blank"
+                           class="w-10 h-10 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-white transition-all shadow-xs">
+                            <svg class="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                         </a>
                     </div>
-                    
-                    <!-- Details & Price -->
-                    <div class="mt-5 w-full">
-                        <h3 class="font-extrabold text-[#2f2f2f] text-base truncate px-2">
-                            {{ item.name }}
-                        </h3>
-                        <p class="text-xs text-stone-400 font-bold mt-1">
-                            Listed by <span class="text-stone-700 font-extrabold">{{ item.user.username }}</span>
-                        </p>
-                        <p class="text-xl font-black text-[#2f2f2f] mt-3">${{ item.price }}</p>
-                    </div>
+                </div>
 
+                <div class="md:col-span-2 md:col-start-8">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Marketplace</h3>
+                    <ul class="space-y-4 font-bold text-xs text-slate-400">
+                        <li><a href="{% url 'item:items' %}" class="hover:text-white transition-colors">All Items</a></li>
+                        {% if request.user.user_type == 'Seller' or request.user.is_staff %}
+                            <li><a href="{% url 'item:new' %}" class="hover:text-white transition-colors">Sell Something</a></li>
+                        {% endif %}
+                    </ul>
                 </div>
-            {% empty %}
-                <div class="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-stone-200/50 shadow-xs">
-                    <span class="text-4xl block mb-2">🌾</span>
-                    <p class="text-[#3b5d50] font-bold text-sm italic">No active listings found in the market. Be the first to create one!</p>
+
+                <div class="md:col-span-2">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Support</h3>
+                    <ul class="space-y-4 font-bold text-xs text-slate-400">
+                        <li><a href="{% url 'core:contact' %}" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
                 </div>
-            {% endfor %}
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    &copy; 2026 Cotton Web. All rights reserved.
+                </p>
+                <div class="flex gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-[#e94560] rounded-full animate-pulse"></span>
+                        Live System
+                    </span>
+                    <span class="text-slate-500">Build By Sakib</span>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+    </footer>
+
+</body>
+</html>
