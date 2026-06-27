@@ -1,111 +1,164 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
 {% block title %}My Cart{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 py-10">
-  <h1 class="text-3xl font-black text-gray-900 mb-8">My Cart</h1>
+<!-- Google Fonts for Furni's Modern Look -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="mb-4 p-4 bg-teal-50 border border-teal-200 text-teal-800 rounded-xl">
-        {{ message }}
-      </div>
-    {% endfor %}
-  {% endif %}
+<style>
+    .furni-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .furni-title {
+        font-family: 'Playfair Display', serif;
+    }
+    /* Subtle hover scale for product thumbnails */
+    .product-thumb-container img {
+        transition: transform 0.4s ease;
+    }
+    .product-thumb-container:hover img {
+        transform: scale(1.05);
+    }
+</style>
 
-  {% if cart_items %}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="furni-container min-h-screen bg-[#eff2f1] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+  <div class="max-w-6xl mx-auto">
+    
+    <!-- Header Section -->
+    <div class="mb-10 text-left">
+      <h1 class="furni-title text-4xl md:text-5xl font-black text-[#2f2f2f] tracking-tight">My Cart</h1>
+      <p class="text-[#6a6a6a] text-sm mt-2 font-medium">Manage your items and proceed to secure checkout.</p>
+    </div>
 
-      <div class="lg:col-span-2 space-y-4">
-        {% for cart_item in cart_items %}
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-4 items-center">
-
-            <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
-              {% if cart_item.item.image %}
-                <img src="{{ cart_item.item.image.url }}"
-                     alt="{{ cart_item.item.name }}"
-                     class="w-full h-full object-cover">
-              {% else %}
-                <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200"
-                     alt="{{ cart_item.item.name }}"
-                     class="w-full h-full object-cover">
-              {% endif %}
-            </div>
-
-            <div class="flex-1 min-w-0">
-              <p class="text-xs font-semibold text-teal-600 uppercase">{{ cart_item.item.category.name }}</p>
-              <h3 class="font-bold text-gray-800 truncate">{{ cart_item.item.name }}</h3>
-              <p class="text-sm text-gray-500">${{ cart_item.item.price }} each</p>
-            </div>
-
-            <form method="POST" action="{% url 'cart:update' cart_item.item.id %}" class="flex items-center gap-2">
-              {% csrf_token %}
-              <input type="number"
-                     name="quantity"
-                     value="{{ cart_item.quantity }}"
-                     min="0"
-                     class="w-16 text-center border border-gray-200 rounded-lg py-1 px-2 text-sm focus:outline-none focus:border-teal-500">
-              <button type="submit"
-                      class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-3 py-2 rounded-lg transition">
-                Update
-              </button>
-            </form>
-
-            <div class="text-right flex-shrink-0">
-              <p class="font-black text-gray-900">${{ cart_item.get_subtotal }}</p>
-            </div>
-
-            <a href="{% url 'cart:remove' cart_item.item.id %}"
-               class="text-rose-400 hover:text-rose-600 transition flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </a>
+    <!-- Alert / System Messages -->
+    {% if messages %}
+      <div class="mb-6 space-y-2">
+        {% for message in messages %}
+          <div class="p-4 bg-[#3b5d50]/10 border border-[#3b5d50]/20 text-[#3b5d50] rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#3b5d50] animate-pulse"></span>
+            {{ message }}
           </div>
         {% endfor %}
       </div>
+    {% endif %}
 
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-8">
-          <h2 class="text-xl font-black text-gray-900 mb-6">Order Summary</h2>
+    {% if cart_items %}
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-          <div class="space-y-3 mb-6">
-            {% for cart_item in cart_items %}
-              <div class="flex justify-between text-sm text-gray-600">
-                <span class="truncate max-w-[160px]">{{ cart_item.item.name }} x{{ cart_item.quantity }}</span>
-                <span class="font-semibold">${{ cart_item.get_subtotal }}</span>
+        <!-- Left Column: Cart Items List -->
+        <div class="lg:col-span-2 space-y-4">
+          {% for cart_item in cart_items %}
+            <div class="bg-white rounded-3xl border border-stone-200/50 shadow-xs p-5 flex flex-col sm:flex-row gap-5 items-center justify-between transition-all hover:shadow-md duration-300">
+              
+              <!-- Item Thumbnail and Details -->
+              <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="product-thumb-container w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-[#eff2f1] border border-stone-100">
+                  {% if cart_item.item.image %}
+                    <img src="{{ cart_item.item.image.url }}"
+                         alt="{{ cart_item.item.name }}"
+                         class="w-full h-full object-cover">
+                  {% else %}
+                    <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200"
+                         alt="{{ cart_item.item.name }}"
+                         class="w-full h-full object-cover">
+                  {% endif %}
+                </div>
+
+                <div class="min-w-0 flex-1 sm:flex-none">
+                  <p class="text-[10px] font-black text-[#72A10F] uppercase tracking-wider mb-1">{{ cart_item.item.category.name }}</p>
+                  <h3 class="font-extrabold text-[#2f2f2f] text-base truncate max-w-[200px]">{{ cart_item.item.name }}</h3>
+                  <p class="text-xs text-[#6a6a6a] font-bold mt-0.5">${{ cart_item.item.price }} each</p>
+                </div>
               </div>
-            {% endfor %}
-          </div>
 
-          <div class="border-t pt-4 mb-6">
-            <div class="flex justify-between text-lg font-black text-gray-900">
-              <span>Total</span>
-              <span class="text-teal-600">${{ cart.get_total }}</span>
+              <!-- Quantity Update Form -->
+              <div class="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-4 pt-4 sm:pt-0 border-t border-stone-100 sm:border-0">
+                <form method="POST" action="{% url 'cart:update' cart_item.item.id %}" class="flex items-center gap-2">
+                  {% csrf_token %}
+                  <input type="number"
+                         name="quantity"
+                         value="{{ cart_item.quantity }}"
+                         min="0"
+                         class="w-16 text-center border border-stone-200 rounded-full py-1.5 px-3 text-xs font-bold text-[#2f2f2f] focus:outline-none focus:border-[#3b5d50] focus:ring-4 focus:ring-[#3b5d50]/10 bg-[#eff2f1]/30">
+                  <button type="submit"
+                          class="text-[10px] bg-[#3b5d50] hover:bg-[#2d473d] text-white font-extrabold uppercase tracking-widest px-4 py-2.5 rounded-full transition-all duration-300">
+                    Update
+                  </button>
+                </form>
+
+                <!-- Subtotal and Remove Options -->
+                <div class="flex items-center gap-4 pl-4 border-l border-stone-200/60">
+                  <div class="text-right">
+                    <p class="font-black text-[#2f2f2f] text-sm">${{ cart_item.get_subtotal }}</p>
+                  </div>
+
+                  <a href="{% url 'cart:remove' cart_item.item.id %}"
+                     class="w-8 h-8 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-all duration-300"
+                     title="Remove Item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Right Column: Order Summary (Sticky Panel) -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-3xl border border-stone-200/50 shadow-xs p-6 md:p-8 sticky top-24">
+            <h2 class="furni-title text-2xl font-black text-[#2f2f2f] mb-6">Order Summary</h2>
+
+            <!-- Detailed Breakdowns -->
+            <div class="space-y-4 mb-6 max-h-48 overflow-y-auto pr-1">
+              {% for cart_item in cart_items %}
+                <div class="flex justify-between text-xs text-[#6a6a6a] font-semibold">
+                  <span class="truncate max-w-[140px]">{{ cart_item.item.name }}</span>
+                  <span class="text-stone-400 font-bold">x{{ cart_item.quantity }}</span>
+                  <span class="text-[#2f2f2f] font-extrabold">${{ cart_item.get_subtotal }}</span>
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- Total sum line -->
+            <div class="border-t border-stone-100 pt-5 mb-8">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-extrabold text-[#2f2f2f] uppercase tracking-wider">Total</span>
+                <span class="text-2xl font-black text-[#3b5d50]">${{ cart.get_total }}</span>
+              </div>
+            </div>
+
+            <!-- Primary CTAs in Furni's warm colors -->
+            <div class="space-y-3">
+              <a href="{% url 'cart:checkout' %}"
+                 class="block w-full text-center py-4 bg-[#f9bf29] hover:bg-[#e0ab20] text-[#2f2f2f] font-extrabold uppercase tracking-widest text-xs rounded-full shadow-md shadow-[#f9bf29]/10 transition-all duration-300 transform active:scale-95">
+                Proceed to Checkout
+              </a>
+              <a href="{% url 'item:items' %}"
+                 class="block w-full text-center py-3.5 bg-[#eff2f1] hover:bg-[#dfe4e2] text-[#2f2f2f] font-extrabold uppercase tracking-widest text-xs rounded-full transition-all duration-300">
+                Continue Shopping
+              </a>
             </div>
           </div>
-
-          <a href="{% url 'cart:checkout' %}"
-             class="block w-full text-center py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl transition-all">
-            Proceed to Checkout
-          </a>
-          <a href="{% url 'item:items' %}"
-             class="block w-full text-center py-3 mt-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-2xl transition-all">
-            Continue Shopping
-          </a>
         </div>
+
       </div>
 
-    </div>
-
-  {% else %}
-    <div class="text-center py-20 bg-white rounded-3xl border border-gray-100">
-      <p class="text-gray-400 text-xl mb-6">Your cart is empty.</p>
-      <a href="{% url 'item:items' %}"
-         class="px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl transition-all">
-        Browse Items
-      </a>
-    </div>
-  {% endif %}
+    {% else %}
+      <!-- Empty State View -->
+      <div class="text-center py-20 bg-white rounded-[2.5rem] border border-stone-200/50 shadow-xs">
+        <span class="text-5xl block mb-4">🛒</span>
+        <p class="text-[#6a6a6a] text-sm font-bold mb-8">Your cart is empty.</p>
+        <a href="{% url 'item:items' %}"
+           class="inline-flex items-center justify-center px-8 py-4 bg-[#3b5d50] hover:bg-[#2d473d] text-white font-extrabold uppercase tracking-widest text-xs rounded-full shadow-md shadow-[#3b5d50]/10 transition-all duration-300">
+          Browse Marketplace
+        </a>
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

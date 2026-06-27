@@ -3,81 +3,97 @@
 {% block title %}New Conversation{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto py-12 px-4">
-    <!-- Header Section -->
-    <div class="mb-8 border-b border-gray-100 pb-4">
-        <h1 class="text-3xl font-extrabold text-gray-900">Start a Conversation</h1>
-        <p class="text-gray-500 mt-1">আইটেমটি সম্পর্কে বিক্রেতাকে সরাসরি মেসেজ পাঠান।</p>
-    </div>
-
-    <!-- Form Container -->
-    <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50">
-        <form method="post" action="." class="space-y-6">
-            {% csrf_token %}
-
-            <!-- Form Content -->
-            <div class="space-y-4">
-                {% for field in form %}
-                    <div class="flex flex-col gap-2">
-                        <label class="text-sm font-bold text-gray-700 ml-1">
-                            {{ field.label }}
-                        </label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <p class="text-xs text-gray-400 ml-1">{{ field.help_text }}</p>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-
-            <!-- Error Alerts -->
-            {% if form.errors or form.non_field_errors %}
-                <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-bold text-red-800">Please correct the following:</h3>
-                            <div class="text-sm text-red-700 space-y-1 mt-1">
-                                {% for field in form %}
-                                    {{ field.errors }}
-                                {% endfor %}
-                                {{ form.non_field_errors }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
-            <!-- Submit Button -->
-            <div class="pt-2">
-                <button class="w-full sm:w-auto py-4 px-10 text-lg font-bold bg-teal-600 hover:bg-teal-700 rounded-2xl text-white transition-all transform hover:-translate-y-1 shadow-lg shadow-teal-200">
-                    Send Message
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+<!-- Google Fonts for Furni's Premium Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
 <style>
-    /* Input Styling override if not handled in forms.py */
+    .furni-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .furni-title {
+        font-family: 'Playfair Display', serif;
+    }
+    
+    /* Textarea element overrides to fit Furni theme */
     textarea {
         width: 100%;
         min-height: 120px;
-        padding: 1rem;
+        padding: 1rem 1.25rem;
+        background-color: #FAF8F5; /* Alabaster warm cream background */
+        border: 1px solid rgba(59, 93, 80, 0.2); /* Soft teal tint border */
         border-radius: 1rem;
-        border: 1px solid #e5e7eb;
-        background-color: #f9fafb;
         outline: none;
-        transition: all 0.2s;
+        transition: all 0.3s ease-in-out;
+        font-size: 0.875rem;
+        color: #2f2f2f;
     }
     textarea:focus {
-        border-color: #0d9488;
+        border-color: #3b5d50;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        box-shadow: 0 0 0 4px rgba(59, 93, 80, 0.12);
     }
 </style>
+
+<div class="furni-container min-h-screen bg-[#eff2f1] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+    <div class="max-w-2xl mx-auto">
+        
+        <!-- Page Header -->
+        <div class="mb-10 text-left">
+            <h1 class="furni-title text-4xl md:text-5xl font-black text-[#2f2f2f] tracking-tight">Start a Conversation</h1>
+            <p class="text-[#6a6a6a] text-sm mt-2 font-medium">Send a direct message to the seller about this listing.</p>
+        </div>
+
+        <!-- Form Card Container -->
+        <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-stone-200/50 shadow-xl shadow-[#3b5d50]/5">
+            <form method="post" action="." class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Dynamic Form Fields -->
+                <div class="space-y-5">
+                    {% for field in form %}
+                        <div class="flex flex-col gap-2">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <p class="text-[10px] text-stone-400 font-bold ml-1">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Validation Error Panel -->
+                {% if form.errors or form.non_field_errors %}
+                    <div class="p-5 bg-rose-50 border border-rose-100 rounded-2xl">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <svg class="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-xs font-bold text-rose-800 uppercase tracking-wider">Please correct the following errors:</h3>
+                                <div class="text-xs text-rose-700 space-y-1 mt-1 font-semibold leading-relaxed">
+                                    {% for field in form %}
+                                        {{ field.errors }}
+                                    {% endfor %}
+                                    {{ form.non_field_errors }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- CTA Action Button -->
+                <div class="pt-2">
+                    <button class="w-full sm:w-auto py-4 px-10 text-xs font-extrabold uppercase tracking-widest text-[#2f2f2f] bg-[#f9bf29] hover:bg-[#e0ab20] rounded-full shadow-md shadow-[#f9bf29]/10 transition-all duration-300 transform active:scale-95">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

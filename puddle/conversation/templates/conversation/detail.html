@@ -3,117 +3,132 @@
 {% block title %}Conversation{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-8 px-4">
-    
-    <div class="bg-gray-900 rounded-t-3xl p-5 flex items-center gap-4 shadow-lg border-b border-gray-800">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold text-xl shadow-lg border-2 border-gray-800">
-            {{ conversation.item.name|first|upper }}
-        </div>
-        <div class="flex-1">
-            <h1 class="text-white font-bold text-lg leading-tight">{{ conversation.item.name }}</h1>
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p class="text-gray-400 text-xs font-medium uppercase tracking-wider">Direct Message</p>
-            </div>
-        </div>
-        <a href="{% url 'conversation:inbox' %}" class="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-full transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </a>
-    </div>
-
-    
-    <div id="chat-body" class="bg-white border-x border-gray-100 h-[500px] overflow-y-auto p-6 space-y-6 flex flex-col shadow-inner custom-scrollbar">
-        {% for message in conversation.messages.all %}
-            <div class="flex flex-col {% if message.created_by == request.user %}items-end{% else %}items-start{% endif %} group">
-                {% if message.created_by != request.user %}
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">{{ message.created_by.username }}</span>
-                {% endif %}
-
-                
-                <div class="max-w-[85%] md:max-w-[70%] px-5 py-3 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md
-                    {% if message.created_by == request.user %}
-                        bg-teal-600 text-white rounded-br-none
-                    {% else %}
-                        bg-gray-100 text-gray-800 rounded-bl-none border border-gray-200
-                    {% endif %}">
-                    <p class="text-[15px] leading-relaxed">{{ message.content }}</p>
-                </div>
-
-                
-                <span class="text-[10px] text-gray-400 mt-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {{ message.created_at|timesince }} ago
-                </span>
-            </div>
-        {% endfor %}
-    </div>
-
-    <!-- Chat Form Area -->
-    <div class="bg-gray-50 border border-gray-100 rounded-b-3xl p-4 shadow-md">
-        <form id="chat-form" method="POST" action="." class="flex items-end gap-3">
-            {% csrf_token %}
-            <div class="flex-1 relative">
-                {{ form.content }}
-            </div>
-            <button type="submit" class="p-4 bg-teal-600 text-white rounded-2xl hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 flex-shrink-0 active:scale-95">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="rotate-45">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-            </button>
-        </form>
-    </div>
-</div>
+<!-- Google Fonts for Furni's Premium Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
 <style>
+    .furni-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .furni-title {
+        font-family: 'Playfair Display', serif;
+    }
     
+    /* Custom thin scrollbar */
     .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #e5e7eb;
+        background: #eff2f1;
         border-radius: 10px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #d1d5db;
+        background: #cbd2d0;
     }
 
-    
+    /* Input text area styling for Django widget */
     #id_content {
         width: 100%;
-        min-height: 54px;
+        min-height: 52px;
         max-height: 150px;
         padding: 14px 20px;
         background-color: white;
-        border: 1.5px solid #f3f4f6;
+        border: 1px solid rgba(59, 93, 80, 0.2); /* Teal tint border */
         border-radius: 1.25rem;
         outline: none;
         resize: none;
-        font-size: 0.95rem;
-        transition: all 0.2s;
+        font-size: 0.875rem;
+        transition: all 0.3s ease-in-out;
+        color: #2f2f2f;
     }
     #id_content:focus {
-        border-color: #14b8a6;
-        background-color: #fff;
-        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.05);
+        border-color: #3b5d50;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(59, 93, 80, 0.12);
     }
-    
     
     form p { margin: 0; width: 100%; }
     form p label { display: none; }
 </style>
+
+<div class="furni-container min-h-screen bg-[#eff2f1] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+    <div class="max-w-3xl mx-auto">
+        
+        <!-- Chat Header Panel in Deep Forest Teal -->
+        <div class="bg-[#3b5d50] rounded-t-3xl p-5 flex items-center gap-4 shadow-md border-b border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-[#f9bf29] flex items-center justify-center text-[#2f2f2f] font-black text-xl shadow-md border-2 border-white/10">
+                {{ conversation.item.name|first|upper }}
+            </div>
+            <div class="flex-1">
+                <h1 class="furni-title text-white font-black text-base md:text-lg leading-tight">{{ conversation.item.name }}</h1>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-1.5 h-1.5 bg-[#f9bf29] rounded-full animate-pulse"></span>
+                    <p class="text-[#eff2f1]/80 text-[10px] font-black uppercase tracking-widest">Direct Message</p>
+                </div>
+            </div>
+            <a href="{% url 'conversation:inbox' %}" class="p-2 text-stone-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- Scrollable Messages Body -->
+        <div id="chat-body" class="bg-white border-x border-[#eff2f1] h-[500px] overflow-y-auto p-6 space-y-6 flex flex-col shadow-inner custom-scrollbar">
+            {% for message in conversation.messages.all %}
+                <div class="flex flex-col {% if message.created_by == request.user %}items-end{% else %}items-start{% endif %} group">
+                    {% if message.created_by != request.user %}
+                        <span class="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-1.5 ml-1">{{ message.created_by.username }}</span>
+                    {% endif %}
+
+                    <!-- Dynamic Message Bubble colors -->
+                    <div class="max-w-[85%] md:max-w-[70%] px-5 py-3 rounded-2xl shadow-xs transition-all duration-300 hover:shadow-md
+                        {% if message.created_by == request.user %}
+                            bg-[#3b5d50] text-white rounded-br-none
+                        {% else %}
+                            bg-[#eff2f1]/60 text-[#2f2f2f] rounded-bl-none border border-stone-200/50
+                        {% endif %}">
+                        <p class="text-sm font-medium leading-relaxed">{{ message.content }}</p>
+                    </div>
+
+                    <span class="text-[9px] font-bold text-stone-400 mt-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        {{ message.created_at|timesince }} ago
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Message Composition Input Bar with Furni Gold Accent -->
+        <div class="bg-[#FAF8F5] border border-[#eff2f1] rounded-b-3xl p-4 shadow-sm">
+            <form id="chat-form" method="POST" action="." class="flex items-end gap-3">
+                {% csrf_token %}
+                <div class="flex-1 relative">
+                    {{ form.content }}
+                </div>
+                <button type="submit" class="p-4 bg-[#f9bf29] hover:bg-[#e0ab20] text-[#2f2f2f] rounded-2xl shadow-md shadow-[#f9bf29]/10 flex-shrink-0 transition-all duration-300 transform active:scale-95">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="rotate-45">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
 
 <script>
     const chatBody = document.getElementById('chat-body');
     const messageInput = document.getElementById('id_content');
     const chatForm = document.getElementById('chat-form');
 
+    // Smoothly focus scroll viewport to bottom
     chatBody.scrollTop = chatBody.scrollHeight;
 
+    // Trigger form submit when pressing Enter (without shift active)
     messageInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();

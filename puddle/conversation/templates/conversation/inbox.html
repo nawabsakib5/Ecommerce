@@ -3,69 +3,93 @@
 {% block title %}Inbox{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto py-10 px-4">
-    <!-- Page Header -->
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Inbox</h1>
-        <span class="bg-teal-100 text-teal-700 text-xs font-bold px-3 py-1 rounded-full">
-            {{ conversations|length }} Conversations
-        </span>
-    </div>
+<!-- Google Fonts for Furni's Premium Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
-    <!-- Conversations List -->
-    <div class="space-y-4">
-        {% for conversation in conversations %}
-            <a href="{% url 'conversation:detail' conversation.id %}" 
-               class="group flex items-center gap-5 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 transition-all duration-200">
-                
-                <!-- Item Image -->
-                <div class="relative">
-                    <img src="{{ conversation.item.image.url }}" 
-                         alt="{{ conversation.item.name }}" 
-                         class="w-16 h-16 rounded-xl object-cover shadow-inner group-hover:scale-105 transition-transform duration-200">
-                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-teal-500 border-2 border-white rounded-full"></div>
-                </div>
+<style>
+    .furni-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .furni-title {
+        font-family: 'Playfair Display', serif;
+    }
+</style>
 
-                <!-- Conversation Info -->
-                <div class="flex-1 min-w-0">
-                    {% for member in conversation.members.all %}
-                        {% if member != request.user %}
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="text-sm font-bold text-gray-900 group-hover:text-teal-600 transition-colors">
-                                    {{ member.username|title }}
-                                </h3>
-                                <span class="text-[11px] font-medium text-gray-400">
-                                    {{ conversation.modified_at|timesince }} ago
-                                </span>
-                            </div>
-                            
-                            <p class="text-xs font-semibold text-gray-500 truncate">
-                                Item: <span class="text-gray-700 font-normal">{{ conversation.item.name }}</span>
-                            </p>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-
-                <!-- Arrow Icon -->
-                <div class="text-gray-300 group-hover:text-teal-500 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </a>
-        {% empty %}
-            <!-- Empty State -->
-            <div class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4 text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900">No messages yet</h3>
-                <p class="text-gray-500 text-sm mt-1">When you contact a seller, your conversations will appear here.</p>
-                <a href="{% url 'item:items' %}" class="inline-block mt-6 px-6 py-2 bg-teal-600 text-white text-sm font-bold rounded-xl hover:bg-teal-700 transition-colors">Browse Items</a>
+<div class="furni-container min-h-screen bg-[#eff2f1] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+    <div class="max-w-3xl mx-auto">
+        
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h1 class="furni-title text-4xl md:text-5xl font-black text-[#2f2f2f] tracking-tight">Inbox</h1>
+                <p class="text-[#6a6a6a] text-sm mt-2 font-medium">Keep track of your active inquiries and purchases.</p>
             </div>
-        {% endfor %}
+            <span class="bg-[#3b5d50] text-white text-xs font-bold px-4 py-2 rounded-full shadow-sm">
+                {{ conversations|length }} Conversations
+            </span>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="space-y-4">
+            {% for conversation in conversations %}
+                <a href="{% url 'conversation:detail' conversation.id %}" 
+                   class="group flex items-center gap-5 bg-white p-5 rounded-3xl border border-stone-200/50 shadow-xs hover:shadow-md hover:border-[#3b5d50]/30 transition-all duration-300">
+                    
+                    <!-- Item Thumbnail -->
+                    <div class="relative flex-shrink-0">
+                        {% if conversation.item.image %}
+                            <img src="{{ conversation.item.image.url }}" 
+                                 alt="{{ conversation.item.name }}" 
+                                 class="w-16 h-16 rounded-2xl object-cover shadow-inner group-hover:scale-105 transition-transform duration-300">
+                        {% else %}
+                            <img src="https://picsum.photos/seed/{{ conversation.item.id }}/200/200" 
+                                 alt="{{ conversation.item.name }}" 
+                                 class="w-16 h-16 rounded-2xl object-cover shadow-inner group-hover:scale-105 transition-transform duration-300">
+                        {% endif %}
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#f9bf29] border-2 border-white rounded-full animate-pulse"></div>
+                    </div>
+
+                    <!-- Conversation Info -->
+                    <div class="flex-1 min-w-0">
+                        {% for member in conversation.members.all %}
+                            {% if member != request.user %}
+                                <div class="flex justify-between items-start mb-1.5">
+                                    <h3 class="text-sm font-extrabold text-[#2f2f2f] group-hover:text-[#3b5d50] transition-colors">
+                                        {{ member.username|title }}
+                                    </h3>
+                                    <span class="text-[10px] font-bold text-stone-400">
+                                        {{ conversation.modified_at|timesince }} ago
+                                    </span>
+                                </div>
+                                
+                                <p class="text-xs font-bold text-[#6a6a6a]">
+                                    Item: <span class="text-stone-500 font-medium">{{ conversation.item.name }}</span>
+                                </p>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Action Navigation Arrow Icon -->
+                    <div class="text-stone-300 group-hover:text-[#3b5d50] transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </a>
+            {% empty %}
+                <!-- Empty State Layout -->
+                <div class="text-center py-20 bg-white rounded-[2.5rem] border border-stone-200/50 shadow-xs">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-[#eff2f1] rounded-2xl mb-4 text-[#3b5d50]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                    </div>
+                    <h3 class="furni-title text-2xl font-black text-[#2f2f2f]">No messages yet</h3>
+                    <p class="text-[#6a6a6a] text-xs font-bold mt-2 max-w-sm mx-auto leading-relaxed">When you contact sellers, your direct conversations will appear in this list.</p>
+                    <a href="{% url 'item:items' %}" class="inline-block mt-6 px-8 py-3.5 bg-[#f9bf29] hover:bg-[#e0ab20] text-[#2f2f2f] text-xs font-extrabold uppercase tracking-widest rounded-full shadow-md shadow-[#f9bf29]/10 transition-all duration-300 transform active:scale-95">Browse Items</a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
