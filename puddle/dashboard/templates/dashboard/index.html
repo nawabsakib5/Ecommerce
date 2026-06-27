@@ -3,92 +3,148 @@
 {% block title %}Seller Dashboard{% endblock %}
 
 {% block content %}
+<!-- Chart.js and Custom Fonts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
-<div class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-teal-50/30 -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+<style>
+    /* Organic Theme Typography & Custom Variables */
+    .organic-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .organic-title {
+        font-family: 'Playfair Display', serif;
+    }
+    .dash-label { 
+        display: block; 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        color: #556B2F; /* Olive green */
+        text-transform: uppercase; 
+        letter-spacing: 0.05em; 
+        margin-bottom: 0.35rem; 
+    }
+    .dashboard-form input[type="text"], 
+    .dashboard-form input[type="email"], 
+    .dashboard-form input[type="number"], 
+    .dashboard-form input[type="file"], 
+    .dashboard-form textarea { 
+        width: 100%; 
+        padding: 0.75rem 1rem; 
+        border-radius: 1rem; 
+        border: 1px solid #E2E8F0; 
+        background-color: #FAF9F6; /* Alabaster warm background */
+        font-size: 0.875rem; 
+        transition: all 0.2s ease-in-out; 
+    }
+    .dashboard-form input:focus, 
+    .dashboard-form textarea:focus { 
+        outline: none; 
+        border-color: #72A10F; 
+        background-color: #ffffff; 
+        box-shadow: 0 0 0 4px rgba(114, 161, 15, 0.15); 
+    }
+    .dashboard-form textarea { 
+        min-height: 4.5rem; 
+        resize: vertical; 
+    }
+</style>
 
-    <!-- Header -->
+<div class="organic-container min-h-screen bg-gradient-to-b from-[#F7F9F3] via-[#FCFBF9] to-[#F2F5ED] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+    <!-- Header / Banner Section -->
     <div class="max-w-7xl mx-auto mb-10">
-        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
-                <p class="text-teal-600 text-sm font-bold uppercase tracking-widest mb-2">Seller Hub</p>
-                <h1 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
-                    Welcome back, <span class="text-teal-600">{{ user.username|capfirst }}</span>
-                </h1>
-                <p class="text-gray-500 mt-2 max-w-xl">Manage your storefront, track sales, and grow your business.</p>
+        <div class="relative bg-gradient-to-r from-[#2C3E14] to-[#4A6B22] rounded-[2.5rem] p-8 md:p-12 shadow-xl overflow-hidden">
+            <!-- Decorative Leaf Background Accent -->
+            <div class="absolute right-0 top-0 opacity-10 pointer-events-none translate-x-12 -translate-y-12">
+                <svg width="350" height="350" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C15.3 8 13.6 8.7 12.4 10C11.1 8.7 9.4 8 7.7 8C4 8 1 11.2 1 15C1 18.8 4 22 7.7 22C10.7 22 13 19 13 19S15.3 22 18.3 22C22 22 25 18.8 25 15C25 11.2 22 8 18.3 8M7.7 20C5.1 20 3 17.8 3 15C3 12.2 5.1 10 7.7 10C9.1 10 10.3 10.6 11.1 11.7C10.3 13.5 10.1 15.6 10.5 17.5C9.7 19.1 8.8 20 7.7 20M18.3 20C17.2 20 16.3 19.1 15.5 17.5C15.9 15.6 15.7 13.5 14.9 11.7C15.7 10.6 16.9 10 18.3 10C20.9 10 23 12.2 23 15C23 17.8 20.9 20 18.3 20Z"/></svg>
             </div>
-            <a href="{% url 'item:new' %}"
-               class="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 hover:bg-teal-600 text-white font-bold rounded-2xl shadow-lg transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                List New Product
-            </a>
+            
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF1DB]/20 text-[#C1D89D] text-xs font-bold uppercase tracking-widest mb-3">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#72A10F] animate-pulse"></span>
+                        Seller Hub
+                    </span>
+                    <h1 class="organic-title text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+                        Welcome back, <span class="text-[#C1D89D]">{{ user.username|capfirst }}</span>
+                    </h1>
+                    <p class="text-[#E2EBD3] mt-2 max-w-xl text-sm md:text-base">Manage your organic storefront, monitor transactions, and grow your eco-conscious venture.</p>
+                </div>
+                <a href="{% url 'item:new' %}"
+                   class="inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#72A10F] hover:bg-[#5C830A] text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    List New Product
+                </a>
+            </div>
         </div>
     </div>
 
     {% if messages %}
-        <div class="max-w-7xl mx-auto mb-6 space-y-2">
+        <div class="max-w-7xl mx-auto mb-8 space-y-2">
             {% for message in messages %}
-                <div class="px-5 py-3 rounded-2xl text-sm font-semibold {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-100{% else %}bg-teal-50 text-teal-800 border border-teal-100{% endif %}">
+                <div class="px-6 py-4 rounded-2xl text-sm font-semibold flex items-center gap-2 {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-100{% else %}bg-[#FAF8F5] text-[#556B2F] border border-[#EAF1DB]{% endif %} shadow-sm">
+                    <span class="w-2 h-2 rounded-full {% if message.tags == 'success' %}bg-emerald-500{% else %}bg-[#72A10F]{% endif %}"></span>
                     {{ message }}
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <!-- Stats Row -->
-    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition col-span-1">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active</p>
-            <p class="text-2xl font-black text-gray-900 mt-1">{{ active_count }}</p>
-            <p class="text-xs text-gray-400 mt-1">Listings</p>
+    <!-- Stats Grid (Leafy and warm container styles) -->
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 mb-10">
+        <div class="bg-white rounded-2xl border border-[#EAF1DB]/60 p-5 shadow-sm hover:shadow-md transition">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Active</p>
+            <p class="text-3xl font-black text-stone-800 mt-2">{{ active_count }}</p>
+            <p class="text-xs text-[#556B2F] font-medium mt-1">🌿 Listed Live</p>
         </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sold</p>
-            <p class="text-2xl font-black text-emerald-600 mt-1">{{ sold_count }}</p>
-            <p class="text-xs text-gray-400 mt-1">Items</p>
+        <div class="bg-white rounded-2xl border border-[#EAF1DB]/60 p-5 shadow-sm hover:shadow-md transition">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Sold</p>
+            <p class="text-3xl font-black text-emerald-600 mt-2">{{ sold_count }}</p>
+            <p class="text-xs text-emerald-600 font-medium mt-1">📦 Dispatched</p>
         </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Revenue</p>
-            <p class="text-2xl font-black text-teal-600 mt-1">${{ total_revenue }}</p>
-            <p class="text-xs text-gray-400 mt-1">Total earned</p>
+        <div class="bg-white rounded-2xl border border-[#EAF1DB]/60 p-5 shadow-sm hover:shadow-md transition">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Revenue</p>
+            <p class="text-3xl font-black text-[#72A10F] mt-2">${{ total_revenue }}</p>
+            <p class="text-xs text-[#72A10F] font-medium mt-1">💵 Total Revenue</p>
         </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commission</p>
-            <p class="text-2xl font-black text-rose-500 mt-1">${{ total_commission }}</p>
-            <p class="text-xs text-gray-400 mt-1">Platform fee</p>
+        <div class="bg-white rounded-2xl border border-[#EAF1DB]/60 p-5 shadow-sm hover:shadow-md transition">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Commission</p>
+            <p class="text-3xl font-black text-amber-600 mt-2">${{ total_commission }}</p>
+            <p class="text-xs text-amber-600 font-medium mt-1">🏷️ Platform Fee</p>
         </div>
-        <div class="bg-gradient-to-br from-teal-600 to-teal-700 rounded-2xl p-5 shadow-lg text-white">
-            <p class="text-xs font-bold text-teal-100 uppercase tracking-wider">Net Income</p>
-            <p class="text-2xl font-black mt-1">${{ net_income }}</p>
-            <p class="text-xs text-teal-100/70 mt-1">After fees</p>
+        <div class="bg-gradient-to-br from-[#72A10F] to-[#556B2F] rounded-2xl p-5 shadow-md text-white">
+            <p class="text-xs font-bold text-[#EAF1DB] uppercase tracking-wider">Net Income</p>
+            <p class="text-3xl font-black mt-2">${{ net_income }}</p>
+            <p class="text-xs text-[#EAF1DB]/80 font-medium mt-1">🌻 Pocket Profit</p>
         </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Messages</p>
-            <p class="text-2xl font-black text-blue-600 mt-1">{{ message_count }}</p>
-            <p class="text-xs text-gray-400 mt-1">Conversations</p>
+        <div class="bg-white rounded-2xl border border-[#EAF1DB]/60 p-5 shadow-sm hover:shadow-md transition">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-wider">Messages</p>
+            <p class="text-3xl font-black text-stone-800 mt-2">{{ message_count }}</p>
+            <p class="text-xs text-[#72A10F] font-medium mt-1">💬 Active Chat</p>
         </div>
     </div>
 
     <!-- Charts + Top Items Row -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-
-        <!-- Revenue by Category Chart -->
-        <div class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <h3 class="text-base font-black text-gray-900 mb-1">Revenue by Category</h3>
-            <p class="text-xs text-gray-400 mb-4">Your top performing categories</p>
-            <div style="position:relative;height:220px;">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+        
+        <!-- Revenue by Category Chart (styled beautifully) -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm p-6 md:p-8">
+            <h3 class="organic-title text-xl font-bold text-stone-800 mb-1">Revenue by Category</h3>
+            <p class="text-xs text-stone-400 mb-6">Best performing sections in your store</p>
+            <div style="position:relative; height:240px;">
                 <canvas id="catChart"></canvas>
             </div>
         </div>
 
         <!-- Top Selling Items -->
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <h3 class="text-base font-black text-gray-900 mb-1">Top Selling Items</h3>
-            <p class="text-xs text-gray-400 mb-4">Your best performers</p>
-            <div class="space-y-3">
+        <div class="bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm p-6 md:p-8">
+            <h3 class="organic-title text-xl font-bold text-stone-800 mb-1">Top Selling Items</h3>
+            <p class="text-xs text-stone-400 mb-6">Highest consumer demand</p>
+            <div class="space-y-4">
                 {% for item in top_items %}
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div class="flex items-center gap-4 p-2 rounded-2xl hover:bg-[#FAF8F5] transition duration-200">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-stone-100 border border-stone-200">
                             {% if item.image %}
                                 <img src="{{ item.image.url }}" class="w-full h-full object-cover" alt="{{ item.name }}">
                             {% else %}
@@ -96,32 +152,32 @@
                             {% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-gray-800 truncate">{{ item.name }}</p>
-                            <p class="text-xs text-gray-400">{{ item.sale_count }} sold · ${{ item.price }}</p>
+                            <p class="text-sm font-bold text-stone-800 truncate">{{ item.name }}</p>
+                            <p class="text-xs text-stone-500 font-medium mt-0.5">{{ item.sale_count }} sold · <span class="text-[#72A10F]">${{ item.price }}</span></p>
                         </div>
                     </div>
                 {% empty %}
-                    <p class="text-sm text-gray-400 text-center py-4">No sales yet</p>
+                    <div class="text-center py-8 text-stone-400 text-sm font-medium">No sales yet 🌾</div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Recent Sales + Low Stock Row -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Recent Sales + Attention Row -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
 
-        <!-- Recent Sales -->
-        <div class="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+        <!-- Recent Sales Card -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-[#FAF9F6]">
                 <div>
-                    <h3 class="text-base font-black text-gray-900">Recent Sales</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Last 10 transactions</p>
+                    <h3 class="organic-title text-xl font-bold text-stone-800">Recent Sales</h3>
+                    <p class="text-xs text-stone-400 mt-0.5">Last 10 successful shipments</p>
                 </div>
             </div>
-            <div class="divide-y divide-gray-50">
+            <div class="divide-y divide-stone-100">
                 {% for sale in recent_sales %}
-                    <div class="flex items-center gap-4 px-6 py-4">
-                        <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div class="flex items-center gap-4 px-6 py-4 hover:bg-[#FCFBF9] transition">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-stone-100">
                             {% if sale.item.image %}
                                 <img src="{{ sale.item.image.url }}" class="w-full h-full object-cover" alt="{{ sale.item.name }}">
                             {% else %}
@@ -129,91 +185,95 @@
                             {% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-gray-800 truncate">{{ sale.item.name }}</p>
-                            <p class="text-xs text-gray-400">Buyer: {{ sale.buyer.username }} · {{ sale.sold_at|date:"M d, H:i" }}</p>
+                            <p class="text-sm font-bold text-stone-800 truncate">{{ sale.item.name }}</p>
+                            <p class="text-xs text-stone-400 font-medium">Buyer: {{ sale.buyer.username }} · {{ sale.sold_at|date:"M d, H:i" }}</p>
                         </div>
                         <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-black text-teal-600">${{ sale.total_amount }}</p>
-                            <p class="text-xs text-gray-400">qty: {{ sale.quantity }}</p>
+                            <p class="text-sm font-black text-[#72A10F]">${{ sale.total_amount }}</p>
+                            <span class="inline-block px-2 py-0.5 bg-[#EAF1DB]/50 rounded-md text-[10px] font-bold text-[#556B2F]">Qty: {{ sale.quantity }}</span>
                         </div>
                     </div>
                 {% empty %}
-                    <div class="text-center py-10 text-gray-400 text-sm">No sales yet</div>
+                    <div class="text-center py-12 text-stone-400 text-sm font-medium">No sales recorded yet 🌾</div>
                 {% endfor %}
             </div>
         </div>
 
-        <!-- Low Stock Alert -->
-        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-100">
-                <h3 class="text-base font-black text-gray-900">⚠️ Needs Attention</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Items missing images</p>
+        <!-- Attention Required (Low Stock / Missing Image etc) -->
+        <div class="bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-stone-100 bg-[#FAF9F6]">
+                <h3 class="organic-title text-xl font-bold text-stone-800">⚠️ Needs Attention</h3>
+                <p class="text-xs text-stone-400 mt-0.5">Products without detailed image setups</p>
             </div>
-            <div class="divide-y divide-gray-50">
+            <div class="divide-y divide-stone-100">
                 {% for item in low_stock %}
-                    <div class="flex items-center gap-3 px-6 py-4">
-                        <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-4 px-6 py-4 hover:bg-[#FCFBF9] transition">
+                        <div class="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-amber-100 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                             </svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-gray-800 truncate">{{ item.name }}</p>
-                            <p class="text-xs text-gray-400">${{ item.price }}</p>
+                            <p class="text-sm font-bold text-stone-800 truncate">{{ item.name }}</p>
+                            <p class="text-xs text-[#72A10F] font-bold">${{ item.price }}</p>
                         </div>
                         <a href="{% url 'item:edit' item.id %}"
-                           class="text-xs font-bold text-teal-600 hover:text-teal-700 flex-shrink-0">
+                           class="text-xs font-bold text-amber-600 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-xl transition-all duration-200">
                             Fix →
                         </a>
                     </div>
                 {% empty %}
-                    <div class="text-center py-10">
-                        <p class="text-sm font-bold text-emerald-600">✅ All good!</p>
-                        <p class="text-xs text-gray-400 mt-1">No issues found</p>
+                    <div class="text-center py-12">
+                        <span class="text-3xl">🌻</span>
+                        <p class="text-sm font-bold text-[#556B2F] mt-2">All looking fresh!</p>
+                        <p class="text-xs text-stone-400 mt-1">No items missing descriptions or images.</p>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Profile + Inventory -->
+    <!-- Profile + Inventory Grid -->
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-        <!-- Profile card -->
+        <!-- Profile card with Organic aesthetics -->
         <div class="lg:col-span-4">
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden sticky top-24">
-                <div class="h-32 bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 relative"></div>
-                <div class="px-6 pb-8 -mt-14 text-center relative">
+            <div class="bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm overflow-hidden sticky top-24">
+                <div class="h-32 bg-gradient-to-r from-[#556B2F] to-[#72A10F] relative">
+                    <!-- Bottom arc SVG for soft organic feel -->
+                    <div class="absolute bottom-0 left-0 right-0 h-4 bg-white rounded-t-3xl"></div>
+                </div>
+                <div class="px-6 pb-6 -mt-14 text-center relative">
                     <div class="inline-block relative">
                         {% if profile.image and profile.image.name != 'default.jpg' %}
                             <img src="{{ profile.image.url }}" alt="{{ user.username }}"
-                                 class="w-28 h-28 rounded-2xl border-4 border-white shadow-xl object-cover bg-white mx-auto ring-4 ring-teal-100">
+                                 class="w-24 h-24 rounded-2xl border-4 border-white shadow-md object-cover bg-white mx-auto ring-4 ring-[#EAF1DB]">
                         {% else %}
-                            <div class="w-28 h-28 rounded-2xl border-4 border-white shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 mx-auto flex items-center justify-center ring-4 ring-teal-100">
-                                <span class="text-4xl font-black text-teal-600">{{ user.username|slice:":1"|upper }}</span>
+                            <div class="w-24 h-24 rounded-2xl border-4 border-white shadow-md bg-gradient-to-br from-[#FAF8F5] to-[#EAF1DB] mx-auto flex items-center justify-center ring-4 ring-[#EAF1DB]">
+                                <span class="text-3xl font-black text-[#72A10F]">{{ user.username|slice:":1"|upper }}</span>
                             </div>
                         {% endif %}
-                        <span class="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center">
+                        <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#72A10F] border-2 border-white rounded-full flex items-center justify-center">
                             <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                         </span>
                     </div>
-                    <h2 class="mt-5 text-xl font-black text-gray-900">{{ user.username|capfirst }}</h2>
-                    <p class="text-sm text-gray-500">{{ user.email }}</p>
+                    <h2 class="mt-4 text-xl font-bold text-stone-800">{{ user.username|capfirst }}</h2>
+                    <p class="text-xs text-stone-400">{{ user.email }}</p>
                     {% if user.user_type %}
-                        <span class="inline-block mt-3 px-3 py-1 bg-teal-50 text-teal-700 text-xs font-bold rounded-full">{{ user.user_type }}</span>
+                        <span class="inline-block mt-3 px-3 py-1 bg-[#EAF1DB] text-[#556B2F] text-xs font-bold rounded-full">{{ user.user_type }}</span>
                     {% endif %}
                 </div>
 
-                <form method="POST" enctype="multipart/form-data" class="px-6 pb-8 space-y-4 border-t border-gray-100 pt-6 dashboard-form">
+                <form method="POST" enctype="multipart/form-data" class="px-6 pb-8 space-y-4 border-t border-stone-100 pt-6 dashboard-form">
                     {% csrf_token %}
-                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Account Settings</p>
+                    <p class="text-xs font-bold text-[#556B2F] uppercase tracking-wider">Account Settings</p>
                     <div>
                         <label class="dash-label">Email</label>
                         {{ u_form.email }}
                     </div>
                     <div>
                         <label class="dash-label">Profile Photo</label>
-                        <div class="mt-1">{{ p_form.image }}</div>
+                        <div class="mt-1 text-xs text-stone-500">{{ p_form.image }}</div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -229,33 +289,33 @@
                         <label class="dash-label">Shipping Address</label>
                         {{ p_form.address }}
                     </div>
-                    <button type="submit" class="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-100 transition-all">
-                        Save Changes
+                    <button type="submit" class="w-full py-4 bg-[#72A10F] hover:bg-[#5C830A] text-white font-bold rounded-2xl shadow-md transition-all duration-300">
+                        Save Account Info
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Inventory -->
+        <!-- Inventory List (Redesigned like elegant e-commerce product grids) -->
         <div class="lg:col-span-8">
-            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="px-6 md:px-8 py-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
+            <div class="bg-white rounded-3xl border border-[#EAF1DB]/50 shadow-sm overflow-hidden">
+                <div class="px-6 md:px-8 py-6 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-[#FAF9F6]">
                     <div>
-                        <h3 class="text-xl font-black text-gray-900">My Shop Inventory</h3>
-                        <p class="text-sm text-gray-500 mt-0.5">Products you listed — visible to all buyers</p>
+                        <h3 class="organic-title text-2xl font-bold text-stone-800">My Shop Inventory</h3>
+                        <p class="text-xs text-stone-400 mt-0.5">Manage stock details and change configurations</p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{% url 'item:items' %}" class="px-4 py-2.5 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:border-teal-300 hover:text-teal-600 transition">Browse Market</a>
-                        <a href="{% url 'item:new' %}" class="px-4 py-2.5 text-sm font-bold text-white bg-teal-600 rounded-xl hover:bg-teal-700 transition shadow-sm">+ Add Item</a>
+                        <a href="{% url 'item:items' %}" class="px-4 py-2.5 text-xs font-bold text-stone-600 bg-white border border-stone-200 rounded-xl hover:border-[#72A10F] hover:text-[#72A10F] transition duration-200">Browse Market</a>
+                        <a href="{% url 'item:new' %}" class="px-4 py-2.5 text-xs font-bold text-white bg-[#72A10F] rounded-xl hover:bg-[#5C830A] transition duration-200 shadow-sm">+ Add Item</a>
                     </div>
                 </div>
                 <div class="p-6 md:p-8">
                     {% if items %}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             {% for item in items %}
-                                <article class="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-teal-200 hover:shadow-xl transition-all duration-300">
+                                <article class="group relative bg-white rounded-2xl border border-stone-100 overflow-hidden hover:border-[#72A10F]/30 hover:shadow-lg transition-all duration-300">
                                     <a href="{% url 'item:detail' item.id %}" class="block">
-                                        <div class="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                                        <div class="relative aspect-[4/3] bg-stone-50 overflow-hidden">
                                             {% if item.image %}
                                                 <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy"
                                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -264,34 +324,35 @@
                                                 <img src="https://picsum.photos/seed/{{ item.id }}/500/375" alt="{{ item.name }}" loading="lazy"
                                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                             {% endif %}
-                                            <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/95 backdrop-blur text-xs font-bold text-gray-700 rounded-lg">{{ item.category.name }}</span>
-                                            <span class="absolute top-3 right-3 px-3 py-1 bg-teal-600 text-white text-sm font-black rounded-xl shadow-lg">${{ item.price }}</span>
+                                            <span class="absolute top-3 left-3 px-2.5 py-1 bg-white/95 backdrop-blur text-[10px] font-bold text-[#556B2F] rounded-lg shadow-sm">{{ item.category.name }}</span>
+                                            <span class="absolute top-3 right-3 px-3 py-1 bg-[#72A10F] text-white text-xs font-black rounded-xl shadow-md">${{ item.price }}</span>
+                                            
                                             {% if item.is_sold %}
-                                                <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-rose-500 text-white text-xs font-bold rounded-lg">Sold</span>
+                                                <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-lg">Sold Out</span>
                                             {% else %}
-                                                <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-emerald-500 text-white text-xs font-bold rounded-lg">Live</span>
+                                                <span class="absolute bottom-3 left-3 px-2.5 py-1 bg-[#72A10F] text-white text-[10px] font-bold rounded-lg">Live</span>
                                             {% endif %}
                                         </div>
-                                        <div class="p-4">
-                                            <h4 class="font-bold text-gray-900 truncate group-hover:text-teal-600 transition-colors">{{ item.name }}</h4>
-                                            <p class="text-xs text-gray-400 mt-1">{{ item.created_at|date:"M d, Y" }}</p>
+                                        <div class="p-5">
+                                            <h4 class="font-bold text-stone-800 text-base truncate group-hover:text-[#72A10F] transition-colors duration-200">{{ item.name }}</h4>
+                                            <p class="text-xs text-stone-400 mt-1">📅 Listed on {{ item.created_at|date:"M d, Y" }}</p>
                                         </div>
                                     </a>
-                                    <div class="px-4 pb-4 flex gap-2 border-t border-gray-50 pt-3">
-                                        <a href="{% url 'item:edit' item.id %}" class="flex-1 text-center py-2 text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-xl transition">Edit</a>
-                                        <a href="{% url 'item:delete' item.id %}" class="flex-1 text-center py-2 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition">Delete</a>
+                                    <div class="px-5 pb-5 flex gap-2 pt-3 border-t border-stone-50">
+                                        <a href="{% url 'item:edit' item.id %}" class="flex-1 text-center py-2.5 text-xs font-bold text-stone-600 bg-stone-50 hover:bg-[#FAF8F5] border border-stone-200/50 rounded-xl transition duration-200">Edit Details</a>
+                                        <a href="{% url 'item:delete' item.id %}" class="flex-1 text-center py-2.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition duration-200">Delete</a>
                                     </div>
                                 </article>
                             {% endfor %}
                         </div>
                     {% else %}
                         <div class="text-center py-16 px-6">
-                            <div class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-teal-50 flex items-center justify-center">
-                                <svg class="w-10 h-10 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-[#EAF1DB]/60 flex items-center justify-center text-3xl">
+                                🌾
                             </div>
-                            <h4 class="text-lg font-black text-gray-900 mb-2">Your shop is empty</h4>
-                            <p class="text-gray-500 text-sm max-w-sm mx-auto mb-8">List your first product — every Cotton Web user can discover and add it to their cart.</p>
-                            <a href="{% url 'item:new' %}" class="inline-flex items-center gap-2 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-100 transition">Create First Listing</a>
+                            <h4 class="organic-title text-xl font-bold text-stone-800 mb-2">Your Shop inventory is empty</h4>
+                            <p class="text-stone-400 text-xs max-w-sm mx-auto mb-8">List your fresh products today and start sharing organic items with active customers.</p>
+                            <a href="{% url 'item:new' %}" class="inline-flex items-center gap-2 px-8 py-4 bg-[#72A10F] hover:bg-[#5C830A] text-white font-bold rounded-2xl shadow-lg transition duration-200">Create First Listing</a>
                         </div>
                     {% endif %}
                 </div>
@@ -300,14 +361,8 @@
     </div>
 </div>
 
-<style>
-    .dash-label { display:block; font-size:0.7rem; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.35rem; }
-    .dashboard-form input[type="text"], .dashboard-form input[type="email"], .dashboard-form input[type="number"], .dashboard-form input[type="file"], .dashboard-form textarea { width:100%; padding:0.65rem 1rem; border-radius:0.75rem; border:1px solid #e5e7eb; background-color:#f9fafb; font-size:0.875rem; transition:border-color 0.2s, box-shadow 0.2s; }
-    .dashboard-form input:focus, .dashboard-form textarea:focus { outline:none; border-color:#0d9488; background-color:#fff; box-shadow:0 0 0 3px rgba(13,148,136,0.12); }
-    .dashboard-form textarea { min-height:4.5rem; resize:vertical; }
-</style>
-
 <script>
+// Chart configuration with Soft Organic Palette (Muted leaf-green and gold tones)
 const catLabels = [{% for c in revenue_by_cat %}"{{ c.name }}"{% if not forloop.last %},{% endif %}{% endfor %}];
 const catData   = [{% for c in revenue_by_cat %}{{ c.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
 
@@ -318,17 +373,26 @@ new Chart(document.getElementById('catChart'), {
         datasets: [{
             label: 'Revenue ($)',
             data: catData,
-            backgroundColor: 'rgba(13,148,136,0.75)',
-            borderRadius: 8,
+            backgroundColor: 'rgba(114, 161, 15, 0.85)', /* Leaf Green color */
+            borderRadius: 10,
             borderSkipped: false,
         }]
     },
     options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: { 
+            legend: { display: false } 
+        },
         scales: {
-            x: { ticks: { color:'#9ca3af', font:{size:11} }, grid: { display:false } },
-            y: { ticks: { color:'#9ca3af', font:{size:11}, callback: v => '$'+v }, grid: { color:'rgba(0,0,0,0.04)' } }
+            x: { 
+                ticks: { color:'#78716c', font:{size:11, family:'Plus Jakarta Sans'} }, 
+                grid: { display:false } 
+            },
+            y: { 
+                ticks: { color:'#78716c', font:{size:11, family:'Plus Jakarta Sans'}, callback: v => '$'+v }, 
+                grid: { color:'rgba(114, 161, 15, 0.06)' } 
+            }
         }
     }
 });
