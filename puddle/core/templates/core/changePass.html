@@ -3,45 +3,83 @@
 {% block title %}Change Password{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto py-16 px-6">
-    <!-- Card component with soft ivory border and subtle organic shadow -->
-    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#EAF1DB] shadow-xl shadow-[#72A10F]/5">
-        <div class="text-center mb-8">
-            <span class="inline-block text-2xl mb-2">🔒</span>
-            <h1 class="text-3xl font-black text-[#2C3E14] tracking-tight" style="font-family: 'Playfair Display', serif;">Security</h1>
-            <p class="text-stone-400 text-xs font-bold mt-2">আপনার পাসওয়ার্ড আপডেট করুন</p>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .bazaar-title {
+        font-family: 'Playfair Display', serif;
+    }
+    .pass-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        color: #0f172a;
+        transition: all 0.3s ease-in-out;
+        outline: none;
+    }
+    .pass-input:focus {
+        border-color: #e94560;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+    }
+</style>
+
+<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20 animate-fade-in">
+    <div class="max-w-md w-full">
+        
+        <!-- Card Container with Soft Shadow and Premium rounded corners -->
+        <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+            <div class="text-center mb-8">
+                <span class="inline-block text-3xl mb-2">🔒</span>
+                <h1 class="bazaar-title text-3xl font-black text-[#0f172a] tracking-tight">Security</h1>
+                <p class="text-slate-400 text-xs font-bold mt-2">Update your password to keep your account secure.</p>
+            </div>
+
+            <!-- Messages/Errors Feedback panel -->
+            {% if messages %}
+                <div class="mb-4 space-y-2">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-xl text-xs font-bold uppercase tracking-wider border {% if message.tags == 'success' %}bg-emerald-50 border-emerald-100 text-emerald-800{% else %}bg-rose-50 border-rose-100 text-rose-800{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="." class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Current Password -->
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Current Password</label>
+                    <input type="password" name="old_pass" required placeholder="••••••••" class="pass-input">
+                </div>
+
+                <!-- New Password -->
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">New Password</label>
+                    <input type="password" name="new_pass" required placeholder="••••••••" class="pass-input">
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Confirm New Password</label>
+                    <input type="password" name="con_pass" required placeholder="••••••••" class="pass-input">
+                </div>
+
+                <!-- Action Button in Bazaar Crimson -->
+                <button type="submit" class="w-full py-4.5 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-full shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                    Update Password
+                </button>
+            </form>
         </div>
 
-        <form method="POST" action="." class="space-y-6">
-            {% csrf_token %}
-            
-            <!-- Current Password -->
-            <div class="space-y-2">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Current Password</label>
-                <input type="password" name="old_pass" required placeholder="••••••••" 
-                       class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
-            </div>
-
-            <!-- New Password -->
-            <div class="space-y-2">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">New Password</label>
-                <input type="password" name="new_pass" required placeholder="••••••••" 
-                       class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="space-y-2">
-                <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Confirm New Password</label>
-                <input type="password" name="con_pass" required placeholder="••••••••" 
-                       class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
-            </div>
-
-            <!-- Organic Brand Submit Button -->
-            <button type="submit" 
-                    class="w-full py-4 bg-[#72A10F] hover:bg-[#5C830A] text-white font-extrabold uppercase tracking-widest text-xs rounded-2xl shadow-md shadow-[#72A10F]/10 transition-all duration-300 transform active:scale-95">
-                Update Password
-            </button>
-        </form>
     </div>
 </div>
 {% endblock %}

@@ -1,45 +1,69 @@
 {% extends 'core/base.html' %}
-
 {% block title %}Contact Support{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto py-12 px-6">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .bazaar-title {
+        font-family: 'Playfair Display', serif;
+    }
+    .contact-input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        color: #0f172a;
+        transition: all 0.3s ease-in-out;
+        outline: none;
+    }
+    .contact-input:focus {
+        border-color: #e94560;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+    }
+</style>
+
+<div class="bazaar-container max-w-6xl mx-auto py-12 px-6">
     <!-- Header Section -->
     <div class="text-center mb-16">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAF1DB]/50 text-[#556B2F] text-xs font-bold uppercase tracking-widest mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-widest mb-3">
             ✉️ Contact Us
         </span>
-        <h1 class="text-4xl md:text-5xl font-black text-[#2C3E14] tracking-tight mb-4" style="font-family: 'Playfair Display', serif;">Get in Touch</h1>
-        <p class="text-stone-400 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
+        <h1 class="bazaar-title text-4xl md:text-5xl font-black text-[#0f172a] tracking-tight mb-4">Get in Touch</h1>
+        <p class="text-slate-400 text-xs md:text-sm font-semibold max-w-2xl mx-auto leading-relaxed">
             Have any questions or need assistance? Drop us a message and our support team will get back to you shortly.
         </p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <!-- Contact Information Cards -->
+        <!-- Contact Cards -->
         <div class="space-y-6">
-            <!-- Email Us Card -->
-            <div class="bg-white p-8 rounded-3xl border border-[#EAF1DB]/80 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div class="w-12 h-12 bg-[#FAF8F5] border border-[#EAF1DB] rounded-2xl flex items-center justify-center text-[#72A10F] mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xs hover:shadow-md transition duration-300">
+                <div class="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-[#e94560] mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </div>
-                <h3 class="organic-title text-xl font-bold text-[#2C3E14] mb-2" style="font-family: 'Playfair Display', serif;">Email Us</h3>
-                <p class="text-stone-400 text-xs font-bold mb-4">For any technical issues or inquiries:</p>
-                <a href="mailto:nawabsakib5@gmail.com" class="text-[#72A10F] font-bold hover:underline text-sm">nawabsakib5@gmail.com</a>
+                <h3 class="bazaar-title text-xl font-bold text-[#0f172a] mb-2">Email Us</h3>
+                <p class="text-slate-400 text-xs font-bold mb-4">For any technical issues or inquiries:</p>
+                <a href="mailto:support@cottonweb.com" class="text-[#e94560] font-black hover:underline text-xs">nawabsakib5@gmail.com</a>
             </div>
 
-            <!-- Our Office Card -->
-            <div class="bg-white p-8 rounded-3xl border border-[#EAF1DB]/80 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div class="w-12 h-12 bg-[#FAF8F5] border border-[#EAF1DB] rounded-2xl flex items-center justify-center text-[#72A10F] mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xs hover:shadow-md transition duration-300">
+                <div class="w-12 h-12 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-[#e94560] mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
-                <h3 class="organic-title text-xl font-bold text-[#2C3E14] mb-2" style="font-family: 'Playfair Display', serif;">Our Office</h3>
-                <p class="text-stone-400 text-xs font-bold leading-relaxed">
+                <h3 class="bazaar-title text-xl font-bold text-[#0f172a] mb-2">Our Office</h3>
+                <p class="text-slate-400 text-xs font-bold leading-relaxed">
                     Dhaka, Bangladesh<br>
                     Level 4, Tech Park<br>
                     Gulshan-1
@@ -47,33 +71,33 @@
             </div>
         </div>
 
-        <!-- Contact Form -->
+        <!-- Contact Form Card -->
         <div class="lg:col-span-2">
-            <div class="bg-white p-10 rounded-3xl border border-[#EAF1DB]/80 shadow-xl shadow-[#72A10F]/5">
+            <div class="bg-white p-10 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50">
                 <form action="#" method="POST" class="space-y-6">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Your Name</label>
-                            <input type="text" placeholder="John Doe" class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
+                            <input type="text" placeholder="John Doe" class="contact-input">
                         </div>
                         <div class="space-y-2">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Email Address</label>
-                            <input type="email" placeholder="john@example.com" class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
+                            <input type="email" placeholder="john@example.com" class="contact-input">
                         </div>
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Subject</label>
-                        <input type="text" placeholder="How can we help?" class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 text-stone-800">
+                        <input type="text" placeholder="How can we help?" class="contact-input">
                     </div>
 
                     <div class="space-y-2">
                         <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Message</label>
-                        <textarea rows="5" placeholder="Write your message here..." class="w-full px-6 py-4 bg-[#FAF8F5] border border-stone-200/60 rounded-2xl focus:outline-none focus:border-[#72A10F] focus:bg-white transition-all duration-300 focus:ring-4 focus:ring-[#72A10F]/10 resize-none text-stone-800"></textarea>
+                        <textarea rows="5" placeholder="Write your message here..." class="contact-input resize-none h-32"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full py-4 bg-[#72A10F] hover:bg-[#5C830A] text-white font-extrabold uppercase tracking-widest text-xs rounded-2xl shadow-md shadow-[#72A10F]/10 transition-all duration-300 transform active:scale-95">
+                    <button type="submit" class="w-full py-4 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                         Send Message
                     </button>
                 </form>
