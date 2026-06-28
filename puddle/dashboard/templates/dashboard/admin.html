@@ -4,217 +4,100 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<!-- Google Fonts for High-End Organic Aesthetics -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<!-- Google Fonts and ChartJS overrides for Dasher Premium UI -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root {
-    --bg: #F7F9F3; /* Soft, fresh sage-tinted background */
-    --s1: #ffffff; /* Crisp white card background */
-    --s2: #FAF8F5; /* Cozy warm alabaster details */
-    --s3: #EAF1DB; /* Soft green highlight tint */
-    --border: rgba(114, 161, 15, 0.15); /* Light organic border line */
-    --border2: rgba(114, 161, 15, 0.3); /* Accentuated border line */
-    --text: #2C3E14; /* Deep forest olive for major headings */
-    --muted: #7A846A; /* Earthy muted gray */
-    --muted2: #8E987E; /* Soft sage details */
-    --primary: #72A10F; /* Classic Organic Green */
-    --accent: #E5A93C; /* Honey amber gold for secondary stats */
-    --font: 'Plus Jakarta Sans', sans-serif;
-    --serif: 'Playfair Display', serif;
-}
+    .dasher-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .dasher-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
+    }
+    
+    /* Sleek Custom Scrollbar for Recent Activity */
+    .sale-list { max-height: 520px; overflow-y: auto; padding-right: 4px; }
+    .sale-list::-webkit-scrollbar { width: 4px; }
+    .sale-list::-webkit-scrollbar-track { background: transparent; }
+    .sale-list::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    .sale-list::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
 
-.adm * { box-sizing: border-box; margin: 0; padding: 0; }
-.adm {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 2.5rem 1.5rem 4rem;
-    margin: -2rem -1.5rem;
-}
-
-/* ── Header Banner ── */
-.adm-header {
-    background: linear-gradient(135deg, #2C3E14 0%, #4A6B22 100%);
-    border-radius: 2rem;
-    padding: 2.5rem;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 10px 25px -5px rgba(44,62,20,0.1);
-    position: relative;
-    overflow: hidden;
-}
-.adm-header::before {
-    content: ''; position: absolute; right: 0; bottom: 0;
-    width: 200px; height: 200px; opacity: 0.08; pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'%3E%3Cpath d='M17 8C15.3 8 13.6 8.7 12.4 10C11.1 8.7 9.4 8 7.7 8C4 8 1 11.2 1 15C1 18.8 4 22 7.7 22C10.7 22 13 19 13 19S15.3 22 18.3 22C22 22 25 18.8 25 15C25 11.2 22 8 18.3 8Z'/%3E%3C/svg%3E");
-    background-size: contain; background-repeat: no-repeat;
-}
-.adm-header h1 {
-    font-family: var(--serif);
-    font-size: 2.5rem; font-weight: 800; color: #ffffff;
-    letter-spacing: -0.02em;
-}
-.adm-header p { font-size: 0.85rem; color: #E2EBD3; margin-top: 6px; font-weight: 500; }
-
-/* ── Stat Cards ── */
-.stats-row {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 1.25rem; margin-bottom: 2rem;
-}
-@media(max-width:1100px){ .stats-row { grid-template-columns: repeat(3,1fr); } }
-@media(max-width:640px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
-
-.stat {
-    background: var(--s1); border: 1px solid var(--border);
-    border-radius: 1.25rem; padding: 1.4rem 1.5rem;
-    position: relative; overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-}
-.stat:hover { 
-    transform: translateY(-4px); 
-    border-color: var(--primary); 
-    box-shadow: 0 10px 15px -3px rgba(114, 161, 15, 0.08);
-}
-.stat-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem; margin-bottom: 1.1rem;
-    background: var(--s2);
-    border: 1px solid var(--border);
-}
-.stat-num {
-    font-size: 2rem; font-weight: 800; letter-spacing: -0.03em;
-    line-height: 1; color: var(--text);
-}
-.stat-lbl { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
-.stat-sub { font-size: 0.72rem; color: var(--muted2); margin-top: 6px; }
-
-/* ── Panels ── */
-.grid2 { display: grid; grid-template-columns: 1fr 340px; gap: 1.75rem; margin-bottom: 1.75rem; }
-@media(max-width:1024px){ .grid2 { grid-template-columns: 1fr; } }
-
-.panel {
-    background: var(--s1); border: 1px solid var(--border);
-    border-radius: 1.5rem; overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-}
-.panel-head {
-    padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    background: var(--s2);
-}
-.panel-title { font-family: var(--serif); font-size: 1.15rem; font-weight: 800; color: var(--text); }
-.panel-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-.panel-body { padding: 1.5rem 1.75rem; }
-
-/* ── Table ── */
-.tbl { width: 100%; border-collapse: collapse; }
-.tbl th {
-    font-size: 0.7rem; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.07em;
-    padding: 0.9rem 1.25rem; text-align: left; white-space: nowrap;
-    background: var(--s2);
-}
-.tbl td { padding: 1rem 1.25rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text); }
-.tbl tr:hover td { background: var(--s2); }
-.av {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
-}
-.chip {
-    display: inline-block; padding: 3px 10px; border-radius: 8px;
-    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em;
-    border: 1px solid transparent;
-}
-.chip-seller { background: #EAF1DB; color: #556B2F; border-color: rgba(114, 161, 15, 0.2); }
-.chip-buyer  { background: #E0F2FE; color: #0369A1; border-color: rgba(14, 165, 233, 0.15); }
-.chip-admin  { background: #FEF3C7; color: #B45309; border-color: rgba(245, 158, 11, 0.2); }
-.chip-none   { background: #F5F5F4; color: #78716C; }
-.mono { font-weight: 700; font-size: 0.85rem; }
-
-/* ── Recent Sales ── */
-.sale-list { max-height: 520px; overflow-y: auto; padding-right: 4px; }
-.sale-list::-webkit-scrollbar { width: 4px; }
-.sale-list::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 4px; }
-.sale-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 0.9rem 0; border-bottom: 1px solid var(--border);
-    transition: background-color 0.2s;
-}
-.sale-item:last-child { border-bottom: none; }
-.sale-thumb {
-    width: 44px; height: 44px; border-radius: 12px;
-    object-fit: cover; background: var(--s2); flex-shrink: 0;
-    border: 1px solid var(--border);
-}
-.sale-name { font-size: 0.85rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sale-meta { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-.sale-amount { font-size: 0.9rem; font-weight: 800; color: var(--primary); flex-shrink: 0; }
-
-/* ── Chart ── */
-.chart-panel { background: var(--s1); border: 1px solid var(--border); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-.chart-wrap { position: relative; height: 260px; padding: 1.5rem 1.75rem; }
+    /* Custom Table Styling */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th {
+        font-size: 0.7rem; font-weight: 700; color: #64748b;
+        text-transform: uppercase; letter-spacing: 0.06em;
+        padding: 0.9rem 1.25rem; text-align: left; white-space: nowrap;
+        background: #f8fafc;
+    }
+    .tbl td { padding: 1rem 1.25rem; border-top: 1px solid #f1f5f9; font-size: 0.85rem; color: #0f172a; }
+    .tbl tr:hover td { background: #f8fafc; }
 </style>
 
-<div class="adm">
+<div class="dasher-container min-h-screen bg-[#f5f6fa] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-14 animate-fade-in">
 
-    <!-- Header Banner -->
-    <div class="adm-header">
-        <div>
-            <h1>Cotton Web Admin</h1>
-            <p>Full platform monitoring — {{ total_users }} users · {{ grand_available }} listings · {{ grand_sold_qty }} sold items</p>
+    <!-- Top Admin Banner -->
+    <div class="max-w-7xl mx-auto mb-10">
+        <div class="relative bg-gradient-to-r from-[#1e293b] to-[#0f172a] rounded-[2.5rem] p-8 md:p-10 shadow-lg overflow-hidden">
+            <div class="absolute right-0 bottom-0 opacity-5 pointer-events-none translate-x-10 translate-y-10">
+                <svg width="280" height="280" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C15.3 8 13.6 8.7 12.4 10C11.1 8.7 9.4 8 7.7 8C4 8 1 11.2 1 15C1 18.8 4 22 7.7 22C10.7 22 13 19 13 19S15.3 22 18.3 22C22 22 25 18.8 25 15C25 11.2 22 8 18.3 8Z"/></svg>
+            </div>
+            
+            <div class="relative z-10">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#f9bf29] text-[10px] font-black uppercase tracking-widest mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#f9bf29] animate-pulse"></span>
+                    Central Administration
+                </span>
+                <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Cotton Web Admin</h1>
+                <p class="text-slate-300 mt-2 max-w-xl text-xs font-bold">
+                    Full platform monitoring — {{ total_users }} users · {{ grand_available }} active listings · {{ grand_sold_qty }} sold items
+                </p>
+            </div>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-row">
-        <div class="stat">
-            <div class="stat-icon">👥</div>
-            <div class="stat-num" style="color:var(--text);">{{ total_users }}</div>
-            <div class="stat-lbl">Total Users</div>
-            <div class="stat-sub">Registered accounts</div>
+    <!-- Dasher Admin Stats Grid -->
+    <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-5 gap-5 mb-8">
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-xs">
+            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Total Users</p>
+            <p class="text-3xl font-black text-[#0f172a] mt-2">{{ total_users }}</p>
+            <p class="text-[10px] text-[#624bff] font-bold mt-1">👥 Registered accounts</p>
         </div>
-        <div class="stat">
-            <div class="stat-icon">📦</div>
-            <div class="stat-num" style="color:var(--primary);">{{ grand_available }}</div>
-            <div class="stat-lbl">Active Listings</div>
-            <div class="stat-sub">Available for sale</div>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-xs">
+            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Active Listings</p>
+            <p class="text-3xl font-black text-[#624bff] mt-2">{{ grand_available }}</p>
+            <p class="text-[10px] text-[#624bff] font-bold mt-1">📦 Live on market</p>
         </div>
-        <div class="stat">
-            <div class="stat-icon">✅</div>
-            <div class="stat-num" style="color:var(--primary);">{{ grand_sold_qty }}</div>
-            <div class="stat-lbl">Total Sold</div>
-            <div class="stat-sub">Platform wide</div>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-xs">
+            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Total Sold</p>
+            <p class="text-3xl font-black text-[#624bff] mt-2">{{ grand_sold_qty }}</p>
+            <p class="text-[10px] text-[#624bff] font-bold mt-1">✅ Dispatched items</p>
         </div>
-        <div class="stat">
-            <div class="stat-icon">💰</div>
-            <div class="stat-num" style="color:var(--accent);">${{ grand_sales }}</div>
-            <div class="stat-lbl">Revenue</div>
-            <div class="stat-sub">Platform GMV</div>
+        <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-xs">
+            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Revenue</p>
+            <p class="text-3xl font-black text-amber-600 mt-2">${{ grand_sales }}</p>
+            <p class="text-[10px] text-amber-600 font-bold mt-1">💰 Platform GMV</p>
         </div>
-        <div class="stat">
-            <div class="stat-icon">🏦</div>
-            <div class="stat-num" style="color:var(--text);">${{ grand_commission }}</div>
-            <div class="stat-lbl">Commission</div>
-            <div class="stat-sub">{{ commission_rate_pct }}% rate</div>
+        <div class="bg-gradient-to-br from-[#624bff] to-[#523edb] rounded-2xl p-5 shadow-md text-white">
+            <p class="text-[10px] font-black text-white/80 uppercase tracking-wider">Commission</p>
+            <p class="text-3xl font-black mt-2">${{ grand_commission }}</p>
+            <p class="text-[10px] text-white/80 font-bold mt-1">{{ commission_rate_pct }}% platform rate</p>
         </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid2">
+    <!-- Main Grid Panels -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
 
-        <!-- User Table -->
-        <div class="panel">
-            <div class="panel-head">
+        <!-- Left Column: Seller Performance table -->
+        <div class="lg:col-span-8 bg-white rounded-[2rem] border border-slate-100 shadow-xs overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc] flex items-center justify-between">
                 <div>
-                    <div class="panel-title">Seller Performance</div>
-                    <div class="panel-sub">All users — listings, sales & revenue stats</div>
+                    <h3 class="text-base font-black text-[#0f172a]">Seller Performance</h3>
+                    <p class="text-xs text-[#64748b] font-semibold mt-0.5">Overview of registered accounts activity</p>
                 </div>
-                <span class="chip chip-seller font-bold">{{ total_users }} active members</span>
+                <span class="px-3 py-1 bg-[#624bff]/10 text-[#624bff] text-[10px] font-black uppercase rounded-md">{{ total_users }} users registered</span>
             </div>
             <div style="overflow-x:auto;">
                 <table class="tbl">
@@ -222,10 +105,10 @@
                         <tr>
                             <th>User Details</th>
                             <th>Role</th>
-                            <th>Active Listings</th>
-                            <th>Sold Items</th>
-                            <th>Total Revenue</th>
-                            <th>Commission Earned</th>
+                            <th>Active</th>
+                            <th>Sold</th>
+                            <th>Revenue</th>
+                            <th>Commission</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -233,34 +116,34 @@
                         <tr>
                             <td>
                                 <div style="display:flex;align-items:center;gap:12px;">
-                                    <div class="av" style="background:linear-gradient(135deg, var(--s3), var(--border)); color: var(--text);">
+                                    <div class="av w-9 h-9 rounded-xl flex items-center justify-center text-xs font-extrabold" style="background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a;">
                                         {{ row.user.username|slice:":1"|upper }}
                                     </div>
-                                    <div>
-                                        <div style="font-weight:700;font-size:0.88rem;color:var(--text);">{{ row.user.username }}</div>
-                                        <div style="font-size:0.72rem;color:var(--muted);">{{ row.user.email }}</div>
+                                    <div class="min-w-0">
+                                        <p class="font-extrabold text-[#0f172a] text-sm truncate">{{ row.user.username|title }}</p>
+                                        <p class="text-[10px] text-[#64748b] font-bold">{{ row.user.email }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 {% if row.user.is_superuser %}
-                                    <span class="chip chip-admin">Admin</span>
+                                    <span class="px-2 py-0.5 bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-black uppercase rounded">Admin</span>
                                 {% elif row.user.user_type == 'Seller' %}
-                                    <span class="chip chip-seller">Seller</span>
+                                    <span class="px-2 py-0.5 bg-[#624bff]/10 border border-[#624bff]/20 text-[#624bff] text-[10px] font-black uppercase rounded">Seller</span>
                                 {% elif row.user.user_type == 'Buyer' %}
-                                    <span class="chip chip-buyer">Buyer</span>
+                                    <span class="px-2 py-0.5 bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-black uppercase rounded">Buyer</span>
                                 {% else %}
-                                    <span class="chip chip-none">—</span>
+                                    <span class="text-stone-400 text-xs font-bold">—</span>
                                 {% endif %}
                             </td>
-                            <td><span class="mono" style="color:var(--muted);">{{ row.available_count }}</span></td>
-                            <td><span class="mono" style="color:var(--primary);">{{ row.sold_count }}</span></td>
-                            <td><span class="mono" style="color:var(--text);">${{ row.revenue }}</span></td>
-                            <td><span class="mono" style="color:var(--accent);">${{ row.commission }}</span></td>
+                            <td><span class="font-bold text-slate-500">{{ row.available_count }}</span></td>
+                            <td><span class="font-bold text-emerald-600">{{ row.sold_count }}</span></td>
+                            <td><span class="font-bold text-[#0f172a]">${{ row.revenue }}</span></td>
+                            <td><span class="font-bold text-amber-600">${{ row.commission }}</span></td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" style="text-align:center;color:var(--muted);padding:3rem;font-family:var(--serif);font-size:1.1rem;">No users found in the register</td>
+                            <td colspan="6" style="text-align:center;color:#64748b;padding:3rem;font-weight:700;">No users found in database</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -268,53 +151,53 @@
             </div>
         </div>
 
-        <!-- Recent Sales -->
-        <div class="panel">
-            <div class="panel-head">
-                <div>
-                    <div class="panel-title">Recent Transactions</div>
-                    <div class="panel-sub">Latest marketplace actions</div>
-                </div>
+        <!-- Right Column: Recent Activity list -->
+        <div class="lg:col-span-4 bg-white rounded-[2rem] border border-slate-100 shadow-xs overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc]">
+                <h3 class="text-base font-black text-[#0f172a]">Recent Transactions</h3>
+                <p class="text-xs text-[#64748b] font-semibold mt-0.5">Last 20 marketplace sales</p>
             </div>
-            <div class="panel-body">
+            <div class="p-6">
                 <div class="sale-list">
                     {% for sale in recent_sales %}
-                    <div class="sale-item">
-                        {% if sale.item.image %}
-                            <img src="{{ sale.item.image.url }}" class="sale-thumb" alt="{{ sale.item.name }}">
-                        {% else %}
-                            <img src="https://picsum.photos/seed/{{ sale.item.id }}/80/80" class="sale-thumb" alt="{{ sale.item.name }}">
-                        {% endif %}
-                        <div style="flex:1;min-width:0;">
-                            <div class="sale-name">{{ sale.item.name }}</div>
-                            <div class="sale-meta" style="font-weight:500;">{{ sale.seller.username }} ➔ {{ sale.buyer.username }}</div>
-                            <div class="sale-meta">{{ sale.sold_at|date:"M d, H:i" }}</div>
+                    <div class="sale-item flex items-center gap-3 py-3 border-b border-slate-100 last:border-0 last:pb-0">
+                        <div class="w-11 h-11 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 flex items-center justify-center p-1">
+                            {% if sale.item.image %}
+                                <img src="{{ sale.item.image.url }}" class="max-w-full max-h-full object-contain">
+                            {% else %}
+                                <img src="https://picsum.photos/seed/{{ sale.item.id }}/80/80" class="max-w-full max-h-full object-contain">
+                            {% endif %}
                         </div>
-                        <div class="sale-amount">${{ sale.total_amount }}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="sale-name text-xs font-extrabold text-[#0f172a] truncate">{{ sale.item.name }}</div>
+                            <div class="sale-meta text-[10px] text-slate-400 font-bold mt-0.5">{{ sale.seller.username }} ➔ {{ sale.buyer.username }}</div>
+                            <div class="sale-meta text-[9px] text-[#624bff] font-black mt-1">{{ sale.sold_at|date:"M d, H:i" }}</div>
+                        </div>
+                        <div class="sale-amount text-sm font-black text-[#624bff]">${{ sale.total_amount }}</div>
                     </div>
                     {% empty %}
-                    <div style="text-align:center;color:var(--muted);padding:3rem;font-family:var(--serif);">No transactions recorded yet</div>
+                    <div style="text-align:center;color:#64748b;padding:3rem;font-weight:700;" class="text-xs">No transactions recorded yet</div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+
     </div>
 
-    <!-- Chart -->
-    <div class="chart-panel">
-        <div class="panel-head">
-            <div>
-                <div class="panel-title">Revenue & Commission Breakdown</div>
-                <div class="panel-sub">Performance per unique seller</div>
-            </div>
+    <!-- Revenue Breakdown Chart -->
+    <div class="max-w-7xl mx-auto bg-white rounded-[2.5rem] border border-slate-100 shadow-xs overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc]">
+            <h3 class="text-base font-black text-[#0f172a]">Revenue & Commission Breakdown</h3>
+            <p class="text-xs text-[#64748b] font-semibold mt-0.5">Categorized breakdown per seller account</p>
         </div>
-        <div class="chart-wrap">
+        <div class="p-8" style="position:relative; height:280px;">
             <canvas id="revenueChart"></canvas>
         </div>
     </div>
 
 </div>
 
+<!-- Admin Breakdown Chart.js initialization script -->
 <script>
 const labels = [{% for row in user_rows %}"{{ row.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
 const revenues = [{% for row in user_rows %}{{ row.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
@@ -329,14 +212,14 @@ new Chart(ctx, {
             {
                 label: 'Revenue',
                 data: revenues,
-                backgroundColor: 'rgba(114, 161, 15, 0.8)', /* Leaf Green to match ThemeWagon Organic */
+                backgroundColor: 'rgba(98, 75, 255, 0.85)', /* Signature Indigo */
                 borderRadius: 8,
                 borderSkipped: false,
             },
             {
                 label: 'Commission',
                 data: commissions,
-                backgroundColor: 'rgba(229, 169, 60, 0.8)', /* Muted Amber Gold */
+                backgroundColor: 'rgba(195, 181, 255, 0.85)', /* Muted Lilac */
                 borderRadius: 8,
                 borderSkipped: false,
             }
@@ -348,18 +231,18 @@ new Chart(ctx, {
         plugins: {
             legend: {
                 labels: {
-                    color: '#7A846A',
-                    font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' },
+                    color: '#64748b',
+                    font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
                     usePointStyle: true,
                     pointStyleWidth: 8,
                 }
             },
             tooltip: {
                 backgroundColor: '#ffffff',
-                borderColor: 'rgba(114, 161, 15, 0.15)',
+                borderColor: '#e2e8f0',
                 borderWidth: 1,
-                titleColor: '#2C3E14',
-                bodyColor: '#7A846A',
+                titleColor: '#0f172a',
+                bodyColor: '#64748b',
                 titleFont: { family: 'Plus Jakarta Sans', weight: '700' },
                 bodyFont: { family: 'Plus Jakarta Sans' },
                 padding: 12,
@@ -371,22 +254,21 @@ new Chart(ctx, {
         },
         scales: {
             x: {
-                ticks: { color: '#7A846A', font: { family: 'Plus Jakarta Sans', weight: '500' } },
-                grid: { color: 'rgba(114, 161, 15, 0.04)' },
-                border: { color: 'rgba(114, 161, 15, 0.08)' }
+                ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', weight: '700', size: 10 } },
+                grid: { color: 'rgba(98, 75, 255, 0.03)' },
+                border: { color: 'rgba(98, 75, 255, 0.05)' }
             },
             y: {
                 ticks: {
-                    color: '#7A846A',
-                    font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' },
+                    color: '#64748b',
+                    font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' },
                     callback: v => '$' + v.toLocaleString()
                 },
-                grid: { color: 'rgba(114, 161, 15, 0.04)' },
-                border: { color: 'rgba(114, 161, 15, 0.08)' }
+                grid: { color: 'rgba(98, 75, 255, 0.03)' },
+                border: { color: 'rgba(98, 75, 255, 0.05)' }
             }
         }
     }
 });
 </script>
-
 {% endblock %}

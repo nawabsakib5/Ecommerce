@@ -5,7 +5,7 @@ from .models import Profile
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['email'] # ইউজার শুধু ইমেইল আপডেট করতে পারবে
+        fields = ['email' ] # ইউজার শুধু ইমেইল আপডেট করতে পারবে
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
