@@ -4,7 +4,9 @@
 {% block title %} {{ title }} {% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -22,14 +24,13 @@
         border: 1px solid #e2e8f0;
         border-radius: 1rem;
         outline: none;
-        transition: all 0.3s ease-in-out;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         color: #0f172a;
         font-size: 0.875rem;
     }
     input:not([type="checkbox"]):focus, select:focus, textarea:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
     input[type="file"] {
         background-color: transparent;
@@ -37,6 +38,7 @@
         padding: 2rem 1.25rem;
         text-align: center;
         cursor: pointer;
+        transition: all 0.3s ease;
     }
     input[type="file"]:hover {
         border-color: #e94560;
@@ -50,9 +52,9 @@
     }
 </style>
 
-<div class="bazaar-container max-w-2xl mx-auto py-10 px-4 animate-fade-in">
-    <!-- Main Card Container -->
-    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+<div class="bazaar-container max-w-2xl mx-auto py-10 px-4">
+    <!-- Main Card Container (Class main-card added for GSAP) -->
+    <div class="main-card bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
         <div class="mb-8 text-center">
             <span class="inline-block text-3xl mb-2">🛍️</span>
             <h1 class="bazaar-title text-3xl font-black text-[#0f172a]" style="font-family: 'Playfair Display', serif;">{{ title }}</h1>
@@ -85,12 +87,12 @@
                 </div>
             {% endif %}
 
-            <!-- Dynamic Input Fields Loop -->
+            <!-- Dynamic Input Fields Loop (Class form-row added for GSAP) -->
             <div class="space-y-5">
                 {% for field in form %}
                     {% if field.field.widget.input_type == 'checkbox' %}
                         <!-- Custom Styled Checkbox Container -->
-                        <div class="flex items-center space-x-3 p-4 bg-[#f8fafc] rounded-2xl border border-slate-100">
+                        <div class="form-row flex items-center space-x-3 p-4 bg-[#f8fafc] rounded-2xl border border-slate-100 opacity-0">
                             <div class="flex items-center h-5">
                                 {{ field }}
                             </div>
@@ -105,7 +107,7 @@
                         </div>
                     {% else %}
                         <!-- Standard Form Inputs -->
-                        <div class="flex flex-col">
+                        <div class="form-row flex flex-col opacity-0">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
                                 {{ field.label }}
                             </label>
@@ -123,7 +125,7 @@
             </div>
 
             <!-- Submission Actions -->
-            <div class="pt-4 space-y-4">
+            <div class="form-row pt-4 space-y-4 opacity-0">
                 <button type="submit" class="w-full py-4 px-8 text-xs font-extrabold uppercase tracking-widest text-white bg-[#e94560] hover:bg-[#d23f57] rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                     Save Changes
                 </button>
@@ -135,4 +137,56 @@
         </form>
     </div>
 </div>
+
+<script>
+    // 1. Main card fade-and-rise entrance animation
+    gsap.to(".main-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for form input rows
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.05,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.15
+    });
+
+    // 3. Dynamic micro-physics hover / focus on input fields
+    const inputs = document.querySelectorAll('input:not([type="checkbox"]), select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            gsap.to(input, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        input.addEventListener('blur', () => {
+            gsap.to(input, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 4. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+</script>
 {% endblock %}
