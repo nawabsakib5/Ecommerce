@@ -1,21 +1,68 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %} {{ title }} {% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto my-10 px-4">
-    <!-- Main Card Container with Premium Organic Borders and Soft Shadows -->
-    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#EAF1DB] shadow-xl shadow-[#72A10F]/5">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+<style>
+    .bazaar-container {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .bazaar-title {
+        font-family: 'Playfair Display', serif;
+    }
+    
+    /* Global form widget inputs override */
+    input:not([type="checkbox"]), select, textarea {
+        width: 100%;
+        padding: 0.9rem 1.25rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        color: #0f172a;
+        font-size: 0.875rem;
+    }
+    input:not([type="checkbox"]):focus, select:focus, textarea:focus {
+        border-color: #e94560;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+    }
+    input[type="file"] {
+        background-color: transparent;
+        border: 2px dashed #e2e8f0;
+        padding: 2rem 1.25rem;
+        text-align: center;
+        cursor: pointer;
+    }
+    input[type="file"]:hover {
+        border-color: #e94560;
+        background-color: #f8fafc;
+    }
+    input[type="checkbox"] {
+        width: 1.2rem !important;
+        height: 1.2rem !important;
+        cursor: pointer;
+        accent-color: #e94560;
+    }
+</style>
+
+<div class="bazaar-container max-w-2xl mx-auto py-10 px-4 animate-fade-in">
+    <!-- Main Card Container -->
+    <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
         <div class="mb-8 text-center">
-            <span class="inline-block text-3xl mb-2">🌿</span>
-            <h1 class="text-3xl font-black text-[#2C3E14]" style="font-family: 'Playfair Display', serif;">{{ title }}</h1>
-            <p class="text-stone-400 text-xs font-bold mt-2">Please fill in the details below to proceed.</p>
+            <span class="inline-block text-3xl mb-2">🛍️</span>
+            <h1 class="bazaar-title text-3xl font-black text-[#0f172a]" style="font-family: 'Playfair Display', serif;">{{ title }}</h1>
+            <p class="text-slate-400 text-xs font-bold mt-2">Please fill in the details below to update your catalog.</p>
         </div>
 
         <form method="post" action="." enctype="multipart/form-data" class="space-y-6">
             {% csrf_token %}
 
-            <!-- Form Validation Errors -->
+            <!-- Validation Errors -->
             {% if form.errors or form.non_field_errors %}
                 <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-2xl">
                     <div class="flex">
@@ -42,24 +89,24 @@
             <div class="space-y-5">
                 {% for field in form %}
                     {% if field.field.widget.input_type == 'checkbox' %}
-                        <!-- Organic Styled Checkbox Container -->
-                        <div class="flex items-center space-x-3 p-4 bg-[#FAF8F5] rounded-2xl border border-stone-200/60">
+                        <!-- Custom Styled Checkbox Container -->
+                        <div class="flex items-center space-x-3 p-4 bg-[#f8fafc] rounded-2xl border border-slate-100">
                             <div class="flex items-center h-5">
                                 {{ field }}
                             </div>
                             <div class="ml-1.5 text-xs font-bold">
-                                <label for="{{ field.id_for_label }}" class="text-stone-700 cursor-pointer select-none">
+                                <label for="{{ field.id_for_label }}" class="text-slate-700 cursor-pointer select-none">
                                     {{ field.label }}
                                 </label>
                                 {% if field.help_text %}
-                                    <p class="text-[10px] text-stone-400 font-medium mt-0.5">{{ field.help_text }}</p>
+                                    <p class="text-[10px] text-slate-400 font-medium mt-0.5">{{ field.help_text }}</p>
                                 {% endif %}
                             </div>
                         </div>
                     {% else %}
-                        <!-- Text / Selection / File Fields -->
+                        <!-- Standard Form Inputs -->
                         <div class="flex flex-col">
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] mb-2 ml-1">
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
                                 {{ field.label }}
                             </label>
                             
@@ -68,7 +115,7 @@
                             </div>
 
                             {% if field.help_text %}
-                                <p class="text-[10px] text-stone-400 font-bold mt-1.5 ml-1">{{ field.help_text }}</p>
+                                <p class="text-[10px] text-slate-400 font-bold mt-1.5 ml-1">{{ field.help_text }}</p>
                             {% endif %}
                         </div>
                     {% endif %}
@@ -77,54 +124,15 @@
 
             <!-- Submission Actions -->
             <div class="pt-4 space-y-4">
-                <button type="submit" class="w-full py-4 px-8 text-xs font-extrabold uppercase tracking-widest text-white bg-[#72A10F] hover:bg-[#5C830A] rounded-2xl shadow-md shadow-[#72A10F]/10 transition-all duration-300 transform active:scale-95">
+                <button type="submit" class="w-full py-4 px-8 text-xs font-extrabold uppercase tracking-widest text-white bg-[#e94560] hover:bg-[#d23f57] rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                     Save Changes
                 </button>
                 
-                <a href="{% url 'dashboard:index' %}" class="block text-center text-xs font-bold text-[#7A846A] hover:text-[#2C3E14] underline transition-colors duration-200">
+                <a href="{% url 'dashboard:index' %}" class="block text-center text-xs font-bold text-slate-400 hover:text-[#0f172a] underline transition-colors duration-200">
                     Cancel and go back
                 </a>
             </div>
         </form>
     </div>
 </div>
-
-<style>
-    /* Styling for all Django-generated form controls except checkboxes */
-    input:not([type="checkbox"]), select, textarea {
-        width: 100%;
-        padding: 0.9rem 1.25rem;
-        background-color: #FAF8F5; /* Alabaster warm cream background */
-        border: 1px solid rgba(114, 161, 15, 0.2); /* Muted leaf border tint */
-        border-radius: 1rem;
-        outline: none;
-        transition: all 0.3s ease-in-out;
-        color: #2C3E14;
-        font-size: 0.875rem;
-    }
-    input:not([type="checkbox"]):focus, select:focus, textarea:focus {
-        border-color: #72A10F;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(114, 161, 15, 0.12);
-    }
-    /* Dashed styling wrapper for dynamic Django file fields */
-    input[type="file"] {
-        background-color: transparent;
-        border: 2px dashed rgba(114, 161, 15, 0.2);
-        padding: 2rem 1.25rem;
-        text-align: center;
-        cursor: pointer;
-    }
-    input[type="file"]:hover {
-        border-color: #72A10F;
-        background-color: #FAF8F5;
-    }
-    /* Checkbox widget customization dimensions */
-    input[type="checkbox"] {
-        width: 1.2rem !important;
-        height: 1.2rem !important;
-        cursor: pointer;
-        accent-color: #72A10F; /* Matches brand color on modern browsers */
-    }
-</style>
-{% endblock content %}
+{% endblock %}
