@@ -3,8 +3,9 @@
 {% block title %}Start a Conversation{% endblock %}
 
 {% block content %}
-<!-- Google Fonts for Ultra-Premium Typography -->
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -22,14 +23,13 @@
         border: 1px solid #e2e8f0;
         border-radius: 1.25rem;
         outline: none;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         font-size: 0.875rem;
         color: #0f172a;
     }
     textarea:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 10px 25px -5px rgba(233, 69, 96, 0.08), 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
 </style>
 
@@ -38,25 +38,25 @@
         
         <!-- Page Header -->
         <div class="mb-10 text-center">
-            <span class="inline-flex items-center justify-center w-12 h-12 bg-white border border-slate-100 rounded-2xl text-xl shadow-xs mb-4">💬</span>
+            <span class="inline-block text-3xl mb-2">💬</span>
             <h1 class="bazaar-title text-3xl md:text-5xl font-black text-[#0f172a] tracking-tight">Start a Conversation</h1>
-            <p class="text-slate-400 text-xs md:text-sm font-bold mt-2.5">Send an inquiry message to the listed seller to initiate trading.</p>
+            <p class="text-slate-400 text-xs font-bold mt-2.5">Send a direct message to the seller about this product.</p>
         </div>
 
-        <!-- Form Card Container -->
-        <div class="bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(15,23,42,0.015)] shadow-slate-100/40 relative">
+        <!-- Form Card Container (Class main-card added for GSAP) -->
+        <div class="main-card bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-[0_8px_30px_rgb(15,23,42,0.015)] shadow-slate-100/40 relative opacity-0">
             
-            <!-- Quick Helper Templates -->
-            <div class="mb-8">
+            <!-- Quick Helper Templates (Class form-row added for GSAP) -->
+            <div class="form-row mb-8 opacity-0">
                 <p class="text-[10px] font-black uppercase tracking-widest text-[#e94560] mb-4 ml-1">Suggested Inquiries</p>
                 <div class="flex flex-wrap gap-2.5">
-                    <button type="button" onclick="insertTemplate('Hi, is this item still available?')" class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
+                    <button type="button" onclick="insertTemplate('Hi, is this item still available?')" class="reply-pill px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
                         Is this available?
                     </button>
-                    <button type="button" onclick="insertTemplate('Hi! Is the price negotiable?')" class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
+                    <button type="button" onclick="insertTemplate('Hi! Is the price negotiable?')" class="reply-pill px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
                         Price negotiable?
                     </button>
-                    <button type="button" onclick="insertTemplate('Hi, I am interested. Can I see some more pictures of it?')" class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
+                    <button type="button" onclick="insertTemplate('Hi, I am interested. Can I see some more pictures of it?')" class="reply-pill px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 rounded-xl text-xs font-bold text-[#0f172a] transition duration-200 active:scale-95">
                         More pictures?
                     </button>
                 </div>
@@ -68,7 +68,8 @@
                 <!-- Dynamic Form Fields Loop -->
                 <div class="space-y-5">
                     {% for field in form %}
-                        <div class="flex flex-col gap-2 relative">
+                        <!-- Form Input Row (Class form-row added for GSAP) -->
+                        <div class="form-row flex flex-col gap-2 relative opacity-0">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                                 {{ field.label }}
                             </label>
@@ -85,9 +86,9 @@
                     {% endfor %}
                 </div>
 
-                <!-- Validation Errors Panel -->
+                <!-- Validation Errors Panel (Class form-row added for GSAP) -->
                 {% if form.errors or form.non_field_errors %}
-                    <div class="p-5 bg-rose-50 border border-rose-100 rounded-2xl">
+                    <div class="form-row p-5 bg-rose-50 border border-rose-100 rounded-2xl opacity-0">
                         <div class="flex items-start">
                             <div class="flex-shrink-0 mt-0.5">
                                 <svg class="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
@@ -107,9 +108,9 @@
                     </div>
                 {% endif %}
 
-                <!-- Submission Trigger -->
-                <div class="pt-4">
-                    <button type="submit" class="w-full py-4.5 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                <!-- Submission Trigger (Class form-row added for GSAP) -->
+                <div class="form-row pt-4 opacity-0">
+                    <button type="submit" class="submit-btn w-full py-4.5 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                         Send Message
                     </button>
                 </div>
@@ -120,6 +121,77 @@
 </div>
 
 <script>
+    // 1. Main card fade-and-rise entrance animation
+    gsap.to(".main-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for form input rows and quick templates
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.06,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.15
+    });
+
+    // 3. Standalone micro-physics hover / focus on textarea field
+    const textareaField = document.querySelector('textarea');
+    if (textareaField) {
+        textareaField.addEventListener('focus', () => {
+            gsap.to(textareaField, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        textareaField.addEventListener('blur', () => {
+            gsap.to(textareaField, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    }
+
+    // 4. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+
+    // 5. Staggered hover animations for suggested inquiry pill buttons
+    const pills = document.querySelectorAll('.reply-pill');
+    pills.forEach(pill => {
+        pill.addEventListener('mouseenter', () => {
+            gsap.to(pill, {
+                y: -1.5,
+                scale: 1.02,
+                duration: 0.2,
+                ease: "power1.out"
+            });
+        });
+        pill.addEventListener('mouseleave', () => {
+            gsap.to(pill, {
+                y: 0,
+                scale: 1,
+                duration: 0.2,
+                ease: "power1.out"
+            });
+        });
+    });
+
     // Quick Insert Template Handler
     const textarea = document.querySelector('textarea');
     const charCounter = document.getElementById('char-counter');
