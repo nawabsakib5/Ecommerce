@@ -4,7 +4,9 @@
 {% block title %}Inbox{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -18,8 +20,8 @@
 <div class="bazaar-container min-h-screen bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-16">
     <div class="max-w-3xl mx-auto">
         
-        <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+        <!-- Page Header (Class header-sec added for GSAP) -->
+        <div class="header-sec flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 opacity-0">
             <div>
                 <h1 class="bazaar-title text-3xl md:text-5xl font-black text-[#0f172a] tracking-tight">Inbox</h1>
                 <p class="text-slate-400 text-xs md:text-sm font-bold mt-2">Manage and view all your active buyer-seller conversations.</p>
@@ -29,8 +31,8 @@
             </span>
         </div>
 
-        <!-- ✅ Dynamic Instant Search Bar (Filters conversations in real-time) -->
-        <div class="relative mb-8">
+        <!-- ✅ Dynamic Instant Search Bar (Class search-wrap added for GSAP) -->
+        <div class="search-wrap relative mb-8 opacity-0">
             <input type="text" 
                    id="inbox-search" 
                    placeholder="Search inbox by sender or item name..." 
@@ -45,8 +47,8 @@
         <!-- Conversations List container -->
         <div id="conversations-wrapper" class="space-y-4">
             {% for conversation in conversations %}
-                <!-- Item Card with data attributes for search index -->
-                <div class="conversation-card" 
+                <!-- Item Card with data attributes for search index (Class conversation-card opacity-0 added for GSAP) -->
+                <div class="conversation-card opacity-0" 
                      data-search-item="{{ conversation.item.name|lower }}"
                      {% for member in conversation.members.all %}{% if member != request.user %}data-search-member="{{ member.username|lower }}"{% endif %}{% endfor %}>
                     
@@ -96,8 +98,8 @@
                     </a>
                 </div>
             {% empty %}
-                <!-- Empty State Layout -->
-                <div class="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs">
+                <!-- Empty State Layout (Class empty-state added for GSAP) -->
+                <div class="empty-state text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs opacity-0">
                     <div class="inline-flex items-center justify-center w-16 h-16 bg-[#f6f9fc] rounded-2xl mb-4 text-[#0f172a]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -108,8 +110,8 @@
                 </div>
             {% endfor %}
 
-            <!-- Dynamic Search No Results State (Hidden by default) -->
-            <div id="no-search-results" class="hidden text-center py-16 bg-white rounded-[2.5rem] border border-slate-100">
+            <!-- Dynamic Search No Results State (Hidden by default, Class added for GSAP) -->
+            <div id="no-search-results" class="hidden text-center py-16 bg-white rounded-[2.5rem] border border-slate-100 opacity-0">
                 <span class="text-4xl block mb-2">🔍</span>
                 <h3 class="bazaar-title text-xl font-black text-[#0f172a]">No matching chats</h3>
                 <p class="text-slate-400 text-xs font-bold mt-2">Adjust your query or check spelling.</p>
@@ -119,7 +121,103 @@
 </div>
 
 <script>
-    // Real-Time Search Filtering Logic
+    // 1. Header Section fade-and-slide reveal on load
+    gsap.to(".header-sec", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Search bar panel soft entrance
+    gsap.to(".search-wrap", {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: "power2.out",
+        delay: 0.15
+    });
+
+    // 3. Staggered reveal for inbox conversation cards
+    gsap.to(".conversation-card", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.06,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.25
+    });
+
+    // 4. Empty state reveal
+    gsap.to(".empty-state", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 5. Physics-based Hover Micro-interactions for Inbox Cards
+    const convCards = document.querySelectorAll('.conversation-card a');
+    convCards.forEach(card => {
+        const img = card.querySelector('img');
+        const icon = card.querySelector('.text-slate-300');
+        
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -5,
+                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.04)",
+                borderColor: "rgba(233, 69, 96, 0.15)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (img) {
+                gsap.to(img, { scale: 1.05, duration: 0.4, ease: "power2.out" });
+            }
+            if (icon) {
+                gsap.to(icon, { x: 3, duration: 0.3, ease: "power2.out" });
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.01)",
+                borderColor: "#f1f5f9",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (img) {
+                gsap.to(img, { scale: 1, duration: 0.4, ease: "power2.out" });
+            }
+            if (icon) {
+                gsap.to(icon, { x: 0, duration: 0.3, ease: "power2.out" });
+            }
+        });
+    });
+
+    // 6. Dynamic micro-physics on Search input field focus
+    const searchField = document.getElementById('inbox-search');
+    if (searchField) {
+        searchField.addEventListener('focus', () => {
+            gsap.to(searchField, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.04)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        searchField.addEventListener('blur', () => {
+            gsap.to(searchField, {
+                scale: 1,
+                boxShadow: "0 8px 30px rgb(15,23,42,0.01)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    }
+
+    // 7. Dynamic GSAP Real-Time Search Filtering Logic (with fade transitions)
     const searchInput = document.getElementById('inbox-search');
     const cards = document.querySelectorAll('.conversation-card');
     const noResults = document.getElementById('no-search-results');
@@ -134,18 +232,50 @@
                 const member = card.getAttribute('data-search-member') || '';
 
                 if (item.includes(query) || member.includes(query)) {
-                    card.style.display = 'block';
+                    if (card.style.display === 'none' || card.style.opacity === '0') {
+                        card.style.display = 'block';
+                        gsap.fromTo(card, 
+                            { opacity: 0, y: 15 },
+                            { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+                        );
+                    }
                     visibleCount++;
                 } else {
-                    card.style.display = 'none';
+                    if (card.style.display !== 'none') {
+                        gsap.to(card, {
+                            opacity: 0,
+                            y: -15,
+                            duration: 0.25,
+                            ease: "power2.in",
+                            onComplete: () => {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
                 }
             });
 
-            // Toggle empty state if no chats found
+            // Toggle empty state if no chats found with smooth GSAP animations
             if (visibleCount === 0 && cards.length > 0) {
-                noResults.classList.remove('hidden');
+                if (noResults.classList.contains('hidden')) {
+                    noResults.classList.remove('hidden');
+                    gsap.fromTo(noResults, 
+                        { opacity: 0, y: 15 },
+                        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+                    );
+                }
             } else {
-                noResults.classList.add('hidden');
+                if (!noResults.classList.contains('hidden')) {
+                    gsap.to(noResults, {
+                        opacity: 0,
+                        y: -15,
+                        duration: 0.25,
+                        ease: "power2.in",
+                        onComplete: () => {
+                            noResults.classList.add('hidden');
+                        }
+                    });
+                }
             }
         });
     }
