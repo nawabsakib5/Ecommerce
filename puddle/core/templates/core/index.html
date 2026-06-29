@@ -4,19 +4,18 @@
 {% block title %}Home | Cotton Web{% endblock %}
 
 {% block content %}
-<!-- Google Fonts for Modern Look -->
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    /* Smooth hover transitions for card layouts */
-    .deal-card img {
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .deal-card:hover img {
-        transform: scale(1.05);
+    .bazaar-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 800;
     }
     /* Hide horizontal scrollbar for flash deals track */
     #flash-deals-track::-webkit-scrollbar {
@@ -30,8 +29,8 @@
 
 <div class="bazaar-container max-w-7xl mx-auto px-6 py-6 md:py-10">
 
-    <!-- ✅ Row 1: Categories selector + Extensive Search Bar -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-10">
+    <!-- ✅ Row 1: Categories selector + Extensive Search Bar (Class search-row added for GSAP) -->
+    <div class="search-row grid grid-cols-1 md:grid-cols-12 gap-4 mb-10 opacity-0">
         <!-- Categories selector dropdown button -->
         <div class="md:col-span-3">
             <div class="dropdown relative w-full h-full">
@@ -70,13 +69,13 @@
         </div>
     </div>
 
-    <!-- ✅ Row 2: Premium Bazaar Dynamic Slider (Fully Functional) -->
-    <div class="relative bg-white rounded-3xl mb-16 border border-slate-100 shadow-xs overflow-hidden min-h-[420px] md:min-h-[480px]">
+    <!-- ✅ Row 2: Premium Bazaar Dynamic Slider (Class hero-slider-wrap added for GSAP) -->
+    <div class="hero-slider-wrap relative bg-white rounded-3xl mb-16 border border-slate-100 shadow-xs overflow-hidden min-h-[420px] md:min-h-[480px] opacity-0">
         
         <!-- Slider Container Track -->
-        <div id="carousel-track" class="flex transition-transform duration-700 ease-in-out w-full h-full" style="transform: translateX(0%);">
+        <div id="carousel-track" class="flex w-full h-full">
             
-            <!-- Slide 1: Earbuds (Exactly like input_file_5.png) -->
+            <!-- Slide 1: Earbuds -->
             <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
                 <!-- Left Text Details -->
                 <div class="md:col-span-6 text-left max-w-lg">
@@ -98,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Slide 2: Modern Backpack (Exactly like input_file_6.png structure) -->
+            <!-- Slide 2: Modern Backpack -->
             <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
                 <!-- Left Text Details -->
                 <div class="md:col-span-6 text-left max-w-lg">
@@ -152,8 +151,8 @@
         </div>
     </div>
 
-    <!-- ✅ Row 3: Listings / Flash Deals (Interactive Carousel List) -->
-    <div>
+    <!-- ✅ Row 3: Listings / Flash Deals (Class flash-deals-section added for GSAP) -->
+    <div class="flash-deals-section">
         <div class="flex items-center justify-between mb-10">
             <div>
                 <h2 class="text-2xl md:text-3xl font-black text-[#0f172a]">Flash Deals</h2>
@@ -173,7 +172,7 @@
         <!-- Horizontal scroll list -->
         <div id="flash-deals-track" class="flex gap-8 overflow-x-auto scroll-smooth pb-6 snap-x snap-mandatory">
             {% for item in items %}
-                <div class="deal-card min-w-[285px] md:min-w-[340px] flex-shrink-0 snap-start bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-xl hover:border-slate-200 transition-all duration-300 relative flex flex-col justify-between">
+                <div class="deal-card min-w-[285px] md:min-w-[340px] flex-shrink-0 snap-start bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xs hover:border-slate-200 transition-all duration-300 relative flex flex-col justify-between opacity-0">
                     
                     <!-- Floating tags & Price overlay -->
                     <div class="relative aspect-square w-full bg-slate-50/50 flex items-center justify-center p-6">
@@ -181,12 +180,12 @@
                             <img src="{{ item.image.url }}" 
                                  alt="{{ item.name }}" 
                                  loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
+                                 class="max-w-[85%] max-h-[85%] object-contain">
                         {% else %}
                             <img src="https://picsum.photos/seed/{{ item.id }}/400/400" 
                                  alt="{{ item.name }}" 
                                  loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain drop-shadow-md">
+                                 class="max-w-[85%] max-h-[85%] object-contain">
                         {% endif %}
                         
                         <span class="absolute top-4 left-4 bg-slate-900 text-white px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
@@ -224,14 +223,88 @@
 
 </div>
 
-<!-- Carousel & horizontal scroller Logic Scripts -->
+<!-- GSAP Powered Carousel & horizontal scroller Logic Scripts -->
 <script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Top categories & search panel entrance reveal
+    gsap.to(".search-row", {
+        y: 0,
+        opacity: 1,
+        duration: 0.65,
+        ease: "power2.out",
+        delay: 0.1
+    });
+
+    // 2. Elastic slider container card entrance
+    gsap.to(".hero-slider-wrap", {
+        scale: 1,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 3. Scroll triggered staggered entrance for Product Cards
+    gsap.to(".deal-card", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+            trigger: ".flash-deals-section",
+            start: "top 85%"
+        }
+    });
+
+    // 4. Standalone Micro-physics Hover Interaction for Product Cards
+    const cardsList = document.querySelectorAll('.deal-card');
+    cardsList.forEach(card => {
+        const img = card.querySelector('img');
+        
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -6,
+                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.05)",
+                borderColor: "rgba(233, 69, 96, 0.15)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (img) {
+                gsap.to(img, {
+                    scale: 1.04,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                boxShadow: "none",
+                borderColor: "#f1f5f9",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (img) {
+                gsap.to(img, {
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+
+    // 5. GSAP Powered Slider Logic
     let currentSlide = 0;
     const totalSlides = 3;
     const track = document.getElementById('carousel-track');
     const dots = document.querySelectorAll('.carousel-dot');
 
-    // Slide Manual Navigation
     function goToSlide(slideIndex) {
         currentSlide = slideIndex;
         updateCarousel();
@@ -244,21 +317,33 @@
     }, 5000);
 
     function updateCarousel() {
-        // Translate track
-        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        // Dynamic horizontal layout translation via GSAP
+        gsap.to(track, {
+            xPercent: -currentSlide * 100,
+            duration: 0.8,
+            ease: "power3.inOut"
+        });
         
-        // Update DOT indicator styles
+        // Dynamic slider indicators (Stretched dots animation)
         dots.forEach((dot, index) => {
             if (index === currentSlide) {
-                dot.classList.add('w-6', 'bg-[#0f172a]');
-                dot.classList.remove('w-2', 'bg-slate-300');
+                gsap.to(dot, {
+                    width: "24px",
+                    backgroundColor: "#0f172a",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
             } else {
-                dot.classList.add('w-2', 'bg-slate-300');
-                dot.classList.remove('w-6', 'bg-[#0f172a]');
+                gsap.to(dot, {
+                    width: "8px",
+                    backgroundColor: "#cbd5e1",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
             }
         });
         
-        // Reset auto timer interval on manual interaction
+        // Reset timer interval
         clearInterval(autoSlide);
         autoSlide = setInterval(() => {
             currentSlide = (currentSlide + 1) % totalSlides;

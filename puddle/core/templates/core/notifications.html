@@ -1,8 +1,13 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
 {% block title %}Notifications{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -14,21 +19,22 @@
 </style>
 
 <div class="bazaar-container max-w-3xl mx-auto py-10 px-4 sm:px-6">
-    <!-- Header Section -->
-    <div class="flex items-center justify-between mb-8">
+    <!-- Header Section (Class header-sec added for GSAP) -->
+    <div class="header-sec flex items-center justify-between mb-8 opacity-0">
         <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">Notifications</h1>
-        <span class="text-xs font-bold text-[#e94560] bg-[#e94560]/10 px-3.5 py-1.5 rounded-full">{{ notifications|length }} alerts</span>
+        <span class="text-xs font-bold text-[#e94560] bg-[#e94560]/10 px-3.5 py-1.5 rounded-full shadow-xs">{{ notifications|length }} alerts</span>
     </div>
 
     {% if notifications %}
+        <!-- Notifications List container -->
         <div class="space-y-4">
             {% for notif in notifications %}
-                <!-- Notification Row Card -->
-                <div class="bg-white rounded-3xl border p-5 flex items-start gap-4 shadow-xs hover:shadow-md transition duration-300
-                    {% if not notif.is_read %}border-l-4 border-l-[#e94560] border-y-slate-100 border-r-slate-100{% else %}border-slate-100{% endif %}">
+                <!-- Notification Row Card (Class notif-card added for GSAP) -->
+                <div class="notif-card bg-white rounded-3xl border p-5 flex items-start gap-4 shadow-xs transition-all duration-300 relative opacity-0
+                    {% if not notif.is_read %}border-l-4 border-l-[#e94560] border-y-slate-100 border-r-slate-100 bg-rose-50/5{% else %}border-slate-100{% endif %}">
 
                     <!-- Notification icon mapping -->
-                    <div class="flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center border
+                    <div class="icon-box flex-shrink-0 w-11 h-11 rounded-2xl flex items-center justify-center border transition-all duration-300
                         {% if notif.notification_type == 'message' %}bg-sky-50 border-sky-100 text-sky-600
                         {% elif notif.notification_type == 'sale' %}bg-emerald-50 border-emerald-100 text-emerald-600
                         {% elif notif.notification_type == 'admin' %}bg-amber-50 border-amber-100 text-amber-600
@@ -58,10 +64,10 @@
                         <div class="flex items-start justify-between gap-2">
                             <p class="font-extrabold text-[#0f172a] text-sm md:text-base leading-tight">{{ notif.title }}</p>
                             {% if not notif.is_read %}
-                                <span class="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-[#e94560] mt-1.5"></span>
+                                <span class="unread-dot flex-shrink-0 w-2.5 h-2.5 rounded-full bg-[#e94560] mt-1.5"></span>
                             {% endif %}
                         </div>
-                        <p class="text-xs md:text-sm text-slate-500 font-medium mt-1.5 leading-relaxed">{{ notif.message }}</p>
+                        <p class="text-xs md:text-sm text-slate-500 font-semibold mt-1.5 leading-relaxed">{{ notif.message }}</p>
                         <p class="text-[10px] text-slate-400 font-bold mt-2 flex items-center gap-1">
                             <span>🕒</span> {{ notif.created_at|timesince }} ago
                         </p>
@@ -70,7 +76,7 @@
                     <!-- CTA Read & Direct -->
                     {% if notif.link %}
                         <a href="{% url 'core:notification_read' notif.pk %}"
-                           class="flex-shrink-0 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-[#e94560] bg-rose-50 hover:bg-[#e94560] hover:text-white rounded-xl transition duration-200 border border-[#e94560]/10">
+                           class="btn-detail flex-shrink-0 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-[#e94560] bg-[#e94560]/5 hover:bg-[#e94560] hover:text-white rounded-xl transition duration-200 border border-[#e94560]/10">
                             View Details
                         </a>
                     {% endif %}
@@ -79,11 +85,107 @@
         </div>
 
     {% else %}
-        <!-- Empty Notifications state -->
-        <div class="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs">
+        <!-- Empty Notifications state (Class empty-state added for GSAP) -->
+        <div class="empty-state text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs opacity-0">
             <span class="text-5xl block mb-4">🔔</span>
             <p class="text-slate-400 text-sm font-bold">No notifications yet. You are all caught up!</p>
         </div>
     {% endif %}
 </div>
+
+<script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Header section fade-and-slide entrance
+    gsap.to(".header-sec", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for notification list rows
+    gsap.to(".notif-card", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.06,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.15
+    });
+
+    // 3. Empty State card entrance
+    gsap.to(".empty-state", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 4. Live heartbeat effect on unread notification dots
+    const unreadDots = document.querySelectorAll('.unread-dot');
+    if (unreadDots.length > 0) {
+        gsap.to(unreadDots, {
+            scale: 1.25,
+            opacity: 0.75,
+            duration: 0.8,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+    }
+
+    // 5. Physics-based Micro-hover interactions for Notification Cards
+    const notifCards = document.querySelectorAll('.notif-card');
+    notifCards.forEach(card => {
+        const iconBox = card.querySelector('.icon-box');
+        const ctaBtn = card.querySelector('.btn-detail');
+        
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -5,
+                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
+                borderColor: "rgba(233, 69, 96, 0.15)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (iconBox) {
+                gsap.to(iconBox, {
+                    scale: 1.05,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.01)",
+                borderColor: card.classList.contains('border-slate-100') ? "#f1f5f9" : "rgba(233, 69, 96, 0.2)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (iconBox) {
+                gsap.to(iconBox, {
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        // Hover scale effect for detailed buttons
+        if (ctaBtn) {
+            ctaBtn.addEventListener('mouseenter', () => {
+                gsap.to(ctaBtn, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+            });
+            ctaBtn.addEventListener('mouseleave', () => {
+                gsap.to(ctaBtn, { scale: 1, duration: 0.2, ease: "power1.out" });
+            });
+        }
+    });
+</script>
 {% endblock %}

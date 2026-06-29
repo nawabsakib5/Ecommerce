@@ -1,8 +1,11 @@
 {% extends 'core/base.html' %}
+
 {% block title %}Log In{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -19,18 +22,18 @@
         border-radius: 1rem;
         font-size: 0.875rem;
         color: #0f172a;
-        transition: all 0.3s ease-in-out;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         outline: none;
     }
     .login-input-wrapper input:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
 </style>
 
-<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20 animate-fade-in">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    <!-- Main Card Container (Class main-card added for GSAP) -->
+    <div class="main-card max-w-md w-full space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
         
         <div class="text-center">
             <span class="inline-block text-3xl mb-2">🔑</span>
@@ -42,20 +45,22 @@
             {% csrf_token %}
             
             <div class="space-y-5">
-                <div class="login-input-wrapper">
+                <!-- Username Input Wrapper (Class form-row added for GSAP) -->
+                <div class="form-row login-input-wrapper opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Username</label>
                     {{ form.username }}
                 </div>
 
-                <div class="login-input-wrapper">
+                <!-- Password Input Wrapper (Class form-row added for GSAP) -->
+                <div class="form-row login-input-wrapper opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Password</label>
                     {{ form.password }}
                 </div>
             </div>
 
-            <!-- Error Alerts Panel -->
+            <!-- Error Alerts Panel (Class form-row added for GSAP) -->
             {% if form.errors or form.non_field_errors %}
-            <div class="rounded-xl bg-rose-50 p-4 border border-rose-100 text-xs text-rose-800">
+            <div class="form-row rounded-xl bg-rose-50 p-4 border border-rose-100 text-xs text-rose-800 opacity-0">
                 {% for field in form %}
                     {% for error in field.errors %}
                         <p class="italic font-bold">• {{ error }}</p>
@@ -65,12 +70,15 @@
             </div>
             {% endif %}
 
-            <!-- Submit CTA -->
-            <button type="submit" class="w-full py-4 px-4 rounded-xl text-xs font-extrabold text-white bg-[#e94560] hover:bg-[#d23f57] transition-all duration-300 uppercase tracking-widest shadow-md shadow-[#e94560]/10 transform active:scale-95">
-                Sign In
-            </button>
+            <!-- Submit CTA Button (Class form-row added for GSAP) -->
+            <div class="form-row pt-2 opacity-0">
+                <button type="submit" class="submit-btn w-full py-4 px-4 rounded-xl text-xs font-extrabold text-white bg-[#e94560] hover:bg-[#d23f57] transition-all duration-300 uppercase tracking-widest shadow-md shadow-[#e94560]/10 transform active:scale-95">
+                    Sign In
+                </button>
+            </div>
 
-            <div class="text-center pt-2">
+            <!-- SignUp Redirection (Class form-row added for GSAP) -->
+            <div class="form-row text-center pt-2 opacity-0">
                 <p class="text-xs font-bold text-slate-400">
                     New to Cotton Web? 
                     <a href="{% url 'core:signup' %}" class="font-extrabold text-[#e94560] hover:text-[#d23f57] hover:underline">Create an account</a>
@@ -79,4 +87,56 @@
         </form>
     </div>
 </div>
+
+<script>
+    // 1. Main card fade-and-rise entrance animation
+    gsap.to(".main-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.85,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for form rows
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.2
+    });
+
+    // 3. Dynamic micro-physics hover / focus on input fields
+    const inputs = document.querySelectorAll('.login-input-wrapper input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            gsap.to(input, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        input.addEventListener('blur', () => {
+            gsap.to(input, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 4. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+</script>
 {% endblock %}

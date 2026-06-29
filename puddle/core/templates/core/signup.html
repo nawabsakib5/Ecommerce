@@ -3,7 +3,9 @@
 {% block title %}Create Account{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -21,18 +23,18 @@
         border-radius: 1rem;
         font-size: 0.875rem;
         color: #0f172a;
-        transition: all 0.3s ease-in-out;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         outline: none;
     }
     input:not([type="radio"]):focus, select:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
 </style>
 
-<div class="bazaar-container min-h-screen flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20 animate-fade-in">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+<div class="bazaar-container min-h-screen flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    <!-- Main Card Container (Class main-card added for GSAP) -->
+    <div class="main-card max-w-md w-full space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
 
         <div class="text-center">
             <span class="inline-block text-3xl mb-2">🌱</span>
@@ -47,13 +49,13 @@
             <div class="space-y-4">
                 {% for field in form %}
                     {% if field.name == 'user_type' %}
-                        <!-- Custom styled Radio Choices as Cards -->
-                        <div class="space-y-2">
+                        <!-- Custom styled Radio Choices as Cards (Class form-row added for GSAP) -->
+                        <div class="form-row space-y-2 opacity-0">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                                 Account Type
                             </label>
                             <div class="grid grid-cols-2 gap-3">
-                                <label class="relative cursor-pointer">
+                                <label class="role-card relative cursor-pointer block">
                                     <input type="radio" name="user_type" value="Seller" class="peer hidden"
                                         {% if form.user_type.value == 'Seller' %}checked{% endif %}>
                                     <div class="flex flex-col items-center justify-center p-4 border border-slate-200 rounded-2xl peer-checked:border-[#e94560] peer-checked:bg-[#e94560]/5 transition-all duration-300">
@@ -62,7 +64,7 @@
                                         <span class="text-[9px] text-slate-400 font-bold mt-1">I want to sell</span>
                                     </div>
                                 </label>
-                                <label class="relative cursor-pointer">
+                                <label class="role-card relative cursor-pointer block">
                                     <input type="radio" name="user_type" value="Buyer" class="peer hidden"
                                         {% if form.user_type.value == 'Buyer' %}checked{% endif %}>
                                     <div class="flex flex-col items-center justify-center p-4 border border-slate-200 rounded-2xl peer-checked:border-[#e94560] peer-checked:bg-[#e94560]/5 transition-all duration-300">
@@ -78,8 +80,8 @@
                         </div>
 
                     {% else %}
-                        <!-- Standard inputs -->
-                        <div class="space-y-1.5 relative">
+                        <!-- Standard inputs (Class form-row added for GSAP) -->
+                        <div class="form-row space-y-1.5 relative opacity-0">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
                                 {{ field.label }}
                             </label>
@@ -94,14 +96,17 @@
                 {% endfor %}
             </div>
 
-            <!-- Submit trigger -->
-            <button type="submit"
-                    class="w-full py-4 px-4 bg-[#e94560] hover:bg-[#d23f57] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
-                Create Account
-            </button>
+            <!-- Submit trigger (Class form-row added for GSAP) -->
+            <div class="form-row pt-2 opacity-0">
+                <button type="submit"
+                        class="submit-btn w-full py-4 px-4 bg-[#e94560] hover:bg-[#d23f57] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                    Create Account
+                </button>
+            </div>
         </form>
 
-        <div class="text-center mt-6">
+        <!-- Redirection Link (Class form-row added for GSAP) -->
+        <div class="form-row text-center mt-6 opacity-0">
             <p class="text-xs font-bold text-slate-400">
                 Already have an account?
                 <a href="{% url 'core:login' %}" class="font-extrabold text-[#e94560] hover:text-[#d23f57] hover:underline">Log in</a>
@@ -109,4 +114,67 @@
         </div>
     </div>
 </div>
+
+<script>
+    // 1. Main card fade-and-rise entrance animation
+    gsap.to(".main-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.85,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for form input rows
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.05,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.15
+    });
+
+    // 3. Dynamic micro-physics hover / focus on input fields
+    const inputs = document.querySelectorAll('input:not([type="radio"]), select');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            gsap.to(input, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        input.addEventListener('blur', () => {
+            gsap.to(input, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 4. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+
+    // 5. Dynamic scale hover for role cards (Seller/Buyer)
+    const roleCards = document.querySelectorAll('.role-card');
+    roleCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, { scale: 1.03, duration: 0.3, ease: "power2.out" });
+        });
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, { scale: 1, duration: 0.3, ease: "power2.out" });
+        });
+    });
+</script>
 {% endblock %}
