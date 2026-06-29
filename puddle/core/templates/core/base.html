@@ -7,8 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}{% endblock title %} | Cotton Web</title>
     
-    <!-- Google Fonts for High-End Premium Boutique Vibe -->
+    <!-- Google Fonts & GSAP Animation CDN Packages (Loaded globally in Head) -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     
     <style>
         body { 
@@ -71,8 +73,8 @@
 
 <body class="bg-[#f6f9fc] flex flex-col min-h-screen text-[#0f172a] leading-tight">
 
-    <!-- ✅ Section 1: Narrow Dark Topbar -->
-    <div class="bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5 relative z-50">
+    <!-- ✅ Section 1: Narrow Dark Topbar (Class top-bar-el added for GSAP) -->
+    <div class="top-bar-el bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5 relative z-50 opacity-0">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="bg-[#e94560] text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase">HOT</span>
@@ -89,12 +91,12 @@
         </div>
     </div>
 
-    <!-- ✅ Section 2: Floating Sticky Glass Header -->
-    <nav class="sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm transition-all duration-300">
+    <!-- ✅ Section 2: Floating Sticky Glass Header (Class glass-nav added for GSAP) -->
+    <nav class="glass-nav sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm opacity-0">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-            <!-- Logo Design with original "Cotton Web" brand name -->
-            <a href="/" class="group flex items-center gap-3">
+            <!-- Logo Design with original "Cotton Web" brand name (Class nav-logo-wrap added for GSAP) -->
+            <a href="/" class="nav-logo-wrap group flex items-center gap-3 opacity-0">
                 <div class="logo-container relative w-11 h-11 flex items-center justify-center overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 group-hover:border-slate-200 shadow-sm transition-all">
                     <!-- Crimson Shopping Bag icon -->
                     <svg class="h-6 w-6 text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -110,11 +112,11 @@
             <!-- Desktop Nav System -->
             <div class="hidden md:flex items-center gap-8">
                 <div class="flex items-center gap-8">
-                    <a href="/" class="nav-link text-xs font-bold text-[#0f172a] hover:text-[#e94560] uppercase tracking-wider">Home</a>
-                    <a href="{% url 'item:items' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Browse</a>
+                    <a href="/" class="nav-link nav-link-item text-xs font-bold text-[#0f172a] hover:text-[#e94560] uppercase tracking-wider opacity-0">Home</a>
+                    <a href="{% url 'item:items' %}" class="nav-link nav-link-item text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider opacity-0">Browse</a>
 
                     <!-- Categories Dropdown menu -->
-                    <div class="dropdown relative">
+                    <div class="dropdown relative nav-link-item opacity-0">
                         <button class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider flex items-center gap-1">
                             Categories
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,18 +137,18 @@
 
                     <!-- ✅ Conditional Link: Add Item -->
                     {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
-                        <a href="{% url 'item:new' %}" class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider">Add Item</a>
+                        <a href="{% url 'item:new' %}" class="nav-link nav-link-item text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider opacity-0">Add Item</a>
                     {% endif %}
                 </div>
 
-                <!-- Right Controls with exact matching circular sizes -->
+                <!-- Right Controls and User indicators with exact matching circular sizes -->
                 <div class="flex items-center gap-3.5 pl-8 border-l border-slate-100">
                     {% if request.user.is_authenticated %}
 
-                        <!-- ✅ 1. Buyer View Only: Shopping Cart Icon (h-5 w-5 standard size) -->
+                        <!-- ✅ 1. Buyer View Only: Shopping Cart Icon (Class nav-ctrl-icon added for GSAP) -->
                         {% if request.user.user_type == 'Buyer' %}
                             <a href="{% url 'cart:detail' %}"
-                               class="group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-all duration-300"
+                               class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
                                title="Cart">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -154,18 +156,18 @@
                             </a>
                         {% endif %}
 
-                        <!-- ✅ 2. Message/Inbox Icon (Visible for all logged-in roles: Buyer, Seller, Admin) -->
+                        <!-- ✅ 2. Message/Inbox Icon (Class nav-ctrl-icon added for GSAP) -->
                         <a href="{% url 'conversation:inbox' %}"
-                           class="group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-all duration-300"
+                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
                            title="Messages">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
                         </a>
 
-                        <!-- ✅ 3. Universal Notification Icon -->
+                        <!-- ✅ 3. Universal Notification Icon (Class nav-ctrl-icon added for GSAP) -->
                         <a href="{% url 'core:notifications' %}"
-                           class="group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-all duration-300"
+                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
                            title="Notifications">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -177,8 +179,8 @@
                             {% endif %}
                         </a>
 
-                        <!-- Dashboard Control Button -->
-                        <a href="{% url 'dashboard:index' %}" class="flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95">
+                        <!-- Dashboard Control Button (Class nav-dash-btn added for GSAP) -->
+                        <a href="{% url 'dashboard:index' %}" class="nav-dash-btn flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95 opacity-0">
                             Dashboard
                         </a>
 
@@ -188,11 +190,11 @@
                             </a>
                         {% endif %}
 
-                        <!-- ✅ 4. Security & Exit Controls (Modified to standard h-5 w-5 standalone rounded circles) [301] -->
+                        <!-- ✅ 4. Security & Exit Controls (Class nav-ctrl-icon added for GSAP) [301] -->
                         <!-- Change Password (Key Icon) -->
                         <a href="{% url 'core:changePass' %}" 
                            title="Change Password" 
-                           class="group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-all duration-300">
+                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
                             </svg>
@@ -200,7 +202,7 @@
                         <!-- Logout (Sign-out Door Arrow Icon) -->
                         <a href="{% url 'core:logout' %}" 
                            title="Logout" 
-                           class="group relative p-2.5 bg-slate-50 hover:bg-rose-50 rounded-full border border-slate-100 transition-all duration-300">
+                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-rose-50 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500 group-hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
@@ -274,7 +276,7 @@
                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
                     &copy; 2026 Cotton Web. All rights reserved.
                 </p>
-                <div class="flex gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <div class="flex gap-6 text-[10px] font-black uppercase tracking-widest text-[#eff2f1]/80">
                     <span class="flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 bg-[#e94560] rounded-full animate-pulse"></span>
                         Live System
@@ -286,4 +288,86 @@
     </footer>
 
 </body>
+
+<!-- Global GSAP Animations Script -->
+<script>
+    // 1. Top Bar entrance reveal
+    gsap.to(".top-bar-el", {
+        y: 0,
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out"
+    });
+
+    // 2. Navigation Header slide-down reveal
+    gsap.to(".glass-nav", {
+        y: 0,
+        opacity: 1,
+        duration: 0.65,
+        delay: 0.15,
+        ease: "power2.out"
+    });
+
+    // 3. Logo elastic reveal
+    gsap.to(".nav-logo-wrap", {
+        scale: 1,
+        opacity: 1,
+        duration: 0.75,
+        delay: 0.35,
+        ease: "back.out(1.15)"
+    });
+
+    // 4. Staggered navigation links reveal
+    gsap.to(".nav-link-item", {
+        x: 0,
+        opacity: 1,
+        stagger: 0.05,
+        duration: 0.5,
+        delay: 0.4,
+        ease: "power2.out"
+    });
+
+    // 5. Staggered circular buttons reveal
+    gsap.to(".nav-ctrl-icon", {
+        scale: 1,
+        opacity: 1,
+        stagger: 0.04,
+        duration: 0.5,
+        delay: 0.45,
+        ease: "back.out(1.15)"
+    });
+
+    // 6. Dashboard button slide-in
+    gsap.to(".nav-dash-btn", {
+        scale: 1,
+        opacity: 1,
+        duration: 0.55,
+        delay: 0.5,
+        ease: "back.out(1.1)"
+    });
+
+    // 7. Global Micro-physics Hover Interaction listeners for standalone circular buttons
+    const navButtons = document.querySelectorAll('.nav-ctrl-icon');
+    navButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            gsap.to(btn, {
+                scale: 1.08,
+                backgroundColor: "rgba(233, 69, 96, 0.08)",
+                borderColor: "rgba(233, 69, 96, 0.15)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, {
+                scale: 1,
+                backgroundColor: "#f8fafc",
+                borderColor: "#e2e8f0",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+</script>
 </html>

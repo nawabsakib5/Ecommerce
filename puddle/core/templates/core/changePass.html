@@ -3,7 +3,9 @@
 {% block title %}Change Password{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -20,21 +22,20 @@
         border-radius: 1rem;
         font-size: 0.875rem;
         color: #0f172a;
-        transition: all 0.3s ease-in-out;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         outline: none;
     }
     .pass-input:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
 </style>
 
-<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20 animate-fade-in">
+<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20">
     <div class="max-w-md w-full">
         
-        <!-- Card Container with Soft Shadow and Premium rounded corners -->
-        <div class="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50">
+        <!-- Card Container with Soft Shadow and Premium rounded corners (Class main-card added for GSAP) -->
+        <div class="main-card bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
             <div class="text-center mb-8">
                 <span class="inline-block text-3xl mb-2">🔒</span>
                 <h1 class="bazaar-title text-3xl font-black text-[#0f172a] tracking-tight">Security</h1>
@@ -55,31 +56,85 @@
             <form method="POST" action="." class="space-y-6">
                 {% csrf_token %}
                 
-                <!-- Current Password -->
-                <div class="space-y-2">
+                <!-- Current Password (Class form-row added for GSAP) -->
+                <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Current Password</label>
                     <input type="password" name="old_pass" required placeholder="••••••••" class="pass-input">
                 </div>
 
-                <!-- New Password -->
-                <div class="space-y-2">
+                <!-- New Password (Class form-row added for GSAP) -->
+                <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">New Password</label>
                     <input type="password" name="new_pass" required placeholder="••••••••" class="pass-input">
                 </div>
 
-                <!-- Confirm Password -->
-                <div class="space-y-2">
+                <!-- Confirm Password (Class form-row added for GSAP) -->
+                <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Confirm New Password</label>
                     <input type="password" name="con_pass" required placeholder="••••••••" class="pass-input">
                 </div>
 
-                <!-- Action Button in Bazaar Crimson -->
-                <button type="submit" class="w-full py-4.5 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-full shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
-                    Update Password
-                </button>
+                <!-- Action Button in Bazaar Crimson (Class form-row added for GSAP) -->
+                <div class="form-row pt-2 opacity-0">
+                    <button type="submit" class="submit-btn w-full py-4.5 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-full shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                        Update Password
+                    </button>
+                </div>
             </form>
         </div>
 
     </div>
 </div>
+
+<script>
+    // 1. Main card fade-and-rise entrance animation
+    gsap.to(".main-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for form input rows
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.06,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.15
+    });
+
+    // 3. Dynamic micro-physics hover / focus on input fields
+    const inputs = document.querySelectorAll('.pass-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            gsap.to(input, {
+                scale: 1.008,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        input.addEventListener('blur', () => {
+            gsap.to(input, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 4. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+</script>
 {% endblock %}
