@@ -4,23 +4,24 @@
 {% block title %}My Cart{% endblock %}
 
 {% block content %}
-<!-- Google Fonts for Modern Typography -->
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .bazaar-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800;
+        font-family: 'Playfair Display', serif;
     }
 </style>
 
-<div class="bazaar-container max-w-7xl mx-auto px-6 py-10 md:py-14 animate-fade-in">
+<div class="bazaar-container max-w-7xl mx-auto px-6 py-10 md:py-14">
     
-    <!-- Page Header -->
-    <div class="mb-10 text-left">
+    <!-- Page Header (Class header-sec added for GSAP) -->
+    <div class="header-sec mb-10 text-left opacity-0">
         <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">My Cart</h1>
         <p class="text-slate-500 text-xs font-semibold mt-2">Manage your selected items and review pricing before payment.</p>
     </div>
@@ -40,14 +41,16 @@
     {% if cart_items %}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-            <!-- Left Column: Items List -->
-            <div class="lg:col-span-2 space-y-4">
+            <!-- Left Column: Items List (Class left-items-panel added for GSAP) -->
+            <div class="left-items-panel lg:col-span-2 space-y-4 opacity-0">
                 {% for cart_item in cart_items %}
-                    <div class="bg-white rounded-3xl border border-slate-100 shadow-xs p-5 flex flex-col sm:flex-row gap-5 items-center justify-between transition-all hover:shadow-md duration-300">
+                    <!-- Individual Cart Row (Class cart-row added for GSAP) -->
+                    <div class="cart-row bg-white rounded-3xl border border-slate-100 shadow-xs p-5 flex flex-col sm:flex-row gap-5 items-center justify-between transition-all duration-300">
                         
                         <!-- Thumbnail & Meta Details -->
                         <div class="flex items-center gap-4 w-full sm:w-auto">
-                            <div class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-2">
+                            <!-- Image Wrap (Class thumb-wrap added for GSAP) -->
+                            <div class="thumb-wrap w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-2 transition-transform duration-300">
                                 {% if cart_item.item.image %}
                                     <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="max-w-full max-h-full object-contain">
                                 {% else %}
@@ -88,7 +91,7 @@
                                 </div>
 
                                 <a href="{% url 'cart:remove' cart_item.item.id %}"
-                                   class="w-8 h-8 rounded-full bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors duration-300"
+                                   class="btn-remove w-8 h-8 rounded-full bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors duration-300"
                                    title="Remove Item">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -102,8 +105,8 @@
                 {% endfor %}
             </div>
 
-            <!-- Right Column: Sticky Order Summary Dashboard -->
-            <div class="lg:col-span-1">
+            <!-- Right Column: Sticky Order Summary Dashboard (Class right-summary-panel added for GSAP) -->
+            <div class="right-summary-panel lg:col-span-1 opacity-0">
                 <div class="bg-white rounded-3xl border border-slate-100 shadow-xs p-6 md:p-8 sticky top-24">
                     <h2 class="bazaar-title text-xl font-black text-[#0f172a] mb-6">Order Summary</h2>
 
@@ -128,11 +131,11 @@
                     <!-- Direct CTAs in Bazaar Crimson -->
                     <div class="space-y-3">
                         <a href="{% url 'cart:checkout' %}"
-                           class="block w-full text-center py-4 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                           class="btn-submit block w-full text-center py-4 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                             Proceed to Checkout
                         </a>
                         <a href="{% url 'item:items' %}"
-                           class="block w-full text-center py-3.5 bg-slate-50 hover:bg-slate-100 text-[#0f172a] font-bold uppercase tracking-widest text-xs rounded-xl transition duration-300">
+                           class="btn-back block w-full text-center py-3.5 bg-slate-50 hover:bg-slate-100 text-[#0f172a] font-bold uppercase tracking-widest text-xs rounded-xl transition duration-300">
                             Continue Shopping
                         </a>
                     </div>
@@ -143,11 +146,11 @@
 
     {% else %}
         <!-- Empty Cart State -->
-        <div class="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs">
+        <div class="empty-state text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs opacity-0">
             <span class="text-5xl block mb-4">🛒</span>
             <p class="text-slate-500 text-sm font-bold mb-8">Your shopping cart is empty.</p>
             <a href="{% url 'item:items' %}"
-               class="inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md transition-all duration-300">
+               class="btn-submit inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md transition-all duration-300">
                 Browse Marketplace
             </a>
         </div>
@@ -156,6 +159,130 @@
 
 <!-- Quantity adjust scripts with instant automatic submit callbacks -->
 <script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Header Section fade-and-slide reveal on load
+    gsap.to(".header-sec", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Left Cart Items Panel slide-in entrance
+    gsap.to(".left-items-panel", {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.1
+    });
+
+    // 3. Staggered reveal for individual cart rows
+    gsap.from(".cart-row", {
+        y: 30,
+        opacity: 0,
+        stagger: 0.08,
+        duration: 0.7,
+        ease: "power2.out",
+        delay: 0.2
+    });
+
+    // 4. Right Order Summary Panel slide-in entrance
+    gsap.to(".right-summary-panel", {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.15
+    });
+
+    // 5. Empty State card entrance
+    gsap.to(".empty-state", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 6. Standalone Micro-physics Hover Interaction for Item Row thumbnails
+    const cartRows = document.querySelectorAll('.cart-row');
+    cartRows.forEach(row => {
+        const thumb = row.querySelector('.thumb-wrap');
+        const removeBtn = row.querySelector('.btn-remove');
+        
+        row.addEventListener('mouseenter', () => {
+            gsap.to(row, {
+                y: -4,
+                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.04)",
+                borderColor: "rgba(233, 69, 96, 0.12)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1.04,
+                    borderColor: "rgba(233, 69, 96, 0.15)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        row.addEventListener('mouseleave', () => {
+            gsap.to(row, {
+                y: 0,
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.01)",
+                borderColor: "#f1f5f9",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1,
+                    borderColor: "#e2e8f0",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        // Hover scale effect for individual remove buttons
+        if (removeBtn) {
+            removeBtn.addEventListener('mouseenter', () => {
+                gsap.to(removeBtn, { scale: 1.1, duration: 0.2, ease: "power1.out" });
+            });
+            removeBtn.addEventListener('mouseleave', () => {
+                gsap.to(removeBtn, { scale: 1, duration: 0.2, ease: "power1.out" });
+            });
+        }
+    });
+
+    // 7. Tactical hover configurations for CTA buttons
+    const actionButtons = [document.querySelector('.btn-submit'), document.querySelector('.btn-back')];
+    actionButtons.forEach(btn => {
+        if (btn) {
+            btn.addEventListener('mouseenter', () => {
+                gsap.to(btn, {
+                    y: -2,
+                    scale: 1.015,
+                    duration: 0.25,
+                    ease: "power1.out"
+                });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    y: 0,
+                    scale: 1,
+                    duration: 0.25,
+                    ease: "power1.out"
+                });
+            });
+        }
+    });
+
     function stepDownQty(itemId) {
         const input = document.getElementById(`qty-input-${itemId}`);
         const form = document.getElementById(`qty-form-${itemId}`);

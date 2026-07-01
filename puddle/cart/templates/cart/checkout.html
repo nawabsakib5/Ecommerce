@@ -4,7 +4,10 @@
 {% block title %}Checkout{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -22,20 +25,19 @@
         border-radius: 1rem;
         font-size: 0.875rem;
         color: #0f172a;
-        transition: all 0.3s ease-in-out;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
         outline: none;
     }
     .checkout-input:focus {
         border-color: #e94560;
         background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
     }
 </style>
 
-<div class="bazaar-container max-w-7xl mx-auto px-6 py-10 md:py-14 animate-fade-in">
+<div class="bazaar-container max-w-7xl mx-auto px-6 py-10 md:py-14">
     
-    <!-- Page Header -->
-    <div class="mb-10 text-left">
+    <!-- Page Header (Class header-sec added for GSAP) -->
+    <div class="header-sec mb-10 text-left opacity-0">
         <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">Checkout</h1>
         <p class="text-slate-500 text-xs font-semibold mt-2">Enter your delivery details to secure your purchase.</p>
     </div>
@@ -54,42 +56,43 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <!-- Left Column: Shipping and Contact Form -->
-        <div class="lg:col-span-7 bg-white rounded-[2rem] border border-slate-100 p-8 shadow-xs">
+        <!-- Left Column: Shipping and Contact Form (Class left-form-panel added for GSAP) -->
+        <div class="left-form-panel lg:col-span-7 bg-white rounded-[2rem] border border-slate-100 p-8 shadow-xs opacity-0">
             <h2 class="bazaar-title text-xl font-black text-[#0f172a] mb-6">Delivery Details</h2>
 
             <form method="POST" action="." class="space-y-6">
                 {% csrf_token %}
                 
-                <!-- Shipping Address Input -->
-                <div class="space-y-2">
+                <!-- Shipping Address Input (Class form-row added for GSAP) -->
+                <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Shipping Address</label>
                     <textarea name="shipping_address" required rows="4" placeholder="Enter your full street address, apartment, city and postal code..." class="checkout-input resize-none"></textarea>
                 </div>
 
-                <!-- Contact Phone Number Input -->
-                <div class="space-y-2">
+                <!-- Contact Phone Number Input (Class form-row added for GSAP) -->
+                <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Phone Number</label>
                     <input type="text" name="phone" required placeholder="e.g. +8801XXXXXXXXX" class="checkout-input">
                 </div>
 
-                <!-- Submit Button in Bazaar Crimson -->
-                <div class="pt-4">
-                    <button type="submit" class="w-full py-4 bg-[#e94560] hover:bg-[#d23f57] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
+                <!-- Submit Button in Bazaar Crimson (Class form-row added for GSAP) -->
+                <div class="form-row pt-4 opacity-0">
+                    <button type="submit" class="btn-submit w-full py-4 bg-[#e94560] hover:bg-[#d23f57] text-white text-xs font-extrabold uppercase tracking-widest rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
                         Place Order (${{ total }})
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Right Column: Order Review Panel -->
-        <div class="lg:col-span-5 bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 shadow-xs sticky top-24">
+        <!-- Right Column: Order Review Panel (Class right-review-panel added for GSAP) -->
+        <div class="right-review-panel lg:col-span-5 bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 shadow-xs sticky top-24 opacity-0">
             <h2 class="bazaar-title text-xl font-black text-[#0f172a] mb-6">Order Review</h2>
 
             <div class="space-y-4 mb-6 max-h-72 overflow-y-auto pr-1">
                 {% for cart_item in cart_items %}
-                    <div class="flex items-center gap-4 py-3.5 border-b border-slate-100 last:border-0">
-                        <div class="w-14 h-14 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 flex-shrink-0">
+                    <!-- Item Row (Class item-row added for GSAP) -->
+                    <div class="item-row flex items-center gap-4 py-3.5 border-b border-slate-100 last:border-0">
+                        <div class="thumb-wrap w-14 h-14 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center p-1.5 flex-shrink-0 transition-transform duration-300">
                             {% if cart_item.item.image %}
                                 <img src="{{ cart_item.item.image.url }}" class="max-w-full max-h-full object-contain">
                             {% else %}
@@ -113,11 +116,121 @@
                 <span class="text-2xl font-black text-[#e94560]">${{ total }}</span>
             </div>
 
-            <a href="{% url 'cart:detail' %}" class="block text-center text-xs font-bold text-slate-500 hover:text-[#0f172a] transition duration-200">
+            <a href="{% url 'cart:detail' %}" class="btn-back block text-center text-xs font-bold text-slate-500 hover:text-[#0f172a] transition duration-200">
                 ← Back to Cart
             </a>
         </div>
 
     </div>
 </div>
+
+<script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Header Section fade-and-slide reveal on load
+    gsap.to(".header-sec", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Left Shipping Form Panel slide-in entrance
+    gsap.to(".left-form-panel", {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.1
+    });
+
+    // 3. Staggered reveal for form input rows inside Left Panel
+    gsap.to(".form-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.6,
+        ease: "power2.out",
+        delay: 0.25
+    });
+
+    // 4. Right Order Review Panel slide-in entrance
+    gsap.to(".right-review-panel", {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.15
+    });
+
+    // 5. Dynamic micro-physics hover / focus on form input fields
+    const inputs = document.querySelectorAll('.checkout-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            gsap.to(input, {
+                scale: 1.006,
+                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+        input.addEventListener('blur', () => {
+            gsap.to(input, {
+                scale: 1,
+                boxShadow: "none",
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // 6. Smooth scale hover effect for submit button
+    const submitBtn = document.querySelector('.btn-submit');
+    if (submitBtn) {
+        submitBtn.addEventListener('mouseenter', () => {
+            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
+        });
+        submitBtn.addEventListener('mouseleave', () => {
+            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+
+    // 7. Standalone Micro-physics Hover Interaction for Item Row thumbnails
+    const itemRows = document.querySelectorAll('.item-row');
+    itemRows.forEach(row => {
+        const thumb = row.querySelector('.thumb-wrap');
+        row.addEventListener('mouseenter', () => {
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1.05,
+                    borderColor: "rgba(233, 69, 96, 0.15)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+        row.addEventListener('mouseleave', () => {
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1,
+                    borderColor: "#e2e8f0",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+
+    // 8. Hover scale effect for Back to Cart link
+    const backBtn = document.querySelector('.btn-back');
+    if (backBtn) {
+        backBtn.addEventListener('mouseenter', () => {
+            gsap.to(backBtn, { x: -3, duration: 0.2, ease: "power1.out" });
+        });
+        backBtn.addEventListener('mouseleave', () => {
+            gsap.to(backBtn, { x: 0, duration: 0.2, ease: "power1.out" });
+        });
+    }
+</script>
 {% endblock %}
