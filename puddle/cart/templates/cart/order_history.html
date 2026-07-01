@@ -4,22 +4,31 @@
 {% block title %}Order History{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .bazaar-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800;
+        font-family: 'Playfair Display', serif;
     }
+    
+    /* Sleek Custom Scrollbar for Recent Activity */
+    .sale-list { max-height: 520px; overflow-y: auto; padding-right: 4px; }
+    .sale-list::-webkit-scrollbar { width: 4px; }
+    .sale-list::-webkit-scrollbar-track { background: transparent; }
+    .sale-list::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
+    .sale-list::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
 </style>
 
-<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16 animate-fade-in">
+<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16">
     
-    <!-- Page Header -->
-    <div class="mb-10 text-left">
+    <!-- Page Header (Class header-sec added for GSAP) -->
+    <div class="header-sec mb-10 text-left opacity-0">
         <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">Order History</h1>
         <p class="text-slate-500 text-xs font-semibold mt-2">Track and view invoices for all your past purchases.</p>
     </div>
@@ -27,7 +36,8 @@
     <!-- History list wrapper -->
     <div class="space-y-6">
         {% for order in orders %}
-            <div class="bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:shadow-md duration-300">
+            <!-- Order Card (Class order-card added for GSAP) -->
+            <div class="order-card bg-white rounded-[2rem] border border-slate-100 p-6 md:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 opacity-0">
                 
                 <!-- Order ID and timeline metadata -->
                 <div class="space-y-1">
@@ -49,11 +59,11 @@
                     </div>
                     <p class="text-xs text-stone-400 font-bold">Placed on {{ order.created_at|date:"M d, Y" }}</p>
                     
-                    <!-- Preview of purchased items -->
+                    <!-- Preview of purchased items (Class item-thumb added for GSAP) -->
                     <div class="flex items-center gap-2 pt-3">
                         {% for order_item in order.order_items.all %}
                             {% if forloop.counter <= 3 %}
-                                <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-0.5" title="{{ order_item.item.name }}">
+                                <div class="item-thumb w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center p-0.5 transition-all duration-300" title="{{ order_item.item.name }}">
                                     {% if order_item.item.image %}
                                         <img src="{{ order_item.item.image.url }}" class="max-w-full max-h-full object-contain">
                                     {% else %}
@@ -75,15 +85,15 @@
                         <p class="text-xl font-black text-[#e94560] mt-0.5">${{ order.total_amount }}</p>
                     </div>
 
-                    <a href="{% url 'cart:order_detail' order.id %}" class="px-5 py-3 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-[10px] rounded-xl shadow-xs transition duration-300">
+                    <a href="{% url 'cart:order_detail' order.id %}" class="view-btn px-5 py-3 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-[10px] rounded-xl shadow-xs transition duration-300">
                         View Invoice
                     </a>
                 </div>
 
             </div>
         {% empty %}
-            <!-- Empty history view -->
-            <div class="text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs">
+            <!-- Empty history view (Class empty-state added for GSAP) -->
+            <div class="empty-state text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs opacity-0">
                 <span class="text-5xl block mb-4">📭</span>
                 <h3 class="bazaar-title text-2xl font-black text-[#0f172a]">No orders placed yet</h3>
                 <p class="text-[#6a6a6a] text-xs font-bold mt-2 max-w-sm mx-auto leading-relaxed">Your order history is currently empty. Explore the marketplace to make your first purchase!</p>
@@ -93,4 +103,90 @@
     </div>
 
 </div>
+
+<script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Header section fade-and-slide entrance
+    gsap.to(".header-sec", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for order cards
+    gsap.to(".order-card", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 3. Empty State card entrance
+    gsap.to(".empty-state", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+    });
+
+    // 4. Physics-based Micro-hover interactions for Order Cards
+    const orderCards = document.querySelectorAll('.order-card');
+    orderCards.forEach(card => {
+        const thumbs = card.querySelectorAll('.item-thumb');
+        const viewBtn = card.querySelector('.view-btn');
+        
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                y: -5,
+                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
+                borderColor: "rgba(233, 69, 96, 0.15)",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            // Slightly stagger-scale the product thumbnails on card hover
+            if (thumbs.length > 0) {
+                gsap.to(thumbs, {
+                    scale: 1.05,
+                    stagger: 0.04,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                y: 0,
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.01)",
+                borderColor: "#f1f5f9",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+            if (thumbs.length > 0) {
+                gsap.to(thumbs, {
+                    scale: 1,
+                    stagger: 0.04,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+
+        // Hover scale effect for individual invoice buttons
+        if (viewBtn) {
+            viewBtn.addEventListener('mouseenter', () => {
+                gsap.to(viewBtn, { scale: 1.03, duration: 0.2, ease: "power1.out" });
+            });
+            viewBtn.addEventListener('mouseleave', () => {
+                gsap.to(viewBtn, { scale: 1, duration: 0.2, ease: "power1.out" });
+            });
+        }
+    });
+</script>
 {% endblock %}
