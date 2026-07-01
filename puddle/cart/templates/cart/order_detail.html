@@ -4,7 +4,10 @@
 {% block title %}Order #{{ order.id }} Detail{% endblock %}
 
 {% block content %}
+<!-- Google Fonts & GSAP Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
     .bazaar-container {
@@ -16,16 +19,16 @@
     }
 </style>
 
-<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16 animate-fade-in">
+<div class="bazaar-container max-w-4xl mx-auto px-6 py-10 md:py-16">
     
-    <!-- Receipt Card Component -->
-    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-100/60 p-8 md:p-12 relative overflow-hidden">
+    <!-- Receipt Card Component (Class invoice-card added for GSAP) -->
+    <div class="invoice-card bg-white rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-100/60 p-8 md:p-12 relative overflow-hidden opacity-0">
         
         <!-- Top aesthetic ribbon -->
         <div class="absolute top-0 left-0 right-0 h-2 bg-[#e94560]"></div>
 
-        <!-- Receipt Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-10 pb-8 border-b border-slate-100">
+        <!-- Receipt Header (Class invoice-row added for GSAP) -->
+        <div class="invoice-row flex flex-col md:flex-row justify-between items-start gap-4 mb-10 pb-8 border-b border-slate-100 opacity-0">
             <div>
                 <span class="text-xs font-extrabold text-[#e94560] uppercase tracking-wider mb-2 block">Order Invoice</span>
                 <h1 class="bazaar-title text-3xl font-black text-[#0f172a] tracking-tight">Order #{{ order.id }}</h1>
@@ -48,8 +51,8 @@
             </div>
         </div>
 
-        <!-- Shipping and billing grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 pb-8 border-b border-slate-100">
+        <!-- Shipping and billing grid (Class invoice-row added for GSAP) -->
+        <div class="invoice-row grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 pb-8 border-b border-slate-100 opacity-0">
             <div>
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-[#e94560] mb-3">Shipping Address</h3>
                 <p class="text-slate-700 text-sm font-semibold leading-relaxed">{{ order.shipping_address }}</p>
@@ -61,14 +64,15 @@
             </div>
         </div>
 
-        <!-- Itemized summary list -->
-        <div class="mb-10">
+        <!-- Itemized summary list (Class invoice-row added for GSAP) -->
+        <div class="invoice-row mb-10 opacity-0">
             <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Itemized Items</h3>
             <div class="space-y-4">
                 {% for order_item in order.order_items.all %}
-                    <div class="flex items-center justify-between gap-4 py-2">
+                    <!-- Individual Product Row (Class item-row added for GSAP) -->
+                    <div class="item-row flex items-center justify-between gap-4 py-2 transition-all duration-300">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-1 flex-shrink-0">
+                            <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-1 flex-shrink-0 transition-transform duration-300">
                                 {% if order_item.item.image %}
                                     <img src="{{ order_item.item.image.url }}" class="max-w-full max-h-full object-contain">
                                 {% else %}
@@ -81,7 +85,6 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <!-- Safe subtotal calculations -->
                             <p class="font-black text-[#0f172a] text-sm">${{ order_item.price }}</p>
                         </div>
                     </div>
@@ -89,8 +92,8 @@
             </div>
         </div>
 
-        <!-- Bottom Total Row -->
-        <div class="flex justify-between items-center pt-6 border-t border-slate-100">
+        <!-- Bottom Total Row (Class invoice-row added for GSAP) -->
+        <div class="invoice-row flex justify-between items-center pt-6 border-t border-slate-100 opacity-0">
             <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Total Charged</span>
             <span class="text-3xl font-black text-[#e94560]">${{ order.total_amount }}</span>
         </div>
@@ -99,13 +102,94 @@
 
     <!-- Bottom Actions -->
     <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-10">
-        <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md">
+        <!-- Class btn-cta added for GSAP -->
+        <a href="{% url 'item:items' %}" class="btn-cta inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition shadow-md opacity-0">
             Continue Shopping
         </a>
-        <a href="{% url 'cart:order_history' %}" class="inline-flex items-center justify-center px-8 py-4 bg-white border border-slate-100 hover:bg-slate-50 text-[#0f172a] text-xs font-black uppercase tracking-widest rounded-xl transition">
+        <a href="{% url 'cart:order_history' %}" class="btn-cta inline-flex items-center justify-center px-8 py-4 bg-white border border-slate-100 hover:bg-slate-50 text-[#0f172a] text-xs font-black uppercase tracking-widest rounded-xl transition opacity-0">
             View Order History
         </a>
     </div>
 
 </div>
+
+<script>
+    // Register GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 1. Invoice Card Container smooth fade-and-rise on page load
+    gsap.to(".invoice-card", {
+        y: 0,
+        opacity: 1,
+        duration: 0.85,
+        ease: "power3.out"
+    });
+
+    // 2. Staggered reveal for internal invoice contents
+    gsap.to(".invoice-row", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.65,
+        ease: "power2.out",
+        delay: 0.25
+    });
+
+    // 3. Staggered entrance for the bottom CTA buttons
+    gsap.to(".btn-cta", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.1,
+        duration: 0.55,
+        ease: "power2.out",
+        delay: 0.55
+    });
+
+    // 4. Standalone Micro-physics Hover Interaction for Item Row thumbnails
+    const itemRows = document.querySelectorAll('.item-row');
+    itemRows.forEach(row => {
+        const thumb = row.querySelector('.rounded-xl');
+        row.addEventListener('mouseenter', () => {
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1.05,
+                    borderColor: "rgba(233, 69, 96, 0.15)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+        row.addEventListener('mouseleave', () => {
+            if (thumb) {
+                gsap.to(thumb, {
+                    scale: 1,
+                    borderColor: "#e2e8f0",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+
+    // 5. Tactile hover configurations for the bottom CTA buttons
+    const actionButtons = document.querySelectorAll('.btn-cta');
+    actionButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            gsap.to(btn, {
+                y: -3,
+                scale: 1.02,
+                duration: 0.25,
+                ease: "power1.out"
+            });
+        });
+        btn.addEventListener('mouseleave', () => {
+            gsap.to(btn, {
+                y: 0,
+                scale: 1,
+                duration: 0.25,
+                ease: "power1.out"
+            });
+        });
+    });
+</script>
 {% endblock %}
