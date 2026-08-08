@@ -4,362 +4,767 @@
 {% block title %}Home | Cotton Web{% endblock %}
 
 {% block content %}
-<!-- Google Fonts & GSAP Animation CDN Packages -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
-    .bazaar-container {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .bazaar-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800;
-    }
-    /* Hide horizontal scrollbar for flash deals track */
-    #flash-deals-track::-webkit-scrollbar {
-        display: none;
-    }
-    #flash-deals-track {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
+* { box-sizing: border-box; }
+
+body { background: #f8f7f4; }
+
+.cw-page {
+    font-family: 'Inter', sans-serif;
+    background: #f8f7f4;
+    min-height: 100vh;
+}
+
+/* ── SEARCH ROW ── */
+.cw-search-row {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 12px;
+    padding: 20px 32px 0;
+    max-width: 1360px;
+    margin: 0 auto;
+}
+@media(max-width:768px){ .cw-search-row{ grid-template-columns:1fr; padding:16px; } }
+
+.cw-cat-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: #1a1a2e;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+    position: relative;
+}
+.cw-cat-btn:hover { border-color: #c84b31; box-shadow: 0 0 0 3px rgba(200,75,49,.08); }
+
+.cw-cat-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px); left: 0;
+    width: 220px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 14px;
+    padding: 8px;
+    z-index: 999;
+    box-shadow: 0 20px 40px rgba(0,0,0,.08);
+}
+.cw-cat-btn:focus-within .cw-cat-dropdown,
+.cw-cat-btn:hover .cw-cat-dropdown { display: block; }
+
+.cw-cat-dropdown a {
+    display: block; padding: 8px 12px;
+    font-size: 12px; font-weight: 600; color: #1a1a2e;
+    border-radius: 8px; text-decoration: none;
+    transition: background .15s;
+}
+.cw-cat-dropdown a:hover { background: #f8f7f4; color: #c84b31; }
+
+.cw-search-form { position: relative; }
+.cw-search-input {
+    width: 100%; padding: 14px 48px 14px 20px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 500; color: #1a1a2e;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.cw-search-input:focus { border-color: #c84b31; box-shadow: 0 0 0 3px rgba(200,75,49,.08); }
+.cw-search-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: #9a9a9a;
+    transition: color .2s;
+}
+.cw-search-btn:hover { color: #c84b31; }
+
+/* ── HERO ── */
+.cw-hero {
+    max-width: 1360px; margin: 20px auto 0;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    height: 420px;
+}
+@media(max-width:1024px){ .cw-hero{ grid-template-columns:1fr; height:auto; } }
+@media(max-width:768px){ .cw-hero{ padding:0 16px; } }
+
+.cw-hero-main {
+    position: relative;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex; align-items: center;
+    padding: 48px;
+    cursor: pointer;
+}
+
+/* 3D floating orbs */
+.cw-hero-main::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(200,75,49,.35) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: orbFloat 6s ease-in-out infinite;
+}
+.cw-hero-main::after {
+    content: '';
+    position: absolute; bottom: -60px; left: 30%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(83,144,217,.25) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: orbFloat 8s ease-in-out infinite reverse;
+}
+@keyframes orbFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+}
+
+.cw-hero-content { position: relative; z-index: 2; max-width: 420px; }
+
+.cw-hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px;
+    background: rgba(200,75,49,.2);
+    border: 1px solid rgba(200,75,49,.4);
+    border-radius: 999px;
+    font-size: 10px; font-weight: 700;
+    color: #ff8c7a;
+    letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 20px;
+}
+.cw-hero-badge span { width: 6px; height: 6px; background: #c84b31; border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+.cw-hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -.02em;
+}
+.cw-hero-title em { font-style: normal; color: #ff6b47; }
+
+.cw-hero-sub {
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,.55);
+    margin-bottom: 32px; line-height: 1.6;
+}
+
+.cw-hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 28px;
+    background: #c84b31;
+    color: #fff;
+    border-radius: 12px;
+    font-size: 12px; font-weight: 700;
+    text-decoration: none;
+    letter-spacing: .05em; text-transform: uppercase;
+    transition: transform .2s, background .2s, box-shadow .2s;
+    box-shadow: 0 8px 24px rgba(200,75,49,.35);
+}
+.cw-hero-cta:hover { background: #b03d26; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(200,75,49,.45); }
+
+/* 3D product image in hero */
+.cw-hero-img-wrap {
+    position: absolute; right: 40px; bottom: 0;
+    z-index: 2;
+    width: 240px;
+    animation: heroImgFloat 4s ease-in-out infinite;
+}
+@media(max-width:900px){ .cw-hero-img-wrap{ display:none; } }
+@keyframes heroImgFloat {
+    0%,100%{ transform: translateY(0) rotate3d(1,1,0,0deg); }
+    50%{ transform: translateY(-12px) rotate3d(1,1,0,3deg); }
+}
+.cw-hero-img-wrap img { width: 100%; filter: drop-shadow(0 30px 40px rgba(0,0,0,.5)); }
+
+/* Slider dots */
+.cw-hero-dots { position: absolute; bottom: 20px; left: 48px; display: flex; gap: 6px; z-index: 3; }
+.cw-dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.25); cursor: pointer; transition: all .3s; border: none; padding: 0; }
+.cw-dot.active { width: 24px; background: #c84b31; }
+
+/* Side banner stack */
+.cw-hero-side { display: flex; flex-direction: column; gap: 16px; }
+@media(max-width:1024px){ .cw-hero-side{ flex-direction: row; } }
+
+.cw-side-card {
+    flex: 1;
+    border-radius: 18px;
+    padding: 24px;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    cursor: pointer;
+    transition: transform .3s;
+    min-height: 140px;
+}
+.cw-side-card:hover { transform: scale(1.02); }
+
+.cw-side-card-1 { background: linear-gradient(135deg, #0d7377, #14a085); }
+.cw-side-card-2 { background: linear-gradient(135deg, #7b2d8b, #a855f7); }
+
+.cw-side-card-label {
+    font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px;
+}
+.cw-side-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 800; color: #fff; line-height: 1.2;
+}
+.cw-side-card-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 10px; font-weight: 700; color: #fff;
+}
+
+/* ── CATEGORY STRIP ── */
+.cw-categories {
+    max-width: 1360px; margin: 24px auto 0; padding: 0 32px;
+}
+@media(max-width:768px){ .cw-categories{ padding: 0 16px; } }
+
+.cw-cat-strip {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+    scrollbar-width: none;
+}
+.cw-cat-strip::-webkit-scrollbar { display: none; }
+
+.cw-cat-chip {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 20px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 16px;
+    text-decoration: none;
+    color: #1a1a2e;
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    flex-shrink: 0;
+}
+.cw-cat-chip:hover { border-color: #c84b31; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(200,75,49,.1); color: #c84b31; }
+.cw-cat-chip .cat-icon { font-size: 20px; }
+
+/* ── FLASH SALE SECTION ── */
+.cw-flash {
+    max-width: 1360px; margin: 32px auto 0; padding: 0 32px;
+}
+@media(max-width:768px){ .cw-flash{ padding: 0 16px; } }
+
+.cw-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+}
+.cw-section-left { display: flex; align-items: center; gap: 14px; }
+.cw-section-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: rgba(200,75,49,.1);
+    border-radius: 6px;
+    font-size: 10px; font-weight: 700; color: #c84b31;
+    text-transform: uppercase; letter-spacing: .08em;
+}
+.cw-section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800; color: #1a1a2e;
+}
+
+/* Countdown timer */
+.cw-countdown {
+    display: flex; align-items: center; gap: 6px;
+    background: #1a1a2e;
+    border-radius: 10px; padding: 6px 14px;
+}
+.cw-countdown-item {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 32px;
+}
+.cw-countdown-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 800; color: #fff;
+    line-height: 1;
+}
+.cw-countdown-lbl { font-size: 8px; font-weight: 600; color: rgba(255,255,255,.4); text-transform: uppercase; }
+.cw-countdown-sep { font-size: 16px; font-weight: 700; color: #c84b31; margin-bottom: 8px; }
+
+.cw-scroll-btns { display: flex; gap: 8px; }
+.cw-scroll-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid #e8e5e0;
+    background: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #1a1a2e;
+    transition: all .2s;
+}
+.cw-scroll-btn.primary { background: #1a1a2e; color: #fff; border-color: #1a1a2e; }
+.cw-scroll-btn:hover { border-color: #c84b31; color: #c84b31; }
+.cw-scroll-btn.primary:hover { background: #c84b31; border-color: #c84b31; color: #fff; }
+
+/* Product cards track */
+.cw-cards-track {
+    display: flex; gap: 16px;
+    overflow-x: auto; padding-bottom: 8px;
+    scrollbar-width: none; scroll-snap-type: x mandatory;
+}
+.cw-cards-track::-webkit-scrollbar { display: none; }
+
+/* ── PRODUCT CARD ── */
+.cw-card {
+    min-width: 240px; max-width: 240px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 20px;
+    overflow: hidden;
+    scroll-snap-align: start;
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+.cw-card:hover {
+    transform: translateY(-6px) rotateX(2deg);
+    border-color: rgba(200,75,49,.25);
+    box-shadow: 0 20px 40px rgba(0,0,0,.08), 0 0 0 1px rgba(200,75,49,.1);
+}
+
+.cw-card-img-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    background: #f8f7f4;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    padding: 20px;
+}
+.cw-card-img { width: 100%; height: 100%; object-fit: contain; transition: transform .4s; }
+.cw-card:hover .cw-card-img { transform: scale(1.08); }
+
+/* Discount badge */
+.cw-discount-badge {
+    position: absolute; top: 12px; left: 12px;
+    background: #c84b31;
+    color: #fff;
+    border-radius: 8px; padding: 3px 8px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .03em;
+}
+
+/* COD badge */
+.cw-cod-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: #0d7377;
+    color: #fff;
+    border-radius: 8px; padding: 3px 8px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: .03em;
+}
+
+/* Wishlist */
+.cw-wishlist-btn {
+    position: absolute; bottom: 12px; right: 12px;
+    width: 32px; height: 32px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    cursor: pointer; text-decoration: none;
+    transition: border-color .2s, transform .2s;
+    opacity: 0; transform: scale(0.8);
+    transition: opacity .2s, transform .2s;
+}
+.cw-card:hover .cw-wishlist-btn { opacity: 1; transform: scale(1); }
+.cw-wishlist-btn:hover { border-color: #c84b31; transform: scale(1.1) !important; }
+
+/* Card body */
+.cw-card-body { padding: 16px; }
+.cw-card-cat {
+    font-size: 10px; font-weight: 600; color: #c84b31;
+    text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px;
+}
+.cw-card-name {
+    font-size: 13px; font-weight: 600; color: #1a1a2e;
+    line-height: 1.35; margin-bottom: 4px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cw-card-seller { font-size: 10px; color: #9a9a9a; font-weight: 500; margin-bottom: 12px; }
+.cw-card-seller span { color: #555; font-weight: 600; }
+
+.cw-card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid #f0ede8; padding-top: 12px;
+}
+.cw-price-wrap { display: flex; flex-direction: column; }
+.cw-price-orig { font-size: 10px; color: #bbb; text-decoration: line-through; font-weight: 500; }
+.cw-price-sale { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #c84b31; line-height: 1; }
+.cw-price-main { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: #1a1a2e; line-height: 1; }
+
+.cw-view-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    background: #1a1a2e;
+    border-radius: 10px;
+    color: #fff; font-size: 14px;
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+}
+.cw-view-btn:hover { background: #c84b31; transform: scale(1.05); }
+
+/* ── ALL ITEMS SECTION ── */
+.cw-all-items {
+    max-width: 1360px; margin: 40px auto 40px; padding: 0 32px;
+}
+@media(max-width:768px){ .cw-all-items{ padding: 0 16px; } }
+
+.cw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+/* ── EMPTY STATE ── */
+.cw-empty {
+    grid-column: 1/-1;
+    text-align: center; padding: 60px 20px;
+    background: #fff; border-radius: 20px;
+    border: 1.5px dashed #e8e5e0;
+}
+.cw-empty-icon { font-size: 40px; margin-bottom: 12px; }
+.cw-empty p { font-size: 13px; font-weight: 500; color: #9a9a9a; }
+
+/* ── SEE ALL LINK ── */
+.cw-see-all {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px;
+    background: #fff;
+    border: 1.5px solid #e8e5e0;
+    border-radius: 10px;
+    font-size: 12px; font-weight: 600; color: #1a1a2e;
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+}
+.cw-see-all:hover { border-color: #c84b31; color: #c84b31; }
+
+/* ── 3D SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(30px); }
 </style>
 
-<div class="bazaar-container max-w-7xl mx-auto px-6 py-6 md:py-10">
+<div class="cw-page">
 
-    <!-- ✅ Row 1: Categories selector + Extensive Search Bar (Class search-row added for GSAP) -->
-    <div class="search-row grid grid-cols-1 md:grid-cols-12 gap-4 mb-10 opacity-0">
-        <!-- Categories selector dropdown button -->
-        <div class="md:col-span-3">
-            <div class="dropdown relative w-full h-full">
-                <button class="w-full flex items-center justify-between px-5 py-4 bg-white border border-slate-100 rounded-2xl text-xs font-black text-[#0f172a] uppercase tracking-wider shadow-xs hover:border-slate-300 transition">
-                    <span class="flex items-center gap-2">
-                        <span>☰</span> Categories
-                    </span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <div class="dropdown-menu w-full">
-                    <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-50 hover:text-[#0f172a] rounded-xl transition-all">All Categories</a>
-                    <div class="my-1 border-t border-slate-100"></div>
+    <!-- Search Row -->
+    <div class="cw-search-row reveal">
+        <div style="position:relative;">
+            <button class="cw-cat-btn" tabindex="0">
+                <span style="display:flex;align-items:center;gap:8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    Categories
+                </span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                <div class="cw-cat-dropdown">
+                    <a href="{% url 'item:items' %}">All Items</a>
                     {% for category in categories %}
-                        <option value="{% url 'item:items' %}?category={{ category.id }}" class="block px-4 py-2.5 text-xs font-bold text-[#0f172a] hover:bg-slate-50 rounded-xl transition-all">{{ category.name }}</option>
+                    <a href="{% url 'item:items' %}?category={{ category.id }}">{{ category.name }}</a>
                     {% endfor %}
                 </div>
+            </button>
+        </div>
+        <form class="cw-search-form" method="get" action="{% url 'item:items' %}">
+            <input class="cw-search-input" name="query" type="text" placeholder="Search products, brands and categories...">
+            <button class="cw-search-btn" type="submit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Hero -->
+    <div class="cw-hero reveal">
+        <!-- Main slider -->
+        <div class="cw-hero-main" id="heroMain">
+            <div class="cw-hero-content">
+                <div class="cw-hero-badge">
+                    <span></span> Limited Time Offers
+                </div>
+                <h1 class="cw-hero-title">
+                    Shop Smarter,<br><em>Save Bigger</em>
+                </h1>
+                <p class="cw-hero-sub">Discover thousands of deals from verified sellers across Bangladesh.</p>
+                <a href="{% url 'item:items' %}" class="cw-hero-cta">
+                    Browse All Items
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+            </div>
+
+            <div class="cw-hero-img-wrap">
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500" alt="">
+            </div>
+
+            <div class="cw-hero-dots">
+                <button class="cw-dot active" onclick="heroSlide(0)"></button>
+                <button class="cw-dot" onclick="heroSlide(1)"></button>
+                <button class="cw-dot" onclick="heroSlide(2)"></button>
             </div>
         </div>
 
-        <!-- Real-time search bar -->
-        <div class="md:col-span-9">
-            <form method="get" action="{% url 'item:items' %}" class="relative w-full h-full">
-                <input name="query" 
-                       type="text" 
-                       placeholder="Searching for..." 
-                       value="{{ query }}"
-                       class="w-full h-full pl-5 pr-12 py-4 bg-white border border-slate-100 rounded-2xl text-sm font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition duration-300 shadow-xs">
-                <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0f172a] transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
-            </form>
+        <!-- Side cards -->
+        <div class="cw-hero-side">
+            <a href="{% url 'item:items' %}" class="cw-side-card cw-side-card-1" style="text-decoration:none;">
+                <div class="cw-side-card-badge">New</div>
+                <div class="cw-side-card-label">Fresh Arrivals</div>
+                <div class="cw-side-card-title">Just Dropped<br>Today</div>
+            </a>
+            <a href="{% url 'item:items' %}" class="cw-side-card cw-side-card-2" style="text-decoration:none;">
+                <div class="cw-side-card-badge">Hot 🔥</div>
+                <div class="cw-side-card-label">Trending Now</div>
+                <div class="cw-side-card-title">Top Picks<br>This Week</div>
+            </a>
         </div>
     </div>
 
-    <!-- ✅ Row 2: Premium Bazaar Dynamic Slider (Class hero-slider-wrap added for GSAP) -->
-    <div class="hero-slider-wrap relative bg-white rounded-3xl mb-16 border border-slate-100 shadow-xs overflow-hidden min-h-[420px] md:min-h-[480px] opacity-0">
-        
-        <!-- Slider Container Track -->
-        <div id="carousel-track" class="flex w-full h-full">
-            
-            <!-- Slide 1: Earbuds -->
-            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
-                <!-- Left Text Details -->
-                <div class="md:col-span-6 text-left max-w-lg">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
-                        50% Off For Your First Shopping
-                    </h1>
-                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
-                        Get Free Shipping on all orders over $99.00
-                    </p>
-                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
-                        Shop Now
-                    </a>
-                </div>
-                <!-- Right Image Showcase -->
-                <div class="md:col-span-6 flex justify-center items-center">
-                    <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=800" 
-                         alt="Wireless Earbuds" 
-                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
-                </div>
-            </div>
-
-            <!-- Slide 2: Modern Backpack -->
-            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
-                <!-- Left Text Details -->
-                <div class="md:col-span-6 text-left max-w-lg">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
-                        50% Off For Your First Shopping
-                    </h1>
-                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
-                        Get Free Shipping on all orders over $99.00
-                    </p>
-                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
-                        Shop Now
-                    </a>
-                </div>
-                <!-- Right Image Showcase -->
-                <div class="md:col-span-6 flex justify-center items-center">
-                    <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800" 
-                         alt="Premium Backpack" 
-                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
-                </div>
-            </div>
-
-            <!-- Slide 3: Smart Ecosystem Watch -->
-            <div class="w-full flex-shrink-0 grid grid-cols-1 md:grid-cols-12 gap-8 items-center p-10 md:p-16">
-                <!-- Left Text Details -->
-                <div class="md:col-span-6 text-left max-w-lg">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] leading-tight mb-4">
-                        50% Off For Your First Shopping
-                    </h1>
-                    <p class="text-slate-500 text-sm md:text-base font-semibold mb-8 leading-relaxed">
-                        Get Free Shipping on all orders over $99.00
-                    </p>
-                    <a href="{% url 'item:items' %}" class="inline-flex items-center justify-center px-10 py-4 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-slate-100">
-                        Shop Now
-                    </a>
-                </div>
-                <!-- Right Image Showcase -->
-                <div class="md:col-span-6 flex justify-center items-center">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800" 
-                         alt="Sleek Smartwatch" 
-                         class="w-full max-w-xs md:max-w-sm object-contain drop-shadow-2xl">
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Active dots paginator panel -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
-            <button onclick="goToSlide(0)" class="carousel-dot w-6 h-1.5 bg-[#0f172a] rounded-full transition-all duration-300" title="Slide 1"></button>
-            <button onclick="goToSlide(1)" class="carousel-dot w-2 h-1.5 bg-slate-300 rounded-full transition-all duration-300" title="Slide 2"></button>
-            <button onclick="goToSlide(2)" class="carousel-dot w-2 h-1.5 bg-slate-300 rounded-full transition-all duration-300" title="Slide 3"></button>
+    <!-- Category Strip -->
+    <div class="cw-categories reveal">
+        <div class="cw-cat-strip" id="catStrip">
+            <a href="{% url 'item:items' %}" class="cw-cat-chip">
+                <span class="cat-icon">🏪</span> All
+            </a>
+            {% for category in categories %}
+            <a href="{% url 'item:items' %}?category={{ category.id }}" class="cw-cat-chip">
+                <span class="cat-icon">
+                    {% if category.icon %}{{ category.icon }}{% else %}📦{% endif %}
+                </span>
+                {{ category.name }}
+            </a>
+            {% endfor %}
         </div>
     </div>
 
-    <!-- ✅ Row 3: Listings / Flash Deals (Class flash-deals-section added for GSAP) -->
-    <div class="flash-deals-section">
-        <div class="flex items-center justify-between mb-10">
-            <div>
-                <h2 class="text-2xl md:text-3xl font-black text-[#0f172a]">Flash Deals</h2>
-                <p class="text-slate-400 text-xs font-bold mt-1">Explore hot deals from Cotton Web marketplace</p>
-            </div>
-            <!-- Slider navigation buttons -->
-            <div class="flex items-center gap-2">
-                <button onclick="scrollFlashDeals('left')" class="w-10 h-10 border border-slate-100 hover:border-slate-300 bg-white text-[#0f172a] rounded-full flex items-center justify-center transition active:scale-95">
-                    ←
-                </button>
-                <button onclick="scrollFlashDeals('right')" class="w-10 h-10 bg-[#0f172a] hover:bg-slate-800 text-white rounded-full flex items-center justify-center transition shadow-md active:scale-95">
-                    →
-                </button>
-            </div>
-        </div>
-
-        <!-- Horizontal scroll list -->
-        <div id="flash-deals-track" class="flex gap-8 overflow-x-auto scroll-smooth pb-6 snap-x snap-mandatory">
-            {% for item in items %}
-                <div class="deal-card min-w-[285px] md:min-w-[340px] flex-shrink-0 snap-start bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xs hover:border-slate-200 transition-all duration-300 relative flex flex-col justify-between opacity-0">
-                    
-                    <!-- Floating tags & Price overlay -->
-                    <div class="relative aspect-square w-full bg-slate-50/50 flex items-center justify-center p-6">
-                        {% if item.image and item.image.url %}
-                            <img src="{{ item.image.url }}" 
-                                 alt="{{ item.name }}" 
-                                 loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain">
-                        {% else %}
-                            <img src="https://picsum.photos/seed/{{ item.id }}/400/400" 
-                                 alt="{{ item.name }}" 
-                                 loading="lazy" 
-                                 class="max-w-[85%] max-h-[85%] object-contain">
-                        {% endif %}
-                        
-                        <span class="absolute top-4 left-4 bg-slate-900 text-white px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider">
-                            {{ item.category.name }}
-                        </span>
+    <!-- Flash Sale Section -->
+    {% if flash_items %}
+    <div class="cw-flash reveal">
+        <div class="cw-section-header">
+            <div class="cw-section-left">
+                <div>
+                    <div class="cw-section-label">⚡ Flash Sale</div>
+                    <div class="cw-section-title">Hot Deals</div>
+                </div>
+                <!-- Countdown Timer -->
+                <div class="cw-countdown">
+                    <div class="cw-countdown-item">
+                        <div class="cw-countdown-num" id="cd-h">00</div>
+                        <div class="cw-countdown-lbl">HRS</div>
                     </div>
+                    <div class="cw-countdown-sep">:</div>
+                    <div class="cw-countdown-item">
+                        <div class="cw-countdown-num" id="cd-m">00</div>
+                        <div class="cw-countdown-lbl">MIN</div>
+                    </div>
+                    <div class="cw-countdown-sep">:</div>
+                    <div class="cw-countdown-item">
+                        <div class="cw-countdown-num" id="cd-s">00</div>
+                        <div class="cw-countdown-lbl">SEC</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <a href="{% url 'item:items' %}" class="cw-see-all">See All →</a>
+                <div class="cw-scroll-btns">
+                    <button class="cw-scroll-btn" onclick="scrollTrack('flash-track','left')">←</button>
+                    <button class="cw-scroll-btn primary" onclick="scrollTrack('flash-track','right')">→</button>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Details and pricing -->
-                    <div class="p-6">
-                        <h3 class="font-bold text-[#0f172a] text-base md:text-lg truncate mb-1">
-                            {{ item.name }}
-                        </h3>
-                        <p class="text-[10px] text-slate-400 font-bold mb-4">
-                            By <span class="text-slate-600 font-extrabold">{{ item.user.username }}</span>
-                        </p>
-                        
-                        <div class="flex items-center justify-between border-t border-slate-50 pt-4">
-                            <span class="text-2xl font-black text-[#e94560]">${{ item.price }}</span>
-                            <a href="{% url 'item:detail' item.id %}" 
-                               class="px-5 py-2.5 bg-slate-50 hover:bg-slate-900 hover:text-white text-[#0f172a] font-bold text-xs rounded-xl transition duration-300">
-                                View Details
-                            </a>
+        <div class="cw-cards-track" id="flash-track">
+            {% for item in flash_items %}
+            <div class="cw-card">
+                <div class="cw-card-img-wrap">
+                    {% if item.image %}
+                        <img class="cw-card-img" src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                    {% else %}
+                        <img class="cw-card-img" src="https://picsum.photos/seed/{{ item.id }}f/400/400" alt="{{ item.name }}" loading="lazy">
+                    {% endif %}
+                    {% if item.discount_percent %}
+                    <div class="cw-discount-badge">-{{ item.discount_percent }}%</div>
+                    {% endif %}
+                    <div class="cw-cod-badge">COD</div>
+                    <a href="#" class="cw-wishlist-btn" title="Wishlist">♡</a>
+                </div>
+                <div class="cw-card-body">
+                    <div class="cw-card-cat">{{ item.category.name }}</div>
+                    <div class="cw-card-name">{{ item.name }}</div>
+                    <div class="cw-card-seller">By <span>{{ item.user.username }}</span>{% if item.shop %} · {{ item.shop.name }}{% endif %}</div>
+                    <div class="cw-card-footer">
+                        <div class="cw-price-wrap">
+                            <div class="cw-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
+                            <div class="cw-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
                         </div>
+                        <a href="{% url 'item:detail' item.id %}" class="cw-view-btn">→</a>
                     </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
+    <!-- All Items -->
+    <div class="cw-all-items reveal">
+        <div class="cw-section-header">
+            <div>
+                <div class="cw-section-label" style="margin-bottom:6px;">🛍️ Browse</div>
+                <div class="cw-section-title">Latest Items</div>
+            </div>
+            <a href="{% url 'item:items' %}" class="cw-see-all">View All →</a>
+        </div>
+
+        <div class="cw-grid">
+            {% for item in items %}
+            <div class="cw-card" style="min-width:unset;max-width:unset;">
+                <div class="cw-card-img-wrap">
+                    {% if item.image %}
+                        <img class="cw-card-img" src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                    {% else %}
+                        <img class="cw-card-img" src="https://picsum.photos/seed/{{ item.id }}/400/400" alt="{{ item.name }}" loading="lazy">
+                    {% endif %}
+                    {% if item.condition %}
+                    <div class="cw-discount-badge">{{ item.get_condition_display }}</div>
+                    {% endif %}
+                    {% if item.is_on_sale %}
+                    <div class="cw-cod-badge">SALE</div>
+                    {% endif %}
+                    <a href="{% url 'core:toggle_wishlist' item.id %}" class="cw-wishlist-btn" title="Wishlist">♡</a>
                 </div>
+                <div class="cw-card-body">
+                    <div class="cw-card-cat">{{ item.category.name }}</div>
+                    <div class="cw-card-name">{{ item.name }}</div>
+                    <div class="cw-card-seller">By <span>{{ item.user.username }}</span></div>
+                    <div class="cw-card-footer">
+                        <div class="cw-price-wrap">
+                            {% if item.is_on_sale %}
+                            <div class="cw-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
+                            <div class="cw-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
+                            {% else %}
+                            <div class="cw-price-main">৳{{ item.original_price|floatformat:0 }}</div>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'item:detail' item.id %}" class="cw-view-btn">→</a>
+                    </div>
+                </div>
+            </div>
             {% empty %}
-                <div class="col-span-full py-20 text-center w-full bg-white rounded-3xl border border-slate-100 shadow-xs">
-                    <span class="text-4xl block mb-2">🎁</span>
-                    <p class="text-slate-400 font-bold text-sm italic">No active flash deals listed today.</p>
-                </div>
+            <div class="cw-empty">
+                <div class="cw-empty-icon">🛒</div>
+                <p>No items yet. <a href="{% url 'item:new' %}" style="color:#c84b31;font-weight:600;">Add the first one!</a></p>
+            </div>
             {% endfor %}
         </div>
     </div>
 
 </div>
 
-<!-- GSAP Powered Carousel & horizontal scroller Logic Scripts -->
 <script>
-    // Register GSAP ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Top categories & search panel entrance reveal
-    gsap.to(".search-row", {
-        y: 0,
-        opacity: 1,
-        duration: 0.65,
-        ease: "power2.out",
-        delay: 0.1
+// Reveal on scroll
+gsap.utils.toArray('.reveal').forEach((el, i) => {
+    gsap.to(el, {
+        opacity: 1, y: 0,
+        duration: 0.7,
+        delay: i * 0.05,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%' }
     });
+});
 
-    // 2. Elastic slider container card entrance
-    gsap.to(".hero-slider-wrap", {
-        scale: 1,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        delay: 0.2
+// Card 3D hover (extra js layer on top of CSS)
+document.querySelectorAll('.cw-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(card, {
+            rotateY: x * 8, rotateX: -y * 8,
+            duration: 0.3, ease: 'power2.out',
+            transformPerspective: 800
+        });
     });
+    card.addEventListener('mouseleave', () => {
+        gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.5, ease: 'power2.out' });
+    });
+});
 
-    // 3. Scroll triggered staggered entrance for Product Cards
-    gsap.to(".deal-card", {
-        y: 0,
-        opacity: 1,
-        stagger: 0.08,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-            trigger: ".flash-deals-section",
-            start: "top 85%"
+// Hero slider
+const heroSlides = [
+    { title: "Shop Smarter,<br><em>Save Bigger</em>", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500" },
+    { title: "Discover<br><em>Top Brands</em>", img: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&q=80&w=500" },
+    { title: "Exclusive<br><em>Flash Deals</em>", img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=500" },
+];
+let heroIdx = 0;
+
+function heroSlide(idx) {
+    heroIdx = idx;
+    const title = document.querySelector('.cw-hero-title');
+    const img = document.querySelector('.cw-hero-img-wrap img');
+    const dots = document.querySelectorAll('.cw-dot');
+    gsap.to([title, img], { opacity: 0, y: 10, duration: 0.25, onComplete: () => {
+        title.innerHTML = heroSlides[idx].title;
+        img.src = heroSlides[idx].img;
+        gsap.to([title, img], { opacity: 1, y: 0, duration: 0.4 });
+    }});
+    dots.forEach((d,i) => {
+        d.classList.toggle('active', i === idx);
+        gsap.to(d, { width: i === idx ? '24px' : '6px', duration: 0.3 });
+    });
+}
+
+setInterval(() => { heroSlide((heroIdx + 1) % 3); }, 5000);
+
+// Scroll tracks
+function scrollTrack(id, dir) {
+    const el = document.getElementById(id);
+    el.scrollBy({ left: dir === 'right' ? 270 : -270, behavior: 'smooth' });
+}
+
+// Flash sale countdown — counts down to midnight
+function updateCountdown() {
+    const now = new Date();
+    const end = new Date(); end.setHours(23,59,59,0);
+    const diff = Math.max(0, end - now);
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const pad = n => String(n).padStart(2,'0');
+    const hEl = document.getElementById('cd-h');
+    const mEl = document.getElementById('cd-m');
+    const sEl = document.getElementById('cd-s');
+    if (hEl) hEl.textContent = pad(h);
+    if (mEl) mEl.textContent = pad(m);
+    if (sEl) {
+        if (sEl.textContent !== pad(s)) {
+            gsap.fromTo(sEl, { scale: 1.3, color: '#c84b31' }, { scale: 1, color: '#fff', duration: 0.3 });
         }
-    });
-
-    // 4. Standalone Micro-physics Hover Interaction for Product Cards
-    const cardsList = document.querySelectorAll('.deal-card');
-    cardsList.forEach(card => {
-        const img = card.querySelector('img');
-        
-        card.addEventListener('mouseenter', () => {
-            gsap.to(card, {
-                y: -6,
-                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.05)",
-                borderColor: "rgba(233, 69, 96, 0.15)",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            if (img) {
-                gsap.to(img, {
-                    scale: 1.04,
-                    duration: 0.4,
-                    ease: "power2.out"
-                });
-            }
-        });
-
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-                y: 0,
-                boxShadow: "none",
-                borderColor: "#f1f5f9",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            if (img) {
-                gsap.to(img, {
-                    scale: 1,
-                    duration: 0.4,
-                    ease: "power2.out"
-                });
-            }
-        });
-    });
-
-    // 5. GSAP Powered Slider Logic
-    let currentSlide = 0;
-    const totalSlides = 3;
-    const track = document.getElementById('carousel-track');
-    const dots = document.querySelectorAll('.carousel-dot');
-
-    function goToSlide(slideIndex) {
-        currentSlide = slideIndex;
-        updateCarousel();
+        sEl.textContent = pad(s);
     }
-
-    // Auto sliding interval setup (Every 5 seconds)
-    let autoSlide = setInterval(() => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateCarousel();
-    }, 5000);
-
-    function updateCarousel() {
-        // Dynamic horizontal layout translation via GSAP
-        gsap.to(track, {
-            xPercent: -currentSlide * 100,
-            duration: 0.8,
-            ease: "power3.inOut"
-        });
-        
-        // Dynamic slider indicators (Stretched dots animation)
-        dots.forEach((dot, index) => {
-            if (index === currentSlide) {
-                gsap.to(dot, {
-                    width: "24px",
-                    backgroundColor: "#0f172a",
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            } else {
-                gsap.to(dot, {
-                    width: "8px",
-                    backgroundColor: "#cbd5e1",
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            }
-        });
-        
-        // Reset timer interval
-        clearInterval(autoSlide);
-        autoSlide = setInterval(() => {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateCarousel();
-        }, 5000);
-    }
-
-    // Smooth horizontal scrolling configuration for Flash Deals
-    function scrollFlashDeals(direction) {
-        const scroller = document.getElementById('flash-deals-track');
-        const scrollAmount = 360; // Card width + gap size
-        if (direction === 'left') {
-            scroller.scrollLeft -= scrollAmount;
-        } else {
-            scroller.scrollLeft += scrollAmount;
-        }
-    }
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
 </script>
 {% endblock %}

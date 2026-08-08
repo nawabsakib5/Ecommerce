@@ -1,92 +1,16 @@
-import random
 from django.core.cache import cache
-from django.contrib.auth.signals import user_logged_in
-from django.db.models.signals import post_migrate, post_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 
-from .models import Item, Category
-from .seed_helpers import seed_admin_catalog
+from .models import Item
 
 User = get_user_model()
-
-CATEGORY_NAMES = [
-    'Electronics', 'Clothing', 'Books', 'Furniture', 'Sports',
-    'Toys', 'Vehicles', 'Food', 'Beauty', 'Music',
-    'Gaming', 'Jewelry', 'Tools', 'Garden', 'Pets',
-    'Baby', 'Office', 'Art', 'Travel', 'Fitness',
-    'Kitchen', 'Shoes', 'Bags', 'Watches', 'Cameras',
-    'Phones', 'Laptops', 'Tablets', 'TVs', 'Audio',
-    'Lighting', 'Bedding', 'Cleaning', 'Stationery', 'Crafts',
-    'Outdoors', 'Fishing', 'Cycling', 'Swimming', 'Yoga',
-    'Cooking', 'Baking', 'Coffee', 'Tea', 'Wine',
-    'Comics', 'Movies', 'Anime', 'Collectibles', 'Vintage',
-]
-
-
-def get_or_create_categories():
-    categories = []
-    for name in CATEGORY_NAMES:
-        cat, _ = Category.objects.get_or_create(name=name)
-        categories.append(cat)
-    return categories
-
-
-def create_items_per_category(user):
-    # ✅ Lazy import — Railway তে faker না থাকলেও crash হবে না
-    try:
-        from faker import Faker
-        fake = Faker()
-    except ImportError:
-        return
-
-    categories = Category.objects.all()
-    if not categories.exists():
-        return
-
-    items_to_create = []
-    for category in categories:
-        existing = Item.objects.filter(
-            user=user, category=category
-        ).count()
-        needed = max(0, 2 - existing)
-        for _ in range(needed):
-            items_to_create.append(Item(
-                category=category,
-                user=user,
-                name=fake.word().capitalize() + " " + fake.word().capitalize(),
-                description=fake.paragraph(nb_sentences=3),
-                price=round(random.uniform(10, 1000), 2),
-                is_sold=False,
-            ))
-
-    if items_to_create:
-        Item.objects.bulk_create(items_to_create)
-        print(f"[SEED] {user.username} — {len(items_to_create)} items created!")
-
-
-@receiver(post_migrate)
-def seed_after_migrate(sender, **kwargs):
-    if sender.name != 'item':
-        return
-    seed_admin_catalog()
 
 
 @receiver(post_save, sender=Item)
 def clear_category_cache(sender, **kwargs):
     cache.delete('all_categories')
-
-
-@receiver(user_logged_in)
-def seed_on_login(sender, request, user, **kwargs):
-    create_items_per_category(user)
-
-
-@receiver(post_save, sender=User)
-def seed_on_signup(sender, instance, created, **kwargs):
-    if not created:
-        return
-    create_items_per_category(instance)
 
 
 @receiver(post_save, sender=Item)
@@ -107,7 +31,7 @@ def notify_on_sale(sender, instance, created, **kwargs):
             Notification.objects.create(
                 user=instance.user,
                 title="Item Sold! 🎉",
-                message=f"Your item '{instance.name}' has been sold for ${instance.price}",
+                message=f"Your item '{instance.name}' has been marked as sold.",
                 notification_type='sale',
                 link=f"/items/{instance.id}/",
             )

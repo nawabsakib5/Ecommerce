@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.core.cache import cache
+from django.utils import timezone
 
 from .models import Item, Category
 from .forms import NewItemForm, EditItemForm
@@ -16,8 +17,8 @@ def items(request):
     categories = cache.get_or_set('all_categories', Category.objects.all(), 3600)
 
     items_list = (
-        Item.objects.filter(is_sold=False)
-        .select_related('category', 'user')
+        Item.objects.filter(is_sold=False, status='active')
+        .select_related('category', 'user', 'shop')
         .order_by('-created_at')
     )
 
@@ -33,24 +34,40 @@ def items(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Flash sale items
+    now = timezone.now()
+    flash_items = (
+        Item.objects.filter(
+            is_sold=False,
+            status='active',
+            sale_price__isnull=False,
+            sale_start__lte=now,
+            sale_end__gte=now,
+        )
+        .select_related('category', 'user', 'shop')
+        .order_by('-created_at')[:8]
+    )
+
     return render(request, 'item/items.html', {
         'items': page_obj,
         'query': query,
         'categories': categories,
         'category_id': int(category_id),
+        'flash_items': flash_items,
     })
 
 
 def detail(request, pk):
     item = get_object_or_404(
-        Item.objects.select_related('category', 'user'),
+        Item.objects.select_related('category', 'user', 'shop'),
         pk=pk,
     )
 
     related_items = Item.objects.filter(
         category=item.category,
-        is_sold=False
-    ).exclude(pk=pk).select_related('category', 'user')[:3]
+        is_sold=False,
+        status='active',
+    ).exclude(pk=pk).select_related('category', 'user')[:4]
 
     return render(request, 'item/detail.html', {
         'item': item,
@@ -69,12 +86,12 @@ def new(request):
         if form.is_valid():
             item = form.save(commit=False)
             item.user = request.user
+            # user এর shop থাকলে automatically link করো
+            if hasattr(request.user, 'shop'):
+                item.shop = request.user.shop
             item.save()
             cache.delete('all_categories')
-            messages.success(
-                request,
-                'Your item is live — everyone can browse and add it to cart.',
-            )
+            messages.success(request, 'Your item is live!')
             return redirect('item:detail', pk=item.id)
     else:
         form = NewItemForm()

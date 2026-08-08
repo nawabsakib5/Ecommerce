@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, update_session_auth_hash, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from item.models import Item, Category
 from .forms import SignupForm
@@ -9,16 +10,35 @@ from .models import Notification, Wishlist, Review
 
 
 def index(request):
+    now = timezone.now()
+
+    # Flash sale items
+    flash_items = (
+        Item.objects.filter(
+            is_sold=False,
+            status='active',
+            sale_price__isnull=False,
+            sale_start__lte=now,
+            sale_end__gte=now,
+        )
+        .select_related('category', 'user', 'shop')
+        .order_by('-created_at')[:8]
+    )
+
+    # Latest items
     items = (
-        Item.objects.filter(is_sold=False)
-        .select_related('category', 'user')
+        Item.objects.filter(is_sold=False, status='active')
+        .select_related('category', 'user', 'shop')
         .order_by('-created_at')[:12]
     )
+
     categories = Category.objects.all().order_by('name')
 
     return render(request, 'core/index.html', {
         'categories': categories,
         'items': items,
+        'flash_items': flash_items,
+        'now': now,
     })
 
 
