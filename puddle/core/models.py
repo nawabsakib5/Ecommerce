@@ -98,3 +98,39 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.item.name} ({self.rating}★)"
+
+
+
+
+class Shop(models.Model):
+    SHOP_TYPE_CHOICES = [
+        ('individual', 'Individual Seller'),
+        ('cod_seller', 'COD Seller'),
+        ('verified', 'Verified Shop'),
+        ('b2b', 'B2B Seller'),
+    ]
+
+    owner = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name='shop',
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True, null=True)
+    logo = models.ImageField(upload_to='shop_logos/', blank=True, null=True)
+    banner = models.ImageField(upload_to='shop_banners/', blank=True, null=True)
+    shop_type = models.CharField(
+        max_length=20,
+        choices=SHOP_TYPE_CHOICES,
+        default='individual'
+    )
+    is_verified = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return self.name

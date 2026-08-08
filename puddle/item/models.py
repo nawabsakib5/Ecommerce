@@ -1,8 +1,11 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True, null=True)
+    icon = models.CharField(max_length=50, blank=True, null=True)  # emoji বা icon class
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -11,7 +14,23 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Item(models.Model):
+    CONDITION_CHOICES = [
+        ('new', 'New'),
+        ('like_new', 'Like New'),
+        ('used', 'Used'),
+        ('refurbished', 'Refurbished'),
+    ]
+
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('sold', 'Sold'),
+        ('reserved', 'Reserved'),
+        ('expired', 'Expired'),
+    ]
+
+    # existing fields
     category = models.ForeignKey(
         Category,
         related_name='items',
@@ -22,12 +41,63 @@ class Item(models.Model):
         related_name='items',
         on_delete=models.CASCADE,
     )
+    shop = models.ForeignKey(
+        'core.Shop',
+        related_name='items',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    price = models.FloatField()
     image = models.ImageField(upload_to='item_images', blank=True, null=True)
-    is_sold = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    # নতুন fields
+    original_price = models.FloatField()
+    sale_price = models.FloatField(blank=True, null=True)
+    sale_start = models.DateTimeField(blank=True, null=True)
+    sale_end = models.DateTimeField(blank=True, null=True)
+
+    stock_count = models.PositiveIntegerField(default=1)
+    condition = models.CharField(
+        max_length=20,
+        choices=CONDITION_CHOICES,
+        default='used'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active',
+        db_index=True
+    )
+
+    # পুরানো is_sold এর জায়গায় status ব্যবহার করবো
+    # কিন্তু backward compatibility এর জন্য রাখছি
+    is_sold = models.BooleanField(default=False, db_index=True)
+
+    @property
+    def price(self):
+        """Flash sale active থাকলে sale_price, নাহলে original_price"""
+        if self.is_on_sale:
+            return self.sale_price
+        return self.original_price
+
+    @property
+    def is_on_sale(self):
+        now = timezone.now()
+        return (
+            self.sale_price is not None and
+            self.sale_start is not None and
+            self.sale_end is not None and
+            self.sale_start <= now <= self.sale_end
+        )
+
+    @property
+    def discount_percent(self):
+        if self.is_on_sale and self.original_price > 0:
+            return int((1 - self.sale_price / self.original_price) * 100)
+        return 0
 
     def __str__(self):
         return self.name

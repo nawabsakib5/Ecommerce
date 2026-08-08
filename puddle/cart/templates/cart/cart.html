@@ -1,38 +1,56 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}My Cart{% endblock %}
+{% block title %}My Cart | Next-Gen Marketplace{% endblock %}
 
 {% block content %}
-<!-- Google Fonts & GSAP Animation CDN Packages -->
+<!-- Google Fonts, GSAP, & Vanilla Tilt 3D Animation CDN Packages -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
 
 <style>
     .bazaar-container {
         font-family: 'Plus Jakarta Sans', sans-serif;
+        perspective: 1200px; /* Enable 3D space for children */
     }
     .bazaar-title {
         font-family: 'Playfair Display', serif;
+    }
+    /* Custom Glassmorphism & Glow Effects */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transform-style: preserve-3d;
+    }
+    .glow-effect:hover {
+        box-shadow: 0 20px 40px -15px rgba(233, 69, 96, 0.15);
     }
 </style>
 
 <div class="bazaar-container max-w-7xl mx-auto px-6 py-10 md:py-14">
     
-    <!-- Page Header (Class header-sec added for GSAP) -->
-    <div class="header-sec mb-10 text-left opacity-0">
-        <h1 class="bazaar-title text-3xl md:text-4xl font-black text-[#0f172a] tracking-tight">My Cart</h1>
-        <p class="text-slate-500 text-xs font-semibold mt-2">Manage your selected items and review pricing before payment.</p>
+    <!-- Page Header with 3D Entrance -->
+    <div class="header-sec mb-12 text-left opacity-0 translate-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-[#e94560] text-[10px] font-extrabold uppercase tracking-widest mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#e94560] animate-ping"></span> Secure Shopping Session
+        </div>
+        <h1 class="bazaar-title text-4xl md:text-5xl font-black text-[#0f172a] tracking-tight">Shopping Cart</h1>
+        <p class="text-slate-500 text-sm font-semibold mt-2">Manage your selected items and review your dynamic pricing matrix below.</p>
     </div>
 
     <!-- Alert / System Messages -->
     {% if messages %}
-        <div class="mb-6 space-y-2">
+        <div class="mb-8 space-y-2">
             {% for message in messages %}
-                <div class="p-4 bg-slate-50 border border-slate-100 text-[#0f172a] rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#e94560] animate-pulse"></span>
-                    {{ message }}
+                <div class="p-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center justify-between shadow-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-[#e94560] animate-pulse"></span>
+                        {{ message }}
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-mono">SYSTEM NOTIFICATION</span>
                 </div>
             {% endfor %}
         </div>
@@ -41,59 +59,64 @@
     {% if cart_items %}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-            <!-- Left Column: Items List (Class left-items-panel added for GSAP) -->
-            <div class="left-items-panel lg:col-span-2 space-y-4 opacity-0">
+            <!-- Left Column: Items List with 3D Tilt Wrapper -->
+            <div class="left-items-panel lg:col-span-2 space-y-5 opacity-0">
                 {% for cart_item in cart_items %}
-                    <!-- Individual Cart Row (Class cart-row added for GSAP) -->
-                    <div class="cart-row bg-white rounded-3xl border border-slate-100 shadow-xs p-5 flex flex-col sm:flex-row gap-5 items-center justify-between transition-all duration-300">
+                    <!-- Individual Cart Row with Vanilla Tilt 3D Effect -->
+                    <div class="cart-row glass-card rounded-[2rem] p-6 flex flex-col sm:flex-row gap-6 items-center justify-between transition-all duration-300 glow-effect" data-tilt data-tilt-max="3" data-tilt-speed="400" data-tilt-scale="1.01">
                         
                         <!-- Thumbnail & Meta Details -->
-                        <div class="flex items-center gap-4 w-full sm:w-auto">
-                            <!-- Image Wrap (Class thumb-wrap added for GSAP) -->
-                            <div class="thumb-wrap w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-2 transition-transform duration-300">
+                        <div class="flex items-center gap-5 w-full sm:w-auto">
+                            <!-- Image Wrap with 3D Pop -->
+                            <div class="thumb-wrap w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-50 border border-slate-100 flex items-center justify-center p-3 shadow-inner relative group">
                                 {% if cart_item.item.image %}
-                                    <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="max-w-full max-h-full object-contain">
+                                    <img src="{{ cart_item.item.image.url }}" alt="{{ cart_item.item.name }}" class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
                                 {% else %}
-                                    <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200" alt="{{ cart_item.item.name }}" class="max-w-full max-h-full object-contain">
+                                    <img src="https://picsum.photos/seed/{{ cart_item.item.id }}/200/200" alt="{{ cart_item.item.name }}" class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
                                 {% endif %}
+                                <div class="absolute inset-0 bg-gradient-to-tr from-[#0f172a]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </div>
 
                             <div class="min-w-0 flex-1">
-                                <span class="text-[9px] font-black text-[#e94560] uppercase tracking-widest mb-1.5 block">{{ cart_item.item.category.name }}</span>
-                                <h3 class="font-extrabold text-[#0f172a] text-base truncate max-w-[220px]">{{ cart_item.item.name }}</h3>
-                                <p class="text-xs text-slate-400 font-bold mt-1">${{ cart_item.item.price }} each</p>
+                                <span class="text-[10px] font-black text-[#e94560] uppercase tracking-widest mb-1 block">{{ cart_item.item.category.name }}</span>
+                                <h3 class="font-extrabold text-[#0f172a] text-lg truncate max-w-[240px]">{{ cart_item.item.name }}</h3>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-xs text-slate-400 font-bold">${{ cart_item.item.price }}</span>
+                                    <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                                    <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">In Stock</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Quantity Modifier Widget -->
-                        <div class="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-6 pt-4 sm:pt-0 border-t border-slate-50 sm:border-0">
+                        <!-- Quantity Modifier & Pricing Matrix -->
+                        <div class="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-6 pt-4 sm:pt-0 border-t border-slate-100 sm:border-0">
                             
-                            <form id="qty-form-{{ cart_item.item.id }}" method="POST" action="{% url 'cart:update' cart_item.item.id %}" class="flex items-center gap-1">
+                            <!-- Dynamic Quantity Control Pill -->
+                            <form id="qty-form-{{ cart_item.item.id }}" method="POST" action="{% url 'cart:update' cart_item.item.id %}" class="flex items-center bg-slate-100/80 p-1 rounded-full border border-slate-200/60 shadow-inner">
                                 {% csrf_token %}
-                                
-                                <!-- Custom Plus Minus Button triggers -->
-                                <button type="button" onclick="stepDownQty('{{ cart_item.item.id }}')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-400 bg-white text-[#0f172a] flex items-center justify-center font-bold text-sm transition active:scale-90">-</button>
+                                <button type="button" onclick="stepDownQty('{{ cart_item.item.id }}')" class="w-8 h-8 rounded-full bg-white text-[#0f172a] flex items-center justify-center font-bold text-sm shadow-sm hover:bg-[#e94560] hover:text-white transition-all active:scale-90">-</button>
                                 
                                 <input type="number"
                                        id="qty-input-{{ cart_item.item.id }}"
                                        name="quantity"
                                        value="{{ cart_item.quantity }}"
                                        min="0"
-                                       class="w-12 text-center border-0 py-1.5 text-xs font-extrabold text-[#0f172a] focus:outline-none bg-transparent">
+                                       class="w-10 text-center border-0 py-1 text-xs font-extrabold text-[#0f172a] focus:outline-none bg-transparent">
                                 
-                                <button type="button" onclick="stepUpQty('{{ cart_item.item.id }}')" class="w-8 h-8 rounded-full border border-slate-200 hover:border-slate-400 bg-white text-[#0f172a] flex items-center justify-center font-bold text-sm transition active:scale-90">+</button>
+                                <button type="button" onclick="stepUpQty('{{ cart_item.item.id }}')" class="w-8 h-8 rounded-full bg-white text-[#0f172a] flex items-center justify-center font-bold text-sm shadow-sm hover:bg-[#e94560] hover:text-white transition-all active:scale-90">+</button>
                             </form>
 
                             <!-- Subtotal display & Removal trigger -->
-                            <div class="flex items-center gap-4 pl-4 border-l border-slate-100">
-                                <div class="text-right min-w-[70px]">
-                                    <p class="font-black text-[#0f172a] text-sm">${{ cart_item.get_subtotal }}</p>
+                            <div class="flex items-center gap-4 pl-4 border-l border-slate-200/60">
+                                <div class="text-right min-w-[75px]">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Subtotal</span>
+                                    <p class="font-black text-[#0f172a] text-base">${{ cart_item.get_subtotal }}</p>
                                 </div>
 
                                 <a href="{% url 'cart:remove' cart_item.item.id %}"
-                                   class="btn-remove w-8 h-8 rounded-full bg-slate-50 hover:bg-rose-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors duration-300"
+                                   class="btn-remove w-9 h-9 rounded-2xl bg-slate-100 hover:bg-rose-500 text-slate-400 hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm"
                                    title="Remove Item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                                     </svg>
                                 </a>
@@ -105,37 +128,52 @@
                 {% endfor %}
             </div>
 
-            <!-- Right Column: Sticky Order Summary Dashboard (Class right-summary-panel added for GSAP) -->
-            <div class="right-summary-panel lg:col-span-1 opacity-0">
-                <div class="bg-white rounded-3xl border border-slate-100 shadow-xs p-6 md:p-8 sticky top-24">
-                    <h2 class="bazaar-title text-xl font-black text-[#0f172a] mb-6">Order Summary</h2>
+            <!-- Right Column: Sticky 3D Order Summary Dashboard -->
+            <div class="right-summary-panel lg:col-span-1 opacity-0 translate-x-8">
+                <div class="glass-card rounded-[2.5pax] rounded-[2rem] p-7 md:p-8 sticky top-24 shadow-xl border border-slate-200/60">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                        <h2 class="bazaar-title text-2xl font-black text-[#0f172a]">Order Summary</h2>
+                        <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">{{ cart_items|length }} Items</span>
+                    </div>
 
-                    <!-- Items itemized list -->
-                    <div class="space-y-4 mb-6 max-h-48 overflow-y-auto pr-1">
+                    <!-- Items itemized miniature list -->
+                    <div class="space-y-3 mb-6 max-h-48 overflow-y-auto pr-1">
                         {% for cart_item in cart_items %}
-                            <div class="flex justify-between text-xs text-slate-500 font-semibold gap-2">
-                                <span class="truncate max-w-[140px]">{{ cart_item.item.name }}</span>
-                                <span class="text-slate-400">x{{ cart_item.quantity }}</span>
+                            <div class="flex justify-between items-center text-xs text-slate-500 font-semibold gap-2 py-1 border-b border-slate-50">
+                                <span class="truncate max-w-[130px]">{{ cart_item.item.name }}</span>
+                                <span class="text-slate-400 font-mono">x{{ cart_item.quantity }}</span>
                                 <span class="text-[#0f172a] font-extrabold ml-auto">${{ cart_item.get_subtotal }}</span>
                             </div>
                         {% endfor %}
                     </div>
 
-                    <div class="border-t border-slate-50 pt-5 mb-8">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-extrabold text-[#0f172a] uppercase tracking-wider">Total</span>
-                            <span class="text-2xl font-black text-[#e94560]">${{ cart.get_total }}</span>
+                    <!-- Cost Breakdown details -->
+                    <div class="space-y-2 mb-6 text-xs text-slate-500">
+                        <div class="flex justify-between">
+                            <span>Subtotal</span>
+                            <span class="font-bold text-[#0f172a]">${{ cart.get_total }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Estimated Shipping</span>
+                            <span class="font-bold text-emerald-600">FREE</span>
                         </div>
                     </div>
 
-                    <!-- Direct CTAs in Bazaar Crimson -->
+                    <div class="border-t border-slate-200/60 pt-5 mb-8">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black text-[#0f172a] uppercase tracking-wider">Total Amount</span>
+                            <span class="text-3xl font-black text-[#e94560]">${{ cart.get_total }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Direct CTAs with Magnetic Hover -->
                     <div class="space-y-3">
                         <a href="{% url 'cart:checkout' %}"
-                           class="btn-submit block w-full text-center py-4 bg-[#e94560] hover:bg-[#d23f57] text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
-                            Proceed to Checkout
+                           class="btn-submit block w-full text-center py-4 bg-gradient-to-r from-[#e94560] to-[#ff6b8b] hover:from-[#d23f57] hover:to-[#e94560] text-white font-extrabold uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#e94560]/25 transition-all duration-300 transform active:scale-95">
+                            Proceed to Secure Checkout
                         </a>
                         <a href="{% url 'item:items' %}"
-                           class="btn-back block w-full text-center py-3.5 bg-slate-50 hover:bg-slate-100 text-[#0f172a] font-bold uppercase tracking-widest text-xs rounded-xl transition duration-300">
+                           class="btn-back block w-full text-center py-3.5 bg-slate-100 hover:bg-slate-200 text-[#0f172a] font-bold uppercase tracking-widest text-xs rounded-2xl transition duration-300">
                             Continue Shopping
                         </a>
                     </div>
@@ -145,144 +183,80 @@
         </div>
 
     {% else %}
-        <!-- Empty Cart State -->
-        <div class="empty-state text-center py-20 bg-white rounded-[2.5rem] border border-slate-100 shadow-xs opacity-0">
-            <span class="text-5xl block mb-4">🛒</span>
-            <p class="text-slate-500 text-sm font-bold mb-8">Your shopping cart is empty.</p>
+        <!-- Premium Empty Cart State -->
+        <div class="empty-state text-center py-24 glass-card rounded-[3rem] border border-slate-100 shadow-xl opacity-0 scale-95">
+            <div class="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">
+                🛒
+            </div>
+            <h2 class="bazaar-title text-2xl font-black text-[#0f172a] mb-2">Your cart is currently empty</h2>
+            <p class="text-slate-500 text-xs font-semibold mb-8 max-w-sm mx-auto">Explore our high-end marketplace collection and add your favorite items to begin.</p>
             <a href="{% url 'item:items' %}"
-               class="btn-submit inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-xs rounded-xl shadow-md transition-all duration-300">
+               class="btn-submit inline-flex items-center justify-center px-8 py-4 bg-[#0f172a] hover:bg-slate-800 text-white font-extrabold uppercase tracking-widest text-xs rounded-2xl shadow-xl transition-all duration-300">
                 Browse Marketplace
             </a>
         </div>
     {% endif %}
 </div>
 
-<!-- Quantity adjust scripts with instant automatic submit callbacks -->
+<!-- Advanced GSAP & 3D Interactive Animation Engine -->
 <script>
-    // Register GSAP ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger);
-
-    // 1. Header Section fade-and-slide reveal on load
-    gsap.to(".header-sec", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
-    });
-
-    // 2. Left Cart Items Panel slide-in entrance
-    gsap.to(".left-items-panel", {
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        delay: 0.1
-    });
-
-    // 3. Staggered reveal for individual cart rows
-    gsap.from(".cart-row", {
-        y: 30,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 0.7,
-        ease: "power2.out",
-        delay: 0.2
-    });
-
-    // 4. Right Order Summary Panel slide-in entrance
-    gsap.to(".right-summary-panel", {
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        delay: 0.15
-    });
-
-    // 5. Empty State card entrance
-    gsap.to(".empty-state", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        delay: 0.2
-    });
-
-    // 6. Standalone Micro-physics Hover Interaction for Item Row thumbnails
-    const cartRows = document.querySelectorAll('.cart-row');
-    cartRows.forEach(row => {
-        const thumb = row.querySelector('.thumb-wrap');
-        const removeBtn = row.querySelector('.btn-remove');
-        
-        row.addEventListener('mouseenter', () => {
-            gsap.to(row, {
-                y: -4,
-                boxShadow: "0 20px 25px -5px rgba(15, 23, 42, 0.04)",
-                borderColor: "rgba(233, 69, 96, 0.12)",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            if (thumb) {
-                gsap.to(thumb, {
-                    scale: 1.04,
-                    borderColor: "rgba(233, 69, 96, 0.15)",
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            }
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Initialize Vanilla Tilt on glass cards for 3D card physics
+        VanillaTilt.init(document.querySelectorAll(".glass-card"), {
+            max: 4,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.15,
+            scale: 1.01
         });
 
-        row.addEventListener('mouseleave', () => {
-            gsap.to(row, {
-                y: 0,
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.01)",
-                borderColor: "#f1f5f9",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-            if (thumb) {
-                gsap.to(thumb, {
-                    scale: 1,
-                    borderColor: "#e2e8f0",
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            }
-        });
+        // 2. GSAP Timeline Animations for Cinematic Entrance
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-        // Hover scale effect for individual remove buttons
-        if (removeBtn) {
-            removeBtn.addEventListener('mouseenter', () => {
-                gsap.to(removeBtn, { scale: 1.1, duration: 0.2, ease: "power1.out" });
-            });
-            removeBtn.addEventListener('mouseleave', () => {
-                gsap.to(removeBtn, { scale: 1, duration: 0.2, ease: "power1.out" });
-            });
-        }
-    });
+        tl.to(".header-sec", {
+            y: 0,
+            opacity: 1,
+            duration: 1
+        })
+        .to(".left-items-panel", {
+            x: 0,
+            opacity: 1,
+            duration: 0.9
+        }, "-=0.6")
+        .from(".cart-row", {
+            y: 40,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.8
+        }, "-=0.5")
+        .to(".right-summary-panel", {
+            x: 0,
+            opacity: 1,
+            duration: 0.9
+        }, "-=0.7")
+        .to(".empty-state", {
+            scale: 1,
+            y: 0,
+            opacity: 1,
+            duration: 0.8
+        }, "-=0.5");
 
-    // 7. Tactical hover configurations for CTA buttons
-    const actionButtons = [document.querySelector('.btn-submit'), document.querySelector('.btn-back')];
-    actionButtons.forEach(btn => {
-        if (btn) {
-            btn.addEventListener('mouseenter', () => {
-                gsap.to(btn, {
-                    y: -2,
-                    scale: 1.015,
-                    duration: 0.25,
-                    ease: "power1.out"
-                });
+        // 3. Magnetic Button Hover Micro-interactions
+        const actionButtons = document.querySelectorAll('.btn-submit, .btn-back');
+        actionButtons.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(btn, { x: x * 0.2, y: y * 0.2, duration: 0.3, ease: "power2.out" });
             });
             btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, {
-                    y: 0,
-                    scale: 1,
-                    duration: 0.25,
-                    ease: "power1.out"
-                });
+                gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.4)" });
             });
-        }
+        });
     });
 
+    // Quantity step-down and step-up callback handlers
     function stepDownQty(itemId) {
         const input = document.getElementById(`qty-input-${itemId}`);
         const form = document.getElementById(`qty-form-${itemId}`);

@@ -7,11 +7,14 @@ CHECKBOX_CLASSES = 'w-5 h-5 text-teal-600 border-gray-300 rounded focus:ring-tea
 class NewItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('category', 'name', 'description', 'price', 'image')
+        fields = (
+            'category', 'name', 'description',
+            'original_price', 'condition', 'stock_count',
+            'image',
+            'sale_price', 'sale_start', 'sale_end',
+        )
         widgets = {
-            'category': forms.Select(attrs={
-                'class': INPUT_CLASSES
-            }),
+            'category': forms.Select(attrs={'class': INPUT_CLASSES}),
             'name': forms.TextInput(attrs={
                 'class': INPUT_CLASSES,
                 'placeholder': 'Item name'
@@ -21,12 +24,27 @@ class NewItemForm(forms.ModelForm):
                 'rows': 4,
                 'placeholder': 'Describe your item...'
             }),
-            'price': forms.TextInput(attrs={
+            'original_price': forms.NumberInput(attrs={
                 'class': INPUT_CLASSES,
                 'placeholder': '0.00'
             }),
-            'image': forms.FileInput(attrs={
-                'class': INPUT_CLASSES
+            'condition': forms.Select(attrs={'class': INPUT_CLASSES}),
+            'stock_count': forms.NumberInput(attrs={
+                'class': INPUT_CLASSES,
+                'placeholder': '1'
+            }),
+            'image': forms.FileInput(attrs={'class': INPUT_CLASSES}),
+            'sale_price': forms.NumberInput(attrs={
+                'class': INPUT_CLASSES,
+                'placeholder': 'Flash sale price (optional)'
+            }),
+            'sale_start': forms.DateTimeInput(attrs={
+                'class': INPUT_CLASSES,
+                'type': 'datetime-local'
+            }),
+            'sale_end': forms.DateTimeInput(attrs={
+                'class': INPUT_CLASSES,
+                'type': 'datetime-local'
             }),
         }
 
@@ -34,7 +52,12 @@ class NewItemForm(forms.ModelForm):
 class EditItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ('name', 'description', 'price', 'image', 'is_sold')
+        fields = (
+            'name', 'description',
+            'original_price', 'condition', 'stock_count',
+            'image', 'status',
+            'sale_price', 'sale_start', 'sale_end',
+        )
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': INPUT_CLASSES,
@@ -45,14 +68,24 @@ class EditItemForm(forms.ModelForm):
                 'rows': 4,
                 'placeholder': 'Describe your item...'
             }),
-            'price': forms.TextInput(attrs={
+            'original_price': forms.NumberInput(attrs={
                 'class': INPUT_CLASSES,
                 'placeholder': '0.00'
             }),
-            'image': forms.FileInput(attrs={
-                'class': INPUT_CLASSES
+            'condition': forms.Select(attrs={'class': INPUT_CLASSES}),
+            'stock_count': forms.NumberInput(attrs={'class': INPUT_CLASSES}),
+            'image': forms.FileInput(attrs={'class': INPUT_CLASSES}),
+            'status': forms.Select(attrs={'class': INPUT_CLASSES}),
+            'sale_price': forms.NumberInput(attrs={
+                'class': INPUT_CLASSES,
+                'placeholder': 'Flash sale price (optional)'
             }),
-            'is_sold': forms.CheckboxInput(attrs={
-                'class': CHECKBOX_CLASSES
+            'sale_start': forms.DateTimeInput(attrs={
+                'class': INPUT_CLASSES,
+                'type': 'datetime-local'
+            }),
+            'sale_end': forms.DateTimeInput(attrs={
+                'class': INPUT_CLASSES,
+                'type': 'datetime-local'
             }),
         }
