@@ -82,7 +82,7 @@ def detail(request, pk):
 @login_required
 def new(request):
     if request.user.user_type == 'Buyer':
-        messages.error(request, "Buyers cannot add items. Please create a Seller account.")
+        messages.error(request, "Buyers cannot add items.")
         return redirect('item:items')
 
     if request.method == 'POST':
@@ -90,10 +90,16 @@ def new(request):
         if form.is_valid():
             item = form.save(commit=False)
             item.user = request.user
-            # user এর shop থাকলে automatically link করো
             if hasattr(request.user, 'shop'):
                 item.shop = request.user.shop
             item.save()
+
+            # Extra images save
+            from .models import ItemImage
+            extra_images = request.FILES.getlist('extra_images')
+            for i, img in enumerate(extra_images[:5]):
+                ItemImage.objects.create(item=item, image=img, order=i)
+
             cache.delete('all_categories')
             messages.success(request, 'Your item is live!')
             return redirect('item:detail', pk=item.id)
