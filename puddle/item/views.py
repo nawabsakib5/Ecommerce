@@ -63,6 +63,9 @@ def detail(request, pk):
         pk=pk,
     )
 
+    # Multiple images — main image + extra images
+    extra_images = item.images.all()
+
     related_items = Item.objects.filter(
         category=item.category,
         is_sold=False,
@@ -72,6 +75,7 @@ def detail(request, pk):
     return render(request, 'item/detail.html', {
         'item': item,
         'related_items': related_items,
+        'extra_images': extra_images,
     })
 
 

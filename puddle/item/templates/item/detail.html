@@ -10,182 +10,193 @@
 <style>
 * { box-sizing: border-box; }
 .dp { font-family: 'Inter', sans-serif; background: #f8f7f4; min-height: 100vh; }
-
 .dp-wrap { max-width: 1200px; margin: 0 auto; padding: 32px; }
 @media(max-width:768px){ .dp-wrap{ padding:16px; } }
 
-/* Breadcrumb */
-.dp-bread { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#aaa; margin-bottom:28px; }
+.dp-bread { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#aaa; margin-bottom:28px; flex-wrap:wrap; }
 .dp-bread a { color:#aaa; text-decoration:none; transition:color .2s; }
 .dp-bread a:hover { color:#c84b31; }
 .dp-bread span { color:#1a1a2e; font-weight:700; }
 
-/* Main grid */
 .dp-grid { display:grid; grid-template-columns:1fr 420px; gap:24px; align-items:start; }
 @media(max-width:1024px){ .dp-grid{ grid-template-columns:1fr; } }
 
-/* Image panel */
+/* ── IMAGE PANEL ── */
 .dp-img-panel { background:#fff; border-radius:24px; border:1.5px solid #e8e5e0; overflow:hidden; }
+
 .dp-img-main {
     position:relative;
     background:#f8f7f4;
     display:flex; align-items:center; justify-content:center;
-    padding:40px;
-    min-height:480px;
-    overflow:hidden;
+    min-height:480px; overflow:hidden; cursor:zoom-in;
 }
-.dp-img-main img {
-    max-width:100%; max-height:440px;
+
+/* Zoom lens overlay */
+.dp-img-main img#mainImg {
+    max-width:100%; max-height:460px;
     object-fit:contain;
     filter:drop-shadow(0 20px 40px rgba(0,0,0,.12));
-    transition:transform .5s ease;
+    transition:transform .4s ease;
+    pointer-events:none;
+    user-select:none;
 }
-.dp-img-panel:hover .dp-img-main img { transform:scale(1.04); }
+.dp-img-main.zoomed img#mainImg { transform:scale(1.9); }
 
-/* Image badges */
-.dp-img-badges { position:absolute; top:20px; left:20px; display:flex; flex-direction:column; gap:6px; }
-.dp-badge { padding:4px 10px; border-radius:8px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+/* Zoom hint */
+.dp-zoom-hint {
+    position:absolute; bottom:14px; right:14px;
+    background:rgba(26,26,46,.6); color:#fff;
+    border-radius:8px; padding:4px 10px;
+    font-size:9px; font-weight:700; letter-spacing:.06em;
+    pointer-events:none; opacity:.7;
+}
+
+.dp-img-badges { position:absolute; top:16px; left:16px; display:flex; flex-direction:column; gap:5px; z-index:2; }
+.dp-badge { padding:3px 9px; border-radius:7px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
 .dp-badge-cat { background:#1a1a2e; color:#fff; }
 .dp-badge-sale { background:#c84b31; color:#fff; animation:salePulse 2s infinite; }
 .dp-badge-cond { background:#0d7377; color:#fff; }
 .dp-badge-sold { background:#6b7280; color:#fff; }
-@keyframes salePulse { 0%,100%{opacity:1} 50%{opacity:.7} }
+@keyframes salePulse { 0%,100%{opacity:1}50%{opacity:.6} }
 
-/* Wishlist btn on image */
 .dp-wl-img {
-    position:absolute; top:20px; right:20px;
-    width:40px; height:40px;
+    position:absolute; top:16px; right:16px; z-index:2;
+    width:38px; height:38px;
     background:#fff; border:1.5px solid #e8e5e0; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    text-decoration:none; font-size:18px;
+    text-decoration:none; font-size:17px;
     transition:border-color .2s, transform .2s;
     box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
 .dp-wl-img:hover { border-color:#c84b31; transform:scale(1.1); }
 
-/* Thumbnail strip */
-.dp-thumbs { display:flex; gap:8px; padding:16px; overflow-x:auto; scrollbar-width:none; }
+/* Thumbnail gallery */
+.dp-thumbs { display:flex; gap:8px; padding:14px; overflow-x:auto; scrollbar-width:none; border-top:1px solid #f0ede8; }
 .dp-thumbs::-webkit-scrollbar { display:none; }
 .dp-thumb {
-    width:72px; height:72px; flex-shrink:0;
-    border:1.5px solid #e8e5e0; border-radius:12px;
+    width:70px; height:70px; flex-shrink:0;
+    border:2px solid #e8e5e0; border-radius:11px;
     overflow:hidden; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
-    background:#f8f7f4; padding:6px;
-    transition:border-color .2s;
+    background:#f8f7f4; padding:5px;
+    transition:border-color .2s, transform .2s;
 }
+.dp-thumb:hover { transform:scale(1.05); }
 .dp-thumb.active { border-color:#c84b31; }
 .dp-thumb img { width:100%; height:100%; object-fit:contain; }
 
-/* Info panel */
-.dp-info { background:#fff; border-radius:24px; border:1.5px solid #e8e5e0; padding:32px; }
+/* Lightbox */
+.dp-lightbox {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.92); z-index:9999;
+    align-items:center; justify-content:center;
+    cursor:zoom-out;
+}
+.dp-lightbox.open { display:flex; }
+.dp-lightbox img {
+    max-width:90vw; max-height:90vh;
+    object-fit:contain;
+    border-radius:12px;
+    box-shadow:0 40px 80px rgba(0,0,0,.5);
+    animation:lbIn .25s ease;
+}
+@keyframes lbIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
+.dp-lb-close {
+    position:absolute; top:20px; right:24px;
+    color:#fff; font-size:28px; cursor:pointer;
+    background:rgba(255,255,255,.1); border:none;
+    width:44px; height:44px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s;
+}
+.dp-lb-close:hover { background:rgba(200,75,49,.6); }
+.dp-lb-nav {
+    position:absolute; top:50%; transform:translateY(-50%);
+    color:#fff; font-size:22px; cursor:pointer;
+    background:rgba(255,255,255,.1); border:none;
+    width:48px; height:48px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s;
+}
+.dp-lb-nav:hover { background:rgba(200,75,49,.6); }
+.dp-lb-prev { left:20px; }
+.dp-lb-next { right:20px; }
 
-.dp-info-cat { font-size:10px; font-weight:700; color:#c84b31; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
-.dp-info-name { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#1a1a2e; line-height:1.15; margin-bottom:16px; }
+/* ── INFO PANEL ── */
+.dp-info { background:#fff; border-radius:24px; border:1.5px solid #e8e5e0; padding:28px; }
+.dp-info-cat { font-size:10px; font-weight:700; color:#c84b31; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.dp-info-name { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; line-height:1.15; margin-bottom:14px; }
 
-/* Rating row */
-.dp-rating-row { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid #f0ede8; }
-.dp-stars { color:#f59e0b; font-size:14px; letter-spacing:1px; }
+.dp-rating-row { display:flex; align-items:center; gap:8px; margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid #f0ede8; }
+.dp-stars { color:#f59e0b; font-size:13px; }
 .dp-rating-count { font-size:11px; font-weight:600; color:#aaa; }
 .dp-seller-link { font-size:11px; font-weight:600; color:#555; margin-left:auto; }
 .dp-seller-link b { color:#1a1a2e; }
 
-/* Price box */
-.dp-price-box { background:#f8f7f4; border-radius:16px; padding:20px; margin-bottom:20px; }
-.dp-price-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
-.dp-price-row { display:flex; align-items:baseline; gap:12px; }
-.dp-price-sale { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#c84b31; line-height:1; }
-.dp-price-orig { font-size:18px; font-weight:600; color:#bbb; text-decoration:line-through; }
-.dp-price-main { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; color:#1a1a2e; line-height:1; }
-.dp-discount-tag { background:#c84b31; color:#fff; border-radius:6px; padding:3px 8px; font-size:10px; font-weight:700; margin-left:auto; }
+.dp-price-box { background:#f8f7f4; border-radius:14px; padding:18px; margin-bottom:18px; }
+.dp-price-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+.dp-price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.dp-price-sale { font-family:'Syne',sans-serif; font-size:34px; font-weight:800; color:#c84b31; line-height:1; }
+.dp-price-orig { font-size:17px; font-weight:600; color:#bbb; text-decoration:line-through; }
+.dp-price-main { font-family:'Syne',sans-serif; font-size:34px; font-weight:800; color:#1a1a2e; line-height:1; }
+.dp-discount-tag { background:#c84b31; color:#fff; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:700; margin-left:auto; }
 
-/* Stock bar */
-.dp-stock { margin-bottom:20px; }
-.dp-stock-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.dp-stock { margin-bottom:18px; }
+.dp-stock-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
 .dp-stock-label { font-size:11px; font-weight:600; color:#666; }
 .dp-stock-count { font-size:11px; font-weight:700; color:#1a1a2e; }
 .dp-stock-bar { height:4px; background:#f0ede8; border-radius:999px; overflow:hidden; }
 .dp-stock-fill { height:100%; background:linear-gradient(90deg,#c84b31,#ff8c7a); border-radius:999px; transition:width .8s ease; }
 
-/* Description */
-.dp-desc { margin-bottom:24px; }
-.dp-desc-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+.dp-desc { margin-bottom:20px; }
+.dp-desc-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
 .dp-desc-text { font-size:13px; font-weight:500; color:#555; line-height:1.7; }
 
-/* Meta tags */
-.dp-meta { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:24px; }
-.dp-meta-tag { padding:5px 12px; background:#f8f7f4; border:1px solid #e8e5e0; border-radius:8px; font-size:10px; font-weight:600; color:#555; }
+.dp-meta { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:20px; }
+.dp-meta-tag { padding:4px 10px; background:#f8f7f4; border:1px solid #e8e5e0; border-radius:7px; font-size:10px; font-weight:600; color:#555; }
 .dp-meta-tag b { color:#1a1a2e; }
 
-/* CTA buttons */
-.dp-ctas { display:flex; flex-direction:column; gap:10px; }
-.dp-btn-primary {
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:16px 24px;
-    background:#1a1a2e; color:#fff;
-    border-radius:14px; border:none; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:12px; font-weight:700;
-    text-decoration:none; text-transform:uppercase; letter-spacing:.06em;
-    transition:background .2s, transform .2s, box-shadow .2s;
-    box-shadow:0 8px 20px rgba(26,26,46,.2);
-}
+.dp-ctas { display:flex; flex-direction:column; gap:9px; }
+.dp-btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; padding:15px 24px; background:#1a1a2e; color:#fff; border-radius:13px; border:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:12px; font-weight:700; text-decoration:none; text-transform:uppercase; letter-spacing:.06em; transition:background .2s, transform .2s, box-shadow .2s; box-shadow:0 8px 20px rgba(26,26,46,.2); }
 .dp-btn-primary:hover { background:#c84b31; transform:translateY(-2px); box-shadow:0 12px 28px rgba(200,75,49,.3); }
 .dp-btn-primary.red { background:#c84b31; box-shadow:0 8px 20px rgba(200,75,49,.25); }
 .dp-btn-primary.red:hover { background:#b03d26; }
 
-.dp-btn-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.dp-btn-sec {
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    padding:13px 16px;
-    background:#fff; color:#1a1a2e;
-    border:1.5px solid #e8e5e0; border-radius:12px; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:11px; font-weight:700;
-    text-decoration:none; text-transform:uppercase; letter-spacing:.05em;
-    transition:all .2s;
-}
+.dp-btn-row { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.dp-btn-sec { display:flex; align-items:center; justify-content:center; gap:6px; padding:12px 14px; background:#fff; color:#1a1a2e; border:1.5px solid #e8e5e0; border-radius:11px; cursor:pointer; font-family:'Inter',sans-serif; font-size:11px; font-weight:700; text-decoration:none; text-transform:uppercase; letter-spacing:.05em; transition:all .2s; }
 .dp-btn-sec:hover { border-color:#c84b31; color:#c84b31; transform:translateY(-1px); }
 
-.dp-owner-box { background:#f8f7f4; border-radius:14px; padding:16px; }
-.dp-owner-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+.dp-owner-box { background:#f8f7f4; border-radius:13px; padding:14px; }
+.dp-owner-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
 .dp-owner-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.dp-owner-edit { background:#1a1a2e; color:#fff; }
+.dp-owner-edit { background:#1a1a2e; color:#fff; border-color:#1a1a2e; }
+.dp-owner-edit:hover { background:#c84b31 !important; border-color:#c84b31 !important; color:#fff !important; }
 .dp-owner-del { background:#fee2e2; color:#c84b31; border-color:#fecaca; }
-.dp-owner-del:hover { background:#c84b31; color:#fff; }
+.dp-owner-del:hover { background:#c84b31 !important; color:#fff !important; border-color:#c84b31 !important; }
 
-/* Sold overlay */
-.dp-sold-overlay {
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:16px; background:#f3f4f6; border-radius:14px;
-    font-size:12px; font-weight:700; color:#6b7280;
-    text-transform:uppercase; letter-spacing:.06em;
-}
+.dp-sold-overlay { display:flex; align-items:center; justify-content:center; gap:8px; padding:15px; background:#f3f4f6; border-radius:13px; font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; }
 
-/* Related section */
-.dp-related { margin-top:48px; }
-.dp-related-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#1a1a2e; margin-bottom:20px; }
-.dp-related-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-
-.dp-rel-card {
-    background:#fff; border:1.5px solid #e8e5e0; border-radius:18px; overflow:hidden;
-    text-decoration:none; display:block;
-    transition:transform .3s, border-color .3s, box-shadow .3s;
-}
+/* Related */
+.dp-related { margin-top:44px; }
+.dp-related-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#1a1a2e; margin-bottom:18px; }
+.dp-related-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+.dp-rel-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:18px; overflow:hidden; text-decoration:none; display:block; transition:transform .3s, border-color .3s, box-shadow .3s; }
 .dp-rel-card:hover { transform:translateY(-5px); border-color:rgba(200,75,49,.2); box-shadow:0 16px 32px rgba(0,0,0,.07); }
-.dp-rel-img { aspect-ratio:1; background:#f8f7f4; display:flex; align-items:center; justify-content:center; padding:20px; overflow:hidden; }
+.dp-rel-img { aspect-ratio:1; background:#f8f7f4; display:flex; align-items:center; justify-content:center; padding:18px; overflow:hidden; }
 .dp-rel-img img { width:100%; height:100%; object-fit:contain; transition:transform .4s; }
 .dp-rel-card:hover .dp-rel-img img { transform:scale(1.06); }
-.dp-rel-body { padding:14px; border-top:1px solid #f0ede8; }
-.dp-rel-name { font-size:13px; font-weight:600; color:#1a1a2e; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.dp-rel-price { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:#c84b31; }
+.dp-rel-body { padding:13px; border-top:1px solid #f0ede8; }
+.dp-rel-name { font-size:13px; font-weight:600; color:#1a1a2e; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dp-rel-price { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#c84b31; }
 
 /* Delete modal */
 .dp-modal { display:none; position:fixed; inset:0; background:rgba(26,26,46,.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; }
 .dp-modal.open { display:flex; }
-.dp-modal-box { background:#fff; border-radius:24px; padding:32px; max-width:360px; width:90%; box-shadow:0 40px 80px rgba(0,0,0,.15); }
-.dp-modal-icon { width:60px; height:60px; background:#fee2e2; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:26px; }
-.dp-modal-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:#1a1a2e; text-align:center; margin-bottom:6px; }
-.dp-modal-sub { font-size:12px; font-weight:500; color:#aaa; text-align:center; margin-bottom:24px; line-height:1.5; }
-.dp-modal-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.dp-modal-box { background:#fff; border-radius:22px; padding:28px; max-width:340px; width:90%; box-shadow:0 40px 80px rgba(0,0,0,.15); }
+.dp-modal-icon { width:56px; height:56px; background:#fee2e2; border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:24px; }
+.dp-modal-title { font-family:'Syne',sans-serif; font-size:19px; font-weight:800; color:#1a1a2e; text-align:center; margin-bottom:5px; }
+.dp-modal-sub { font-size:12px; font-weight:500; color:#aaa; text-align:center; margin-bottom:22px; line-height:1.5; }
+.dp-modal-btns { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
 
 .op0 { opacity:0; transform:translateY(20px); }
 </style>
@@ -198,15 +209,14 @@
     <a href="{% url 'core:index' %}">Home</a> /
     <a href="{% url 'item:items' %}">Browse</a> /
     <a href="{% url 'item:items' %}?category={{ item.category.id }}">{{ item.category.name }}</a> /
-    <span>{{ item.name|truncatechars:30 }}</span>
+    <span>{{ item.name|truncatechars:35 }}</span>
   </div>
 
-  <!-- Main Grid -->
   <div class="dp-grid">
 
     <!-- Image Panel -->
     <div class="dp-img-panel op0" id="imgPanel">
-      <div class="dp-img-main">
+      <div class="dp-img-main" id="imgMain">
         <div class="dp-img-badges">
           <span class="dp-badge dp-badge-cat">{{ item.category.name }}</span>
           {% if item.is_on_sale %}<span class="dp-badge dp-badge-sale">-{{ item.discount_percent }}% OFF</span>{% endif %}
@@ -215,16 +225,25 @@
         </div>
         <img id="mainImg"
           src="{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}"
-          alt="{{ item.name }}" loading="lazy">
+          alt="{{ item.name }}">
+        <div class="dp-zoom-hint">🔍 Click to zoom</div>
         {% if request.user.is_authenticated %}
-        <a href="{% url 'core:toggle_wishlist' item.id %}" class="dp-wl-img" title="Add to Wishlist">♡</a>
+        <a href="{% url 'core:toggle_wishlist' item.id %}" class="dp-wl-img" title="Wishlist">♡</a>
         {% endif %}
       </div>
-      <!-- Thumbnail (same image as placeholder, real project এ multiple images হবে) -->
-      <div class="dp-thumbs">
-        <div class="dp-thumb active">
+
+      <!-- Thumbnails -->
+      <div class="dp-thumbs" id="thumbStrip">
+        <!-- Main image thumbnail -->
+        <div class="dp-thumb active" onclick="switchImg(this, '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}', 0)">
           <img src="{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/400/400{% endif %}" alt="">
         </div>
+        <!-- Extra images -->
+        {% for img in extra_images %}
+        <div class="dp-thumb" onclick="switchImg(this, '{{ img.image.url }}', {{ forloop.counter }})">
+          <img src="{{ img.image.url }}" alt="">
+        </div>
+        {% endfor %}
       </div>
     </div>
 
@@ -233,16 +252,12 @@
       <div class="dp-info-cat">{{ item.category.name }}</div>
       <h1 class="dp-info-name">{{ item.name }}</h1>
 
-      <!-- Rating row -->
       <div class="dp-rating-row">
         <div class="dp-stars">★★★★☆</div>
-        <span class="dp-rating-count">
-          {% with item.reviews.count as rc %}{{ rc }} review{{ rc|pluralize }}{% endwith %}
-        </span>
+        <span class="dp-rating-count">{% with item.reviews.count as rc %}{{ rc }} review{{ rc|pluralize }}{% endwith %}</span>
         <span class="dp-seller-link">By <b>{{ item.user.username }}</b>{% if item.shop %} · {{ item.shop.name }}{% endif %}</span>
       </div>
 
-      <!-- Price -->
       <div class="dp-price-box">
         <div class="dp-price-label">Price</div>
         <div class="dp-price-row">
@@ -256,7 +271,6 @@
         </div>
       </div>
 
-      <!-- Stock -->
       {% if item.stock_count %}
       <div class="dp-stock">
         <div class="dp-stock-row">
@@ -269,7 +283,6 @@
       </div>
       {% endif %}
 
-      <!-- Description -->
       {% if item.description %}
       <div class="dp-desc">
         <div class="dp-desc-label">Product Description</div>
@@ -277,24 +290,21 @@
       </div>
       {% endif %}
 
-      <!-- Meta tags -->
       <div class="dp-meta">
         <span class="dp-meta-tag">Condition: <b>{{ item.get_condition_display }}</b></span>
         <span class="dp-meta-tag">Category: <b>{{ item.category.name }}</b></span>
         {% if item.is_on_sale %}<span class="dp-meta-tag" style="background:#fee2e2;border-color:#fecaca;color:#c84b31;">⚡ Flash Sale</span>{% endif %}
       </div>
 
-      <!-- CTAs -->
       <div class="dp-ctas">
         {% if request.user == item.user %}
           <div class="dp-owner-box">
             <div class="dp-owner-label">📦 Your Listed Item</div>
             <div class="dp-owner-btns">
-              <a href="{% url 'item:edit' item.id %}" class="dp-btn-sec dp-owner-edit">✏️ Edit Item</a>
+              <a href="{% url 'item:edit' item.id %}" class="dp-btn-sec dp-owner-edit">✏️ Edit</a>
               <button onclick="document.getElementById('deleteModal').classList.add('open')" class="dp-btn-sec dp-owner-del">🗑️ Delete</button>
             </div>
           </div>
-
         {% elif request.user.is_authenticated and request.user.user_type == 'Buyer' %}
           {% if not item.is_sold %}
           <a href="{% url 'cart:add' item.id %}" class="dp-btn-primary red">🛒 Add to Cart</a>
@@ -303,23 +313,19 @@
           {% endif %}
           <div class="dp-btn-row">
             <a href="{% url 'core:toggle_wishlist' item.id %}" class="dp-btn-sec">💖 Wishlist</a>
-            <a href="{% url 'conversation:new' item.id %}" class="dp-btn-sec">💬 Contact Seller</a>
+            <a href="{% url 'conversation:new' item.id %}" class="dp-btn-sec">💬 Contact</a>
           </div>
-
         {% elif not request.user.is_authenticated %}
           <a href="{% url 'core:login' %}" class="dp-btn-primary">🔐 Login to Buy</a>
-
         {% else %}
-          <div style="background:#fff8e1;border-radius:12px;padding:12px 16px;font-size:11px;font-weight:600;color:#92400e;text-align:center;margin-bottom:8px;">
-            👀 You are viewing as a Seller
-          </div>
+          <div style="background:#fff8e1;border-radius:11px;padding:11px 14px;font-size:11px;font-weight:600;color:#92400e;text-align:center;margin-bottom:7px;">👀 Viewing as Seller</div>
           <a href="{% url 'conversation:new' item.id %}" class="dp-btn-primary">💬 Contact Seller</a>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <!-- Related Items -->
+  <!-- Related -->
   <div class="dp-related">
     <div class="dp-related-title">Related Items</div>
     <div class="dp-related-grid">
@@ -335,9 +341,7 @@
         </div>
       </a>
       {% empty %}
-      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#aaa;font-size:13px;font-weight:500;">
-        No related items found.
-      </div>
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#aaa;font-size:13px;">No related items found.</div>
       {% endfor %}
     </div>
   </div>
@@ -345,12 +349,20 @@
 </div>
 </div>
 
+<!-- Lightbox -->
+<div class="dp-lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="dp-lb-close" onclick="document.getElementById('lightbox').classList.remove('open')">✕</button>
+  <button class="dp-lb-nav dp-lb-prev" onclick="lbNav(-1);event.stopPropagation()">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="dp-lb-nav dp-lb-next" onclick="lbNav(1);event.stopPropagation()">›</button>
+</div>
+
 <!-- Delete Modal -->
 <div class="dp-modal" id="deleteModal">
   <div class="dp-modal-box">
     <div class="dp-modal-icon">🗑️</div>
     <div class="dp-modal-title">Delete this item?</div>
-    <div class="dp-modal-sub">"{{ item.name }}" will be permanently removed from the marketplace.</div>
+    <div class="dp-modal-sub">"{{ item.name }}" will be permanently removed.</div>
     <div class="dp-modal-btns">
       <form method="post" action="{% url 'item:delete' item.id %}">
         {% csrf_token %}
@@ -362,40 +374,76 @@
 </div>
 
 <script>
-// Entrance animations
-gsap.to('#bread', { opacity:1, y:0, duration:.6, ease:'power3.out', delay:.1 });
+gsap.to('#bread',    { opacity:1, y:0, duration:.6, ease:'power3.out', delay:.1 });
 gsap.to('#imgPanel', { opacity:1, y:0, duration:.7, ease:'power3.out', delay:.15 });
-gsap.to('#infoPanel', { opacity:1, y:0, duration:.7, ease:'power3.out', delay:.25 });
+gsap.to('#infoPanel',{ opacity:1, y:0, duration:.7, ease:'power3.out', delay:.25 });
 
-// Stock bar animation
-const stockFill = document.getElementById('stockFill');
-if(stockFill) {
-  const stock = {{ item.stock_count|default:0 }};
-  const maxStock = 20;
-  const pct = Math.min(100, Math.round((stock / maxStock) * 100));
-  setTimeout(() => {
-    stockFill.style.width = pct + '%';
-  }, 600);
+// Stock bar
+const sf = document.getElementById('stockFill');
+if(sf){ setTimeout(()=>{ sf.style.width = Math.min(100, Math.round(({{ item.stock_count|default:0 }}/20)*100))+'%'; }, 600); }
+
+// Related reveal
+gsap.utils.toArray('.dp-rel-card').forEach((el,i)=>{
+  gsap.to(el,{ opacity:1, y:0, duration:.6, delay:i*.08, ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 90%'} });
+});
+
+// Image gallery
+const allImgs = [
+  '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}'
+  {% for img in extra_images %},'{{ img.image.url }}'{% endfor %}
+];
+let currentIdx = 0;
+
+function switchImg(thumb, url, idx) {
+  currentIdx = idx;
+  const mainImg = document.getElementById('mainImg');
+  gsap.to(mainImg, { opacity:0, scale:.96, duration:.15, onComplete:()=>{
+    mainImg.src = url;
+    gsap.to(mainImg, { opacity:1, scale:1, duration:.25 });
+  }});
+  document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
 }
 
-// Related cards reveal
-gsap.utils.toArray('.dp-rel-card').forEach((el, i) => {
-  gsap.to(el, {
-    opacity:1, y:0, duration:.6, delay:i*.08, ease:'power3.out',
-    scrollTrigger: { trigger:el, start:'top 90%' }
-  });
+// Click to open lightbox
+document.getElementById('imgMain').addEventListener('click', ()=>{
+  document.getElementById('lbImg').src = allImgs[currentIdx];
+  document.getElementById('lightbox').classList.add('open');
 });
 
-// 3D tilt on image panel
-const imgPanel = document.getElementById('imgPanel');
-imgPanel.addEventListener('mousemove', e => {
-  const r = imgPanel.getBoundingClientRect();
-  const x = (e.clientX - r.left) / r.width - .5;
-  const y = (e.clientY - r.top) / r.height - .5;
-  gsap.to(imgPanel, { rotateY:x*6, rotateX:-y*6, duration:.4, ease:'power2.out', transformPerspective:1000 });
+function closeLightbox(e) {
+  if(e.target === document.getElementById('lightbox')) {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+}
+
+function lbNav(dir) {
+  currentIdx = (currentIdx + dir + allImgs.length) % allImgs.length;
+  const lbImg = document.getElementById('lbImg');
+  gsap.to(lbImg,{ opacity:0, x: dir*30, duration:.15, onComplete:()=>{
+    lbImg.src = allImgs[currentIdx];
+    gsap.fromTo(lbImg,{ opacity:0, x:-dir*30 },{ opacity:1, x:0, duration:.2 });
+  }});
+  // sync main image
+  document.getElementById('mainImg').src = allImgs[currentIdx];
+  document.querySelectorAll('.dp-thumb').forEach((t,i)=> t.classList.toggle('active', i===currentIdx));
+}
+
+// Keyboard nav in lightbox
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key==='ArrowLeft') lbNav(-1);
+  if(e.key==='ArrowRight') lbNav(1);
+  if(e.key==='Escape') document.getElementById('lightbox').classList.remove('open');
 });
-imgPanel.addEventListener('mouseleave', () => {
-  gsap.to(imgPanel, { rotateY:0, rotateX:0, duration:.6, ease:'power2.out' });
+
+// 3D tilt
+const ip = document.getElementById('imgPanel');
+ip.addEventListener('mousemove', e=>{
+  const r=ip.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+  gsap.to(ip,{ rotateY:x*5, rotateX:-y*5, duration:.4, ease:'power2.out', transformPerspective:1000 });
 });
+ip.addEventListener('mouseleave',()=>{ gsap.to(ip,{ rotateY:0, rotateX:0, duration:.6, ease:'power2.out' }); });
 </script>
 {% endblock %}
