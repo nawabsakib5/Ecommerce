@@ -17,4 +17,6 @@ urlpatterns = [
     ), name='login'),
     path('notifications/', views.notifications, name='notifications'),
     path('notifications/<int:pk>/read/', views.mark_notification_read, name='notification_read'),
+    path('wishlist/toggle/<int:item_id>/', views.toggle_wishlist, name='toggle_wishlist'),
+    path('review/<int:item_id>/', views.add_review, name='add_review'),
 ]
