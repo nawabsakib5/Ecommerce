@@ -37,7 +37,7 @@ def build_admin_dashboard_data():
             sold_items = Item.objects.filter(user=user, is_sold=True)
             sold_count = sold_items.count()
             revenue = round(
-                sold_items.aggregate(t=Sum('price'))['t'] or 0, 2
+            sold_items.aggregate(t=Sum('original_price'))['t'] or 0, 2
             )
             commission = round(revenue * COMMISSION_RATE, 2)
 

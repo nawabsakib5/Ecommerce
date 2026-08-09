@@ -46,7 +46,7 @@ def seller_dashboard(request):
 
     active_items = items.filter(is_sold=False)
     sold_items = items.filter(is_sold=True)
-    inventory_value = active_items.aggregate(total=Sum('price'))['total'] or 0
+    inventory_value = active_items.aggregate(total=Sum('original_price'))['total'] or 0
 
     # Analytics
     sales = Sale.objects.filter(seller=request.user)

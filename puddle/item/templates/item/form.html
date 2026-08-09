@@ -1,192 +1,343 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %} {{ title }} {% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<!-- Google Fonts & GSAP Animation CDN Packages -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
-    .bazaar-container {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .bazaar-title {
-        font-family: 'Playfair Display', serif;
-    }
-    
-    /* Global form widget inputs override */
-    input:not([type="checkbox"]), select, textarea {
-        width: 100%;
-        padding: 0.9rem 1.25rem;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        outline: none;
-        transition: border-color 0.3s ease, background-color 0.3s ease;
-        color: #0f172a;
-        font-size: 0.875rem;
-    }
-    input:not([type="checkbox"]):focus, select:focus, textarea:focus {
-        border-color: #e94560;
-        background-color: #ffffff;
-    }
-    input[type="file"] {
-        background-color: transparent;
-        border: 2px dashed #e2e8f0;
-        padding: 2rem 1.25rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    input[type="file"]:hover {
-        border-color: #e94560;
-        background-color: #f8fafc;
-    }
-    input[type="checkbox"] {
-        width: 1.2rem !important;
-        height: 1.2rem !important;
-        cursor: pointer;
-        accent-color: #e94560;
-    }
+* { box-sizing: border-box; }
+.nf { font-family: 'Inter', sans-serif; background: #f8f7f4; min-height: 100vh; padding: 40px 16px; }
+
+.nf-wrap { max-width: 680px; margin: 0 auto; }
+
+.nf-card {
+    background: #fff; border-radius: 24px;
+    border: 1.5px solid #e8e5e0;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.04);
+}
+@media(max-width:640px){ .nf-card{ padding:24px; } }
+
+.nf-header { text-align:center; margin-bottom:32px; }
+.nf-icon { font-size:36px; margin-bottom:10px; }
+.nf-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; margin-bottom:6px; }
+.nf-sub { font-size:12px; font-weight:500; color:#aaa; }
+
+/* Error box */
+.nf-errors { background:#fee2e2; border-left:4px solid #c84b31; border-radius:12px; padding:14px 16px; margin-bottom:24px; font-size:12px; font-weight:600; color:#7f1d1d; line-height:1.6; }
+
+/* Field groups */
+.nf-group { margin-bottom:20px; }
+.nf-label { display:block; font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.07em; margin-bottom:7px; }
+.nf-input, .nf-select, .nf-textarea {
+    width:100%; padding:13px 16px;
+    background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:12px;
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#1a1a2e;
+    outline:none; transition:border-color .2s, box-shadow .2s, background .2s;
+}
+.nf-input:focus, .nf-select:focus, .nf-textarea:focus {
+    border-color:#c84b31; background:#fff;
+    box-shadow:0 0 0 3px rgba(200,75,49,.08);
+}
+.nf-textarea { resize:vertical; min-height:100px; }
+
+/* Checkbox */
+.nf-check-row { display:flex; align-items:center; gap:10px; padding:13px 16px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:12px; }
+.nf-check-row input[type="checkbox"] { width:18px; height:18px; accent-color:#c84b31; cursor:pointer; flex-shrink:0; }
+.nf-check-label { font-size:13px; font-weight:600; color:#1a1a2e; cursor:pointer; }
+
+/* Grid for price fields */
+.nf-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media(max-width:480px){ .nf-grid-2{ grid-template-columns:1fr; } }
+
+/* Section divider */
+.nf-divider { display:flex; align-items:center; gap:12px; margin:28px 0 20px; }
+.nf-divider-line { flex:1; height:1px; background:#e8e5e0; }
+.nf-divider-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+
+/* Main image upload */
+.nf-file-zone {
+    border:2px dashed #e8e5e0; border-radius:14px;
+    padding:28px 20px; text-align:center;
+    cursor:pointer; transition:border-color .2s, background .2s;
+    position:relative; overflow:hidden;
+}
+.nf-file-zone:hover { border-color:#c84b31; background:#fff8f7; }
+.nf-file-zone input[type="file"] {
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+.nf-file-icon { font-size:28px; margin-bottom:8px; }
+.nf-file-text { font-size:12px; font-weight:600; color:#888; }
+.nf-file-text b { color:#c84b31; }
+.nf-file-preview { display:none; margin-top:14px; }
+.nf-file-preview img { max-height:160px; border-radius:10px; object-fit:contain; border:1.5px solid #e8e5e0; }
+
+/* Multiple images upload */
+.nf-multi-zone {
+    border:2px dashed #e8e5e0; border-radius:14px;
+    padding:20px; transition:border-color .2s, background .2s;
+    cursor:pointer; position:relative;
+}
+.nf-multi-zone:hover { border-color:#c84b31; background:#fff8f7; }
+.nf-multi-input {
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+.nf-multi-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.nf-multi-icon { font-size:22px; }
+.nf-multi-text { font-size:12px; font-weight:600; color:#888; }
+.nf-multi-text b { color:#c84b31; }
+
+.nf-preview-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:8px; margin-top:12px; }
+.nf-preview-item {
+    aspect-ratio:1; border-radius:10px; overflow:hidden;
+    border:1.5px solid #e8e5e0; position:relative;
+    background:#f8f7f4;
+}
+.nf-preview-item img { width:100%; height:100%; object-fit:cover; }
+.nf-preview-item .nf-remove {
+    position:absolute; top:4px; right:4px;
+    width:20px; height:20px; background:rgba(200,75,49,.9); color:#fff;
+    border-radius:50%; border:none; cursor:pointer;
+    font-size:10px; display:flex; align-items:center; justify-content:center;
+}
+
+/* Flash sale section */
+.nf-flash-box { background:#fff8f7; border:1.5px solid rgba(200,75,49,.2); border-radius:14px; padding:18px; }
+.nf-flash-toggle { display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:0; }
+.nf-flash-toggle-label { font-size:12px; font-weight:700; color:#1a1a2e; }
+.nf-flash-badge { background:#c84b31; color:#fff; border-radius:6px; padding:2px 8px; font-size:9px; font-weight:700; }
+.nf-flash-fields { display:none; margin-top:16px; }
+.nf-flash-fields.open { display:block; }
+
+/* Submit */
+.nf-submit {
+    width:100%; padding:15px;
+    background:#1a1a2e; color:#fff;
+    border:none; border-radius:13px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:12px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.06em;
+    transition:background .2s, transform .2s, box-shadow .2s;
+    box-shadow:0 8px 20px rgba(26,26,46,.2);
+    margin-top:28px;
+}
+.nf-submit:hover { background:#c84b31; transform:translateY(-2px); box-shadow:0 12px 28px rgba(200,75,49,.3); }
+
+.nf-cancel { display:block; text-align:center; margin-top:14px; font-size:12px; font-weight:600; color:#aaa; text-decoration:none; transition:color .2s; }
+.nf-cancel:hover { color:#c84b31; }
+
+.op0 { opacity:0; transform:translateY(16px); }
 </style>
 
-<div class="bazaar-container max-w-2xl mx-auto py-10 px-4">
-    <!-- Main Card Container (Class main-card added for GSAP) -->
-    <div class="main-card bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
-        <div class="mb-8 text-center">
-            <span class="inline-block text-3xl mb-2">🛍️</span>
-            <h1 class="bazaar-title text-3xl font-black text-[#0f172a]" style="font-family: 'Playfair Display', serif;">{{ title }}</h1>
-            <p class="text-slate-400 text-xs font-bold mt-2">Please fill in the details below to update your catalog.</p>
-        </div>
+<div class="nf">
+<div class="nf-wrap">
+<div class="nf-card op0" id="nfCard">
 
-        <form method="post" action="." enctype="multipart/form-data" class="space-y-6">
-            {% csrf_token %}
+  <div class="nf-header">
+    <div class="nf-icon">🛍️</div>
+    <div class="nf-title">{{ title }}</div>
+    <div class="nf-sub">Fill in the details below to list your item on Cotton Web.</div>
+  </div>
 
-            <!-- Validation Errors -->
-            {% if form.errors or form.non_field_errors %}
-                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 rounded-2xl">
-                    <div class="flex">
-                        <div class="flex-shrink-0 mt-0.5">
-                            <svg class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-xs font-bold text-rose-800 leading-relaxed">
-                                {% for field in form %}
-                                    {% if field.errors %}
-                                        {{ field.label }}: {{ field.errors|striptags }}<br>
-                                    {% endif %}
-                                {% endfor %}
-                                {{ form.non_field_errors|striptags }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+  {% if form.errors %}
+  <div class="nf-errors">
+    {% for field in form %}{% if field.errors %}{{ field.label }}: {{ field.errors|striptags }}<br>{% endif %}{% endfor %}
+    {{ form.non_field_errors|striptags }}
+  </div>
+  {% endif %}
 
-            <!-- Dynamic Input Fields Loop (Class form-row added for GSAP) -->
-            <div class="space-y-5">
-                {% for field in form %}
-                    {% if field.field.widget.input_type == 'checkbox' %}
-                        <!-- Custom Styled Checkbox Container -->
-                        <div class="form-row flex items-center space-x-3 p-4 bg-[#f8fafc] rounded-2xl border border-slate-100 opacity-0">
-                            <div class="flex items-center h-5">
-                                {{ field }}
-                            </div>
-                            <div class="ml-1.5 text-xs font-bold">
-                                <label for="{{ field.id_for_label }}" class="text-slate-700 cursor-pointer select-none">
-                                    {{ field.label }}
-                                </label>
-                                {% if field.help_text %}
-                                    <p class="text-[10px] text-slate-400 font-medium mt-0.5">{{ field.help_text }}</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% else %}
-                        <!-- Standard Form Inputs -->
-                        <div class="form-row flex flex-col opacity-0">
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
-                                {{ field.label }}
-                            </label>
-                            
-                            <div class="relative">
-                                {{ field }}
-                            </div>
+  <form method="post" action="." enctype="multipart/form-data" id="itemForm">
+    {% csrf_token %}
 
-                            {% if field.help_text %}
-                                <p class="text-[10px] text-slate-400 font-bold mt-1.5 ml-1">{{ field.help_text }}</p>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <!-- Submission Actions -->
-            <div class="form-row pt-4 space-y-4 opacity-0">
-                <button type="submit" class="w-full py-4 px-8 text-xs font-extrabold uppercase tracking-widest text-white bg-[#e94560] hover:bg-[#d23f57] rounded-xl shadow-md shadow-[#e94560]/10 transition-all duration-300 transform active:scale-95">
-                    Save Changes
-                </button>
-                
-                <a href="{% url 'dashboard:index' %}" class="block text-center text-xs font-bold text-slate-400 hover:text-[#0f172a] underline transition-colors duration-200">
-                    Cancel and go back
-                </a>
-            </div>
-        </form>
+    <!-- Category -->
+    <div class="nf-group op0">
+      <label class="nf-label">{{ form.category.label }}</label>
+      <select name="category" class="nf-select">
+        {% for val, label in form.category.field.choices %}
+        <option value="{{ val }}" {% if form.category.value == val|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
     </div>
+
+    <!-- Name -->
+    <div class="nf-group op0">
+      <label class="nf-label">{{ form.name.label }}</label>
+      <input type="text" name="name" class="nf-input" placeholder="Item name" value="{{ form.name.value|default:'' }}">
+    </div>
+
+    <!-- Description -->
+    <div class="nf-group op0">
+      <label class="nf-label">{{ form.description.label }}</label>
+      <textarea name="description" class="nf-textarea" placeholder="Describe your item...">{{ form.description.value|default:'' }}</textarea>
+    </div>
+
+    <!-- Price + Condition -->
+    <div class="nf-grid-2 op0">
+      <div class="nf-group" style="margin-bottom:0">
+        <label class="nf-label">{{ form.original_price.label }}</label>
+        <input type="number" name="original_price" class="nf-input" placeholder="0.00" step="0.01" value="{{ form.original_price.value|default:'' }}">
+      </div>
+      <div class="nf-group" style="margin-bottom:0">
+        <label class="nf-label">{{ form.condition.label }}</label>
+        <select name="condition" class="nf-select">
+          {% for val, label in form.condition.field.choices %}
+          <option value="{{ val }}" {% if form.condition.value == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Stock -->
+    <div class="nf-group op0" style="margin-top:20px;">
+      <label class="nf-label">{{ form.stock_count.label }}</label>
+      <input type="number" name="stock_count" class="nf-input" placeholder="1" min="1" value="{{ form.stock_count.value|default:'1' }}">
+    </div>
+
+    <!-- Divider: Images -->
+    <div class="nf-divider op0">
+      <div class="nf-divider-line"></div>
+      <div class="nf-divider-label">📸 Product Images</div>
+      <div class="nf-divider-line"></div>
+    </div>
+
+    <!-- Main Image -->
+    <div class="nf-group op0">
+      <label class="nf-label">Main Image (Cover)</label>
+      <div class="nf-file-zone" id="mainImgZone">
+        <input type="file" name="image" accept="image/*" id="mainImgInput">
+        <div class="nf-file-icon">🖼️</div>
+        <div class="nf-file-text">Click to upload main image<br><b>or drag & drop</b></div>
+        <div class="nf-file-preview" id="mainPreview">
+          <img id="mainPreviewImg" src="" alt="">
+        </div>
+      </div>
+    </div>
+
+    <!-- Multiple Extra Images -->
+    <div class="nf-group op0">
+      <label class="nf-label">Extra Images (Optional — up to 5)</label>
+      <div class="nf-multi-zone" id="multiZone">
+        <input type="file" name="extra_images" accept="image/*" multiple id="multiInput" class="nf-multi-input">
+        <div class="nf-multi-header">
+          <span class="nf-multi-icon">📁</span>
+          <div class="nf-multi-text">Click to upload multiple images<br><b>PNG, JPG, WEBP supported</b></div>
+        </div>
+        <div class="nf-preview-grid" id="multiPreview"></div>
+      </div>
+    </div>
+
+    <!-- Divider: Flash Sale -->
+    <div class="nf-divider op0">
+      <div class="nf-divider-line"></div>
+      <div class="nf-divider-label">⚡ Flash Sale</div>
+      <div class="nf-divider-line"></div>
+    </div>
+
+    <!-- Flash Sale Toggle -->
+    <div class="nf-group op0">
+      <div class="nf-flash-box">
+        <div class="nf-flash-toggle" onclick="toggleFlash()">
+          <input type="checkbox" id="flashToggle" style="width:18px;height:18px;accent-color:#c84b31;cursor:pointer;">
+          <span class="nf-flash-toggle-label">Enable Flash Sale</span>
+          <span class="nf-flash-badge">⚡ HOT</span>
+        </div>
+        <div class="nf-flash-fields" id="flashFields">
+          <div class="nf-group" style="margin-top:14px;margin-bottom:14px;">
+            <label class="nf-label">Sale Price (৳)</label>
+            <input type="number" name="sale_price" class="nf-input" placeholder="Discounted price" step="0.01">
+          </div>
+          <div class="nf-grid-2">
+            <div class="nf-group" style="margin-bottom:0">
+              <label class="nf-label">Sale Start</label>
+              <input type="datetime-local" name="sale_start" class="nf-input">
+            </div>
+            <div class="nf-group" style="margin-bottom:0">
+              <label class="nf-label">Sale End</label>
+              <input type="datetime-local" name="sale_end" class="nf-input">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status (edit mode only) -->
+    {% if form.status %}
+    <div class="nf-group op0">
+      <label class="nf-label">Status</label>
+      <select name="status" class="nf-select">
+        {% for val, label in form.status.field.choices %}
+        <option value="{{ val }}" {% if form.status.value == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+
+    <button type="submit" class="nf-submit">
+      💾 Save Item
+    </button>
+    <a href="{% url 'dashboard:index' %}" class="nf-cancel">Cancel and go back</a>
+  </form>
+
+</div>
+</div>
 </div>
 
 <script>
-    // 1. Main card fade-and-rise entrance animation
-    gsap.to(".main-card", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
-    });
+gsap.to('#nfCard', { opacity:1, y:0, duration:.7, ease:'power3.out' });
+gsap.utils.toArray('.op0').forEach((el,i) => {
+  if(el.id === 'nfCard') return;
+  gsap.to(el, { opacity:1, y:0, duration:.5, delay:.1+i*.04, ease:'power2.out' });
+});
 
-    // 2. Staggered reveal for form input rows
-    gsap.to(".form-row", {
-        y: 0,
-        opacity: 1,
-        stagger: 0.05,
-        duration: 0.6,
-        ease: "power2.out",
-        delay: 0.15
-    });
+// Main image preview
+document.getElementById('mainImgInput').addEventListener('change', function(){
+  const file = this.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('mainPreviewImg').src = e.target.result;
+    document.getElementById('mainPreview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
 
-    // 3. Dynamic micro-physics hover / focus on input fields
-    const inputs = document.querySelectorAll('input:not([type="checkbox"]), select, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            gsap.to(input, {
-                scale: 1.008,
-                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
-                duration: 0.3,
-                ease: "power2.out"
-            });
-        });
-        input.addEventListener('blur', () => {
-            gsap.to(input, {
-                scale: 1,
-                boxShadow: "none",
-                duration: 0.3,
-                ease: "power2.out"
-            });
-        });
-    });
+// Multiple images preview
+document.getElementById('multiInput').addEventListener('change', function(){
+  const grid = document.getElementById('multiPreview');
+  grid.innerHTML = '';
+  const files = Array.from(this.files).slice(0,5);
+  files.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const div = document.createElement('div');
+      div.className = 'nf-preview-item';
+      div.innerHTML = `<img src="${e.target.result}"><button class="nf-remove" onclick="removeImg(${i})">✕</button>`;
+      grid.appendChild(div);
+      gsap.fromTo(div, {opacity:0,scale:.8}, {opacity:1,scale:1,duration:.3,delay:i*.06});
+    };
+    reader.readAsDataURL(file);
+  });
+});
 
-    // 4. Smooth scale hover effect for submit button
-    const submitBtn = document.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.addEventListener('mouseenter', () => {
-            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
-        });
-        submitBtn.addEventListener('mouseleave', () => {
-            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
-        });
-    }
+function removeImg(idx) {
+  const items = document.querySelectorAll('.nf-preview-item');
+  if(items[idx]) gsap.to(items[idx], {opacity:0,scale:.8,duration:.2,onComplete:()=>items[idx].remove()});
+}
+
+// Flash sale toggle
+function toggleFlash() {
+  const cb = document.getElementById('flashToggle');
+  const fields = document.getElementById('flashFields');
+  cb.checked = !cb.checked;
+  fields.classList.toggle('open', cb.checked);
+}
+
+// Input focus animations
+document.querySelectorAll('.nf-input, .nf-select, .nf-textarea').forEach(el => {
+  el.addEventListener('focus', () => gsap.to(el, {scale:1.005,duration:.2,ease:'power2.out'}));
+  el.addEventListener('blur', () => gsap.to(el, {scale:1,duration:.2,ease:'power2.out'}));
+});
 </script>
 {% endblock %}
