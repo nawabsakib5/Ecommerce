@@ -149,6 +149,19 @@
       </div>
     </div>
 
+    <!-- Video Upload -->
+    <div class="nf-group op0">
+      <label class="nf-label">Product Video (Optional)</label>
+      <div class="nf-file-zone" id="videoZone">
+        <input type="file" name="product_video" accept="video/*" id="videoInput">
+        <div class="nf-file-icon">🎬</div>
+        <div class="nf-file-text">Click to upload product video<br><b>MP4, MOV, WEBM supported</b></div>
+        <div id="videoPreview" style="display:none;margin-top:14px;">
+          <video id="previewVideo" controls style="max-width:100%;max-height:200px;border-radius:10px;border:1.5px solid #e8e5e0;"></video>
+        </div>
+      </div>
+    </div>
+
     <div class="nf-divider op0">
       <div class="nf-divider-line"></div>
       <div class="nf-divider-label">⚡ Flash Sale</div>
@@ -253,6 +266,17 @@ function removeImg(idx) {
   allFiles.splice(idx, 1);
   renderPreviews();
 }
+
+// Video preview
+document.getElementById('videoInput').addEventListener('change', function(){
+  const file = this.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const video = document.getElementById('previewVideo');
+  video.src = url;
+  document.getElementById('videoPreview').style.display = 'block';
+  gsap.fromTo('#videoPreview', {opacity:0,y:10}, {opacity:1,y:0,duration:.3});
+});
 
 // Form submit এ allFiles inject করো
 document.getElementById('itemForm').addEventListener('submit', function(){
