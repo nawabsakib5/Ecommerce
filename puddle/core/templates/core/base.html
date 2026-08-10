@@ -5,377 +5,248 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>{% block title %}{% endblock title %} | Cotton Web</title>
+    <title>{% block title %}{% endblock title %} | CADO Fashion</title>
     
-    <!-- Google Fonts & GSAP Animation CDN Packages -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- Google Fonts & GSAP Animation CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-    
+
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             scroll-behavior: smooth; 
         }
-        .bazaar-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 800;
+        .font-serif-brand {
+            font-family: 'Cinzel', serif;
         }
-        /* Underline slider effect on menu hover */
-        .nav-link { position: relative; transition: all 0.3s ease; }
-        .nav-link::after { 
-            content: ''; 
-            position: absolute; 
-            width: 0; 
-            height: 2px; 
-            bottom: -4px; 
-            left: 0; 
-            background-color: #e94560;
-            transition: width 0.3s ease; 
-        }
-        .nav-link:hover::after { width: 100%; }
         
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f6f9fc; }
-        ::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #1e293b; }
-        
-        /* Glass Navbar Styling */
+        /* Glassmorphism & Custom Glow Effects */
         .glass-nav { 
-            background: rgba(255, 255, 255, 0.95); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px); 
+            background: rgba(255, 255, 255, 0.90); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
         }
-        
-        /* Categories Dropdown */
-        .dropdown:hover .dropdown-menu { display: block; }
-        .dropdown-menu {
-            display: none; 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            z-index: 100;
-            min-width: 240px; 
-            background: #ffffff; 
-            border: 1px solid #f1f5f9;
-            border-radius: 1.25rem; 
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-            padding: 0.5rem; 
-            margin-top: 0.5rem; 
-            max-height: 320px; 
-            overflow-y: auto;
+
+        /* Gold Gradient Text & Elements */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FDF0A6 0%, #E5C158 50%, #9A7432 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .dropdown-menu::-webkit-scrollbar { width: 4px; }
-        .dropdown-menu::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
+
+        /* Custom Social Brand Hover States */
+        .social-btn-fb:hover { background-color: #1877F2 !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(24, 119, 242, 0.4); }
+        .social-btn-insta:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(220, 39, 67, 0.4); }
+        .social-btn-x:hover { background-color: #000000 !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5); }
+        .social-btn-yt:hover { background-color: #FF0000 !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(255, 0, 0, 0.4); }
+        .social-btn-tiktok:hover { background-color: #010101 !important; color: #25F4EE !important; box-shadow: 0 10px 20px -5px rgba(37, 244, 238, 0.3); }
+        .social-btn-linkedin:hover { background-color: #0A66C2 !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(10, 102, 194, 0.4); }
+        .social-btn-pinterest:hover { background-color: #BD081C !important; color: #ffffff !important; box-shadow: 0 10px 20px -5px rgba(189, 8, 28, 0.4); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #E5C158; }
     </style>
 </head>
 
-<body class="bg-[#f6f9fc] flex flex-col min-h-screen text-[#0f172a] leading-tight">
+<body class="bg-[#f8f9fa] flex flex-col min-h-screen text-[#0f172a] antialiased selection:bg-[#D4AF37] selection:text-black">
 
-    <!-- ✅ Section 1: Narrow Dark Topbar (With Social Links) -->
-    <div class="top-bar-el bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5 relative z-50 opacity-0">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="bg-[#e94560] text-white px-2 py-0.5 rounded-md text-[9px] font-black uppercase">HOT</span>
-                <span class="text-white/80">Free Express Shipping on all orders!</span>
+    <!-- ✅ Section 1: Ultra-Modern Dark Topbar -->
+    <div class="top-bar-el bg-[#0b0f19] text-white py-2 px-6 md:px-12 text-xs border-b border-[#D4AF37]/20 relative z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 bg-[#D4AF37]/15 text-[#E5C158] border border-[#D4AF37]/30 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#E5C158] animate-ping"></span> HOT
+                </span>
+                <span class="text-slate-300 font-medium">Free Express Shipping on all orders!</span>
             </div>
-            <div class="flex items-center gap-6 text-white/80">
-                <span class="hover:text-white cursor-pointer transition">EN v</span>
-                
-                <!-- Quick Header Social Icons -->
-                <div class="flex items-center gap-3">
-                    <a href="https://www.facebook.com/cadofashion/" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="Facebook">
+
+            <!-- Top Social Icon Bar -->
+            <div class="flex items-center gap-4">
+                <span class="text-slate-400 font-medium text-[11px] hidden sm:inline">Follow Us:</span>
+                <div class="flex items-center gap-1.5">
+                    <a href="https://www.facebook.com/cadofashion/" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] hover:bg-white/5 transition-all duration-300" title="Facebook">
                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                     </a>
-                    <a href="https://www.instagram.com/cadobd/" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="Instagram">
+                    <a href="https://www.instagram.com/cadobd/" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] hover:bg-white/5 transition-all duration-300" title="Instagram">
                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
-                    <a href="https://x.com/cadobd" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="X (Twitter)">
+                    <a href="https://x.com/cadobd" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] hover:bg-white/5 transition-all duration-300" title="X (Twitter)">
                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
-                    <a href="https://www.youtube.com/@cadobd" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="YouTube">
+                    <a href="https://www.youtube.com/@cadobd" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] hover:bg-white/5 transition-all duration-300" title="YouTube">
                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     </a>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- ✅ Section 2: Floating Sticky Header -->
-    <nav class="glass-nav sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm opacity-0">
+    <!-- ✅ Section 2: Glassmorphism Sticky Header -->
+    <nav class="glass-nav sticky top-0 z-40 border-b border-slate-200/80 py-3.5 px-6 md:px-12 transition-all duration-300">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-            <!-- Logo Design -->
-            <a href="/" class="nav-logo-wrap group flex items-center gap-3 opacity-0">
-                <div class="logo-container relative w-11 h-11 flex items-center justify-center overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 group-hover:border-slate-200 shadow-sm transition-all">
-                    <svg class="h-6 w-6 text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
+            <!-- CADO Brand Logo -->
+            <a href="/" class="group flex items-center gap-3">
+                <!-- Circular Golden Badge Icon -->
+                <div class="relative w-11 h-11 rounded-full bg-gradient-to-tr from-[#9A7432] via-[#E5C158] to-[#FDF0A6] p-[1.5px] shadow-md group-hover:scale-105 transition-transform duration-300">
+                    <div class="w-full h-full bg-[#0b0f19] rounded-full flex items-center justify-center">
+                        <span class="gold-gradient-text font-serif-brand font-black text-xl leading-none">C</span>
+                    </div>
                 </div>
+                <!-- Brand Text -->
                 <div class="flex flex-col">
-                    <span class="bazaar-title text-xl font-black tracking-tight text-[#0f172a] leading-none group-hover:text-[#e94560] transition-colors">Cotton</span>
-                    <span class="text-[9px] font-black text-[#e94560] uppercase tracking-[0.25em] leading-none mt-1 pl-0.5">Web</span>
+                    <span class="text-xl font-black tracking-wider text-slate-900 font-serif-brand leading-none group-hover:text-[#9A7432] transition-colors">CADO</span>
+                    <span class="text-[8px] font-bold text-[#9A7432] uppercase tracking-[0.3em] mt-1">FASHION</span>
                 </div>
             </a>
 
-            <!-- Desktop Nav System -->
+            <!-- Navigation Links -->
             <div class="hidden md:flex items-center gap-8">
-                <div class="flex items-center gap-8">
-                    <a href="/" class="nav-link nav-link-item text-xs font-bold text-[#0f172a] hover:text-[#e94560] uppercase tracking-wider opacity-0">Home</a>
-                    <a href="{% url 'item:items' %}" class="nav-link nav-link-item text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider opacity-0">Browse</a>
-
-                    <!-- Categories Dropdown menu -->
-                    <div class="dropdown relative nav-link-item opacity-0">
-                        <button class="nav-link text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider flex items-center gap-1">
-                            Categories
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">All Categories</a>
-                            <div class="my-1 border-t border-slate-100"></div>
-                            {% for category in all_categories %}
-                                <a href="{% url 'item:items' %}?category={{ category.id }}"
-                                   class="block px-4 py-2.5 text-xs font-bold text-[#0f172a] hover:bg-[#f6f9fc] hover:text-[#0f172a] rounded-xl transition-all">
-                                    {{ category.name }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
-                        <a href="{% url 'item:new' %}" class="nav-link nav-link-item text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider opacity-0">Add Item</a>
-                    {% endif %}
-                </div>
-
-                <!-- Right Controls -->
-                <div class="flex items-center gap-3.5 pl-8 border-l border-slate-100">
-                    {% if request.user.is_authenticated %}
-
-                        {% if request.user.user_type == 'Buyer' %}
-                            <a href="{% url 'cart:detail' %}"
-                               class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
-                               title="Cart">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            </a>
-                        {% endif %}
-
-                        <a href="{% url 'conversation:inbox' %}"
-                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
-                           title="Messages">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                            </svg>
-                        </a>
-
-                        <a href="{% url 'core:notifications' %}"
-                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
-                           title="Notifications">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                            </svg>
-                            {% if unread_notification_count > 0 %}
-                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-[#e94560] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">
-                                    {{ unread_notification_count }}
-                                </span>
-                            {% endif %}
-                        </a>
-
-                        <a href="{% url 'dashboard:index' %}" class="nav-dash-btn flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95 opacity-0">
-                            Dashboard
-                        </a>
-
-                        {% if is_site_admin %}
-                            <a href="{% url 'dashboard:admin' %}" class="flex items-center gap-2 px-5 py-3 bg-amber-500 text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-amber-600 transition-all shadow-md active:scale-95">
-                                Admin Portal
-                            </a>
-                        {% endif %}
-
-                        <a href="{% url 'core:changePass' %}" 
-                           title="Change Password" 
-                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 group-hover:text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                            </svg>
-                        </a>
-
-                        <a href="{% url 'core:logout' %}" 
-                           title="Logout" 
-                           class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-rose-50 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-500 group-hover:text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                        </a>
-
-                    {% else %}
-                        <a href="{% url 'core:login' %}" class="text-[11px] font-black uppercase tracking-widest text-[#0f172a] hover:text-[#e94560] px-4 transition-colors">Log In</a>
-                        <a href="{% url 'core:signup' %}" class="px-8 py-3.5 text-[11px] font-black uppercase tracking-widest bg-[#0f172a] text-white rounded-full hover:bg-slate-800 shadow-md transition-all duration-300 active:scale-95">Get Started</a>
-                    {% endif %}
-                </div>
+                <a href="/" class="text-xs font-extrabold text-slate-900 hover:text-[#9A7432] uppercase tracking-wider transition-colors">Home</a>
+                <a href="{% url 'item:items' %}" class="text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-wider transition-colors">Browse</a>
+                
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'dashboard:index' %}" class="px-6 py-2.5 bg-[#0b0f19] text-[#E5C158] border border-[#D4AF37]/30 text-[11px] font-extrabold uppercase tracking-wider rounded-full hover:bg-[#D4AF37] hover:text-black shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">Dashboard</a>
+                {% else %}
+                    <a href="{% url 'core:login' %}" class="text-xs font-extrabold uppercase tracking-wider text-slate-800 hover:text-[#9A7432] transition-colors">Log In</a>
+                    <a href="{% url 'core:signup' %}" class="px-6 py-2.5 text-xs font-extrabold uppercase tracking-wider bg-[#0b0f19] text-[#E5C158] border border-[#D4AF37]/40 rounded-full hover:bg-[#D4AF37] hover:text-black shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">Get Started</a>
+                {% endif %}
             </div>
 
-            <!-- Mobile Toggle -->
-            <button class="md:hidden p-2.5 bg-slate-50 text-[#0f172a] rounded-xl hover:bg-slate-100 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"/>
-                </svg>
-            </button>
         </div>
     </nav>
 
-    <!-- Main Content Container -->
+    <!-- Main Content -->
     <main class="flex-grow">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- ✅ Section 3: Premium Footer with Social & Email Links -->
-    <footer class="bg-[#0f172a] text-[#f6f9fc] pt-20 pb-12 px-6 md:px-12 mt-auto border-t border-slate-800">
+    <!-- ✅ Section 3: Next-Level Footer with Gold Branding -->
+    <footer class="bg-[#0b0f19] text-white pt-20 pb-10 px-6 md:px-12 mt-auto border-t border-[#D4AF37]/20">
         <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
                 
-                <!-- 1. Brand & Social Media SVG Buttons -->
-                <div class="md:col-span-4">
-                    <a href="/" class="flex items-center gap-3 mb-6">
-                        <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web"
-                             class="w-10 h-10 object-contain rounded-xl border border-white/10 shadow-xs"
-                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0f172a&color=fff'">
-                        <span class="bazaar-title text-2xl font-black text-white">Cotton Web<span class="text-[#e94560]">.</span></span>
-                    </a>
-                    <p class="text-slate-400 leading-relaxed max-w-sm mb-6 font-medium text-sm">
-                        Bangladesh's premium online trading platform. Easy, secure, and fully reliable.
-                    </p>
-                    
-                    <!-- All Social Media Buttons -->
-                    <div class="flex flex-wrap gap-2">
-                        <!-- Facebook -->
-                        <a href="https://www.facebook.com/cadofashion/" target="_blank" rel="noopener noreferrer" title="Facebook"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                        </a>
-                        <!-- Instagram -->
-                        <a href="https://www.instagram.com/cadobd/" target="_blank" rel="noopener noreferrer" title="Instagram"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                        </a>
-                        <!-- Twitter/X -->
-                        <a href="https://x.com/cadobd" target="_blank" rel="noopener noreferrer" title="X (Twitter)"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                        </a>
-                        <!-- YouTube -->
-                        <a href="https://www.youtube.com/@cadobd" target="_blank" rel="noopener noreferrer" title="YouTube"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        </a>
-                        <!-- TikTok -->
-                        <a href="https://www.tiktok.com/@cadobd" target="_blank" rel="noopener noreferrer" title="TikTok"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.98-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.67 2.58-4.8 1.41-1.1 3.22-1.61 5.02-1.44.02 1.41.01 2.82.01 4.23-.96-.13-1.96.11-2.73.68-.82.59-1.3 1.56-1.31 2.57.01 1.2.66 2.33 1.68 2.93 1.02.6 2.3.62 3.34.05 1.02-.54 1.72-1.57 1.83-2.72.08-1.12.04-2.25.04-3.37V.02z"/></svg>
-                        </a>
-                        <!-- LinkedIn -->
-                        <a href="https://www.linkedin.com/in/cadobd/" target="_blank" rel="noopener noreferrer" title="LinkedIn"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.63a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>
-                        </a>
-                        <!-- Pinterest -->
-                        <a href="https://www.pinterest.com/cadobd/" target="_blank" rel="noopener noreferrer" title="Pinterest"
-                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345c-.091.378-.293 1.189-.333 1.355-.053.225-.173.272-.401.165-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
-                        </a>
+                <!-- Left Column: Brand & Description -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#9A7432] via-[#E5C158] to-[#FDF0A6] p-[1.5px] shadow-lg shadow-[#D4AF37]/10">
+                            <div class="w-full h-full bg-[#0b0f19] rounded-full flex items-center justify-center">
+                                <span class="gold-gradient-text font-serif-brand font-black text-2xl">C</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-black tracking-wider text-white font-serif-brand leading-none">CADO</span>
+                            <span class="text-[9px] font-bold text-[#E5C158] tracking-[0.35em] uppercase mt-1">— FASHION —</span>
+                        </div>
                     </div>
-                </div>
+                    
+                
 
-                <!-- 2. Marketplace Navigation -->
-                <div class="md:col-span-2 md:col-start-6">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Marketplace</h3>
-                    <ul class="space-y-4 font-bold text-xs text-slate-400">
-                        <li><a href="{% url 'item:items' %}" class="hover:text-white transition-colors">All Items</a></li>
-                        {% if request.user.user_type == 'Seller' or request.user.is_staff %}
-                            <li><a href="{% url 'item:new' %}" class="hover:text-white transition-colors">Sell Something</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-
-                <!-- 3. Support -->
-                <div class="md:col-span-2">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Support</h3>
-                    <ul class="space-y-4 font-bold text-xs text-slate-400">
-                        <li><a href="{% url 'core:help_center' %}" class="hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="{% url 'core:privacy_policy' %}" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    </ul>
-                </div>
-
-                <!-- 4. Email & Contact Cards -->
-                <div class="md:col-span-4">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Get In Touch</h3>
-                    <div class="space-y-3 text-xs font-semibold text-slate-300">
-                        
-                        <!-- General Email -->
-                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-[#e94560]/30 transition-all">
-                            <div class="w-8 h-8 rounded-lg bg-[#e94560]/10 flex items-center justify-center text-[#e94560]">
+                    <!-- Contact Mail Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <a href="mailto:info.cadobd@gmail.com" class="group flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl hover:border-[#D4AF37]/50 hover:bg-slate-800/50 transition-all duration-300">
+                            <div class="w-9 h-9 rounded-xl bg-[#D4AF37]/10 text-[#E5C158] flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                             </div>
-                            <div>
-                                <p class="text-[10px] uppercase text-slate-400 font-bold">General Query</p>
-                                <a href="mailto:info.cadobd@gmail.com" class="hover:text-[#e94560] transition-colors">info.cadobd@gmail.com</a>
+                            <div class="overflow-hidden">
+                                <p class="text-[9px] uppercase font-black text-slate-500 tracking-wider">General Query</p>
+                                <p class="text-xs font-semibold text-slate-300 truncate group-hover:text-white transition-colors">info.cadobd@gmail.com</p>
                             </div>
-                        </div>
+                        </a>
 
-                        <!-- Support Email -->
-                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-[#e94560]/30 transition-all">
-                            <div class="w-8 h-8 rounded-lg bg-[#e94560]/10 flex items-center justify-center text-[#e94560]">
+                        <a href="mailto:support.cadobd@gmail.com" class="group flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl hover:border-[#D4AF37]/50 hover:bg-slate-800/50 transition-all duration-300">
+                            <div class="w-9 h-9 rounded-xl bg-[#D4AF37]/10 text-[#E5C158] flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             </div>
-                            <div>
-                                <p class="text-[10px] uppercase text-slate-400 font-bold">Support Mail</p>
-                                <a href="mailto:support.cadobd@gmail.com" class="hover:text-[#e94560] transition-colors">support.cadobd@gmail.com</a>
+                            <div class="overflow-hidden">
+                                <p class="text-[9px] uppercase font-black text-slate-500 tracking-wider">Support Mail</p>
+                                <p class="text-xs font-semibold text-slate-300 truncate group-hover:text-white transition-colors">support.cadobd@gmail.com</p>
                             </div>
-                        </div>
+                        </a>
+                    </div>
+                </div>
 
+                <!-- Right Column: Interactive Social Media Hub -->
+                <div class="lg:col-span-7 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xs font-black uppercase tracking-[0.25em] text-[#E5C158] mb-3">Connect With Us</h3>
+                        <p class="text-slate-400 text-sm mb-6 font-medium">Follow CADO Fashion across social channels for new drops & exclusive releases.</p>
+                        
+                        <!-- Premium Social Icon Badges Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            
+                            <!-- Facebook -->
+                            <a href="https://www.facebook.com/cadofashion/" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-fb flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                                <span class="text-xs font-bold">Facebook</span>
+                            </a>
+
+                            <!-- Instagram -->
+                            <a href="https://www.instagram.com/cadobd/" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-insta flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                <span class="text-xs font-bold">Instagram</span>
+                            </a>
+
+                            <!-- Twitter / X -->
+                            <a href="https://x.com/cadobd" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-x flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                <span class="text-xs font-bold">Twitter / X</span>
+                            </a>
+
+                            <!-- YouTube -->
+                            <a href="https://www.youtube.com/@cadobd" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-yt flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                <span class="text-xs font-bold">YouTube</span>
+                            </a>
+
+                            <!-- TikTok -->
+                            <a href="https://www.tiktok.com/@cadobd" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-tiktok flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.98-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.67 2.58-4.8 1.41-1.1 3.22-1.61 5.02-1.44.02 1.41.01 2.82.01 4.23-.96-.13-1.96.11-2.73.68-.82.59-1.3 1.56-1.31 2.57.01 1.2.66 2.33 1.68 2.93 1.02.6 2.3.62 3.34.05 1.02-.54 1.72-1.57 1.83-2.72.08-1.12.04-2.25.04-3.37V.02z"/></svg>
+                                <span class="text-xs font-bold">TikTok</span>
+                            </a>
+
+                            <!-- LinkedIn -->
+                            <a href="https://www.linkedin.com/in/cadobd/" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-linkedin flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.63a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>
+                                <span class="text-xs font-bold">LinkedIn</span>
+                            </a>
+
+                            <!-- Pinterest -->
+                            <a href="https://www.pinterest.com/cadobd/" target="_blank" rel="noopener noreferrer" 
+                               class="social-btn-pinterest flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all duration-300 hover:-translate-y-1">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345c-.091.378-.293 1.189-.333 1.355-.053.225-.173.272-.401.165-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                                <span class="text-xs font-bold">Pinterest</span>
+                            </a>
+
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    &copy; 2026 Cotton Web. All rights reserved.
-                </p>
-                <div class="flex gap-6 text-[10px] font-black uppercase tracking-widest text-[#eff2f1]/80">
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 bg-[#e94560] rounded-full animate-pulse"></span>
-                        Live System
-                    </span>
-                    <span class="text-slate-500">Build By Sakib</span>
+            <!-- Bottom Line -->
+            <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+                <p>&copy; 2026 CADO Fashion. All rights reserved.</p>
+                <div class="flex items-center gap-2">
+                    <span>Designed & Developed by Sakib</span>
                 </div>
             </div>
+
         </div>
     </footer>
 
 </body>
-
-<!-- Global GSAP Animations Script -->
-<script>
-    gsap.to(".top-bar-el", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" });
-    gsap.to(".glass-nav", { y: 0, opacity: 1, duration: 0.65, delay: 0.15, ease: "power2.out" });
-    gsap.to(".nav-logo-wrap", { scale: 1, opacity: 1, duration: 0.75, delay: 0.35, ease: "back.out(1.15)" });
-    gsap.to(".nav-link-item", { x: 0, opacity: 1, stagger: 0.05, duration: 0.5, delay: 0.4, ease: "power2.out" });
-    gsap.to(".nav-ctrl-icon", { scale: 1, opacity: 1, stagger: 0.04, duration: 0.5, delay: 0.45, ease: "back.out(1.15)" });
-    gsap.to(".nav-dash-btn", { scale: 1, opacity: 1, duration: 0.55, delay: 0.5, ease: "back.out(1.1)" });
-
-    const navButtons = document.querySelectorAll('.nav-ctrl-icon');
-    navButtons.forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-            gsap.to(btn, { scale: 1.08, backgroundColor: "rgba(233, 69, 96, 0.08)", borderColor: "rgba(233, 69, 96, 0.15)", duration: 0.3, ease: "power2.out" });
-        });
-        btn.addEventListener('mouseleave', () => {
-            gsap.to(btn, { scale: 1, backgroundColor: "#f8fafc", borderColor: "#e2e8f0", duration: 0.3, ease: "power2.out" });
-        });
-    });
-</script>
 </html>
