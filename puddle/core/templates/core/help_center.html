@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Help Center - Cado Fashion{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.5rem; color: #0f172a; margin-bottom: 10px;">How can we help you?</h1>
+        <p style="color: #64748b; font-size: 1.1rem;">Cado Fashion-এর সাথে কেনাকাটা সম্পর্কিত যেকোনো তথ্যের জন্য নিচের অপশনগুলো দেখুন।</p>
+    </div>
+
+    <!-- FAQ Categories -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        <!-- Card 1 -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <h3 style="color: #ef4444; margin-top: 0;">🚚 Order & Delivery</h3>
+            <p style="color: #475569; font-size: 0.95rem;">ঢাকার ভেতরে ২-৩ দিন এবং ঢাকার বাইরে ৩-৫ দিনের মধ্যে ডেলিভারি করা হয়। ক্যাশ অন ডেলিভারি প্রযোজ্য।</p>
+        </div>
+        <!-- Card 2 -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <h3 style="color: #ef4444; margin-top: 0;">🔄 Return & Exchange</h3>
+            <p style="color: #475569; font-size: 0.95rem;">সাইজ বা কোয়ালিটি ইস্যু থাকলে ডেলিভারি ম্যানের সামনে চেক করে ৭ দিনের মধ্যে এক্সচেঞ্জ করার সুযোগ রয়েছে।</p>
+        </div>
+        <!-- Card 3 -->
+        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <h3 style="color: #ef4444; margin-top: 0;">💳 Payment Methods</h3>
+            <p style="color: #475569; font-size: 0.95rem;">আমরা Cash on Delivery, bKash, Nagad এবং সব ধরনের Debit/Credit Card পেমেন্ট গ্রহণ করি।</p>
+        </div>
+    </div>
+
+    <!-- Contact Support Box -->
+    <div style="background-color: #0f172a; color: white; padding: 30px; border-radius: 8px; text-align: center;">
+        <h2 style="margin-top: 0;">Need More Help?</h2>
+        <p style="color: #94a3b8; margin-bottom: 20px;">আমাদের সাপোর্ট টিম আপনাকে সাহায্য করতে প্রস্তুত।</p>
+        <p style="font-size: 1.1rem; margin: 5px 0;">📞 Hotline: <strong>+8801571249470</strong></p>
+        <p style="font-size: 1.1rem; margin: 5px 0;">✉️ Email: <strong>support.cadobd@gmail.com</strong></p>
+    </div>
+</div>
+{% endblock %}
