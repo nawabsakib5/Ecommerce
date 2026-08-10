@@ -134,14 +134,41 @@ def edit(request, pk):
         form = EditItemForm(request.POST, request.FILES, instance=item)
         if form.is_valid():
             form.save()
+
+            # নতুন extra images যোগ করা
+            from .models import ItemImage
+            extra_images = request.FILES.getlist('extra_images')
+            for i, img in enumerate(extra_images[:5]):
+                existing_count = item.images.filter(media_type='image').count()
+                ItemImage.objects.create(item=item, image=img, order=existing_count + i)
+
+            # নতুন video যোগ করা
+            product_video = request.FILES.get('product_video')
+            if product_video:
+                from .models import ItemImage
+                item.images.filter(media_type='video').delete()
+                ItemImage.objects.create(item=item, video=product_video, media_type='video', order=99)
+
+            # পুরানো images delete request
+            delete_ids = request.POST.getlist('delete_image')
+            if delete_ids:
+                item.images.filter(id__in=delete_ids).delete()
+
             messages.success(request, "Item updated successfully!")
             return redirect('item:detail', pk=item.id)
     else:
         form = EditItemForm(instance=item)
 
+    # Existing media pass করো template এ
+    existing_images = item.images.filter(media_type='image')
+    existing_video = item.images.filter(media_type='video').first()
+
     return render(request, 'item/form.html', {
         'form': form,
         'title': 'Edit Item',
+        'item': item,
+        'existing_images': existing_images,
+        'existing_video': existing_video,
     })
 
 
