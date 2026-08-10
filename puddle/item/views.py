@@ -100,6 +100,16 @@ def new(request):
             for i, img in enumerate(extra_images[:5]):
                 ItemImage.objects.create(item=item, image=img, order=i)
 
+            # Video save
+            product_video = request.FILES.get('product_video')
+            if product_video:
+                ItemImage.objects.create(
+                    item=item,
+                    video=product_video,
+                    media_type='video',
+                    order=99
+                )
+
             cache.delete('all_categories')
             messages.success(request, 'Your item is live!')
             return redirect('item:detail', pk=item.id)
