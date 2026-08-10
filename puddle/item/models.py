@@ -104,16 +104,27 @@ class Item(models.Model):
 
 
 class ItemImage(models.Model):
+    MEDIA_TYPE_CHOICES = [
+        ('image', 'Image'),
+        ('video', 'Video'),
+    ]
+
     item = models.ForeignKey(
         Item,
         related_name='images',
         on_delete=models.CASCADE,
     )
-    image = models.ImageField(upload_to='item_images/')
+    image = models.ImageField(upload_to='item_images/', blank=True, null=True)
+    video = models.FileField(upload_to='item_videos/', blank=True, null=True)
+    media_type = models.CharField(
+        max_length=10,
+        choices=MEDIA_TYPE_CHOICES,
+        default='image'
+    )
     order = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ('order',)
 
     def __str__(self):
-        return f"{self.item.name} — image {self.order}"
+        return f"{self.item.name} — {self.media_type} {self.order}"
