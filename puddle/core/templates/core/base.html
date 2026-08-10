@@ -13,7 +13,7 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .font-serif-brand { font-family: 'Cinzel', serif; }
-        .glass-nav { background: rgba(255, 255, 255, 0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
         .gold-gradient-text { background: linear-gradient(135deg, #FDF0A6 0%, #E5C158 50%, #9A7432 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .social-btn-fb:hover { background-color: #1877F2 !important; color: #ffffff !important; }
         .social-btn-insta:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important; color: #ffffff !important; }
@@ -22,68 +22,140 @@
         .social-btn-tiktok:hover { background-color: #010101 !important; color: #25F4EE !important; }
         .social-btn-linkedin:hover { background-color: #0A66C2 !important; color: #ffffff !important; }
         .social-btn-pinterest:hover { background-color: #BD081C !important; color: #ffffff !important; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
     </style>
 </head>
 
-<body class="bg-[#f8f9fa] flex flex-col min-h-screen text-[#0f172a]">
+<body class="bg-[#f8f9fa] flex flex-col min-h-screen text-[#0f172a] antialiased">
 
     <!-- Topbar -->
-    <div class="bg-[#0b0f19] text-white py-2 px-6 md:px-12 text-xs border-b border-[#D4AF37]/20">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="bg-[#0b0f19] text-white py-2 px-6 md:px-12 text-xs border-b border-[#D4AF37]/20 z-50 relative">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-1.5 bg-[#D4AF37]/15 text-[#E5C158] border border-[#D4AF37]/30 px-2 py-0.5 rounded-full text-[10px] uppercase font-bold">HOT</span>
-                <span class="text-slate-300">Free Express Shipping on all orders!</span>
+                <span class="inline-flex items-center gap-1.5 bg-[#D4AF37]/15 text-[#E5C158] border border-[#D4AF37]/30 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#E5C158] animate-ping"></span> HOT
+                </span>
+                <span class="text-slate-300 font-medium">Free Express Shipping on all orders!</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-slate-400 text-[11px] hidden sm:inline">Follow Us:</span>
+                <div class="flex items-center gap-1.5">
+                    <a href="https://www.facebook.com/cadofashion/" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] transition-all">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/cadobd/" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] transition-all">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="https://x.com/cadobd" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] transition-all">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@cadobd" target="_blank" class="p-1.5 rounded-lg text-slate-400 hover:text-[#E5C158] transition-all">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Navbar -->
-    <nav class="glass-nav sticky top-0 z-50 border-b border-slate-200/80 py-3.5 px-6 md:px-12">
+    <nav class="glass-nav sticky top-0 z-40 border-b border-slate-200/80 py-3.5 px-6 md:px-12 transition-all duration-300">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-[#9A7432] to-[#FDF0A6] p-[1.5px]">
+
+            <!-- Logo -->
+            <a href="/" class="group flex items-center gap-3">
+                <div class="relative w-11 h-11 rounded-full bg-gradient-to-tr from-[#9A7432] via-[#E5C158] to-[#FDF0A6] p-[1.5px] shadow-md group-hover:scale-105 transition-transform duration-300">
                     <div class="w-full h-full bg-[#0b0f19] rounded-full flex items-center justify-center">
-                        <span class="gold-gradient-text font-serif-brand font-black text-xl">C</span>
+                        <span class="gold-gradient-text font-serif-brand font-black text-xl leading-none">C</span>
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-black text-slate-900 font-serif-brand leading-none">CADO</span>
-                    <span class="text-[8px] font-bold text-[#9A7432] uppercase tracking-[0.3em]">FASHION</span>
+                    <span class="text-xl font-black tracking-wider text-slate-900 font-serif-brand leading-none group-hover:text-[#9A7432] transition-colors">CADO</span>
+                    <span class="text-[8px] font-bold text-[#9A7432] uppercase tracking-[0.3em] mt-1">FASHION</span>
                 </div>
             </a>
 
             <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-7">
-                <a href="/" class="text-xs font-extrabold text-slate-900 uppercase">Home</a>
-                <a href="{% url 'item:items' %}" class="text-xs font-bold text-slate-600 uppercase">Browse</a>
+                <a href="/" class="text-xs font-extrabold text-slate-900 hover:text-[#9A7432] uppercase tracking-wider transition-colors">Home</a>
+                <a href="{% url 'item:items' %}" class="text-xs font-bold text-slate-600 hover:text-slate-900 uppercase tracking-wider transition-colors">Browse</a>
 
-                <!-- Updated Dropdown -->
+                <!-- Categories Dropdown -->
                 <div class="relative">
-                    <button id="catBtn" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 uppercase">
+                    <button id="catBtn" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#9A7432] uppercase tracking-wider transition-colors py-1">
                         Categories
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <svg id="catArrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
-                    <div id="catDropdown" data-open="false" class="absolute top-full right-0 mt-3 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50" style="opacity:0; visibility:hidden; transition:all .2s;">
-                        <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-[#9A7432] hover:bg-amber-50">🏪 All Items</a>
-                        <div class="my-1 border-t border-slate-100"></div>
+                    <div id="catDropdown" data-open="false" class="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-white border border-slate-100 rounded-2xl shadow-xl shadow-slate-200/60 py-2 z-50" style="opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s,transform .2s;transform:translateY(8px);">
+                        <a href="{% url 'item:items' %}" class="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-[#9A7432] hover:bg-amber-50 transition-all">🏪 All Items</a>
+                        <div class="my-1 border-t border-slate-100 mx-3"></div>
                         {% for category in categories %}
-                        <a href="{% url 'item:items' %}?category={{ category.id }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:text-[#9A7432] hover:bg-amber-50">
-                            {% if category.icon %}{{ category.icon }}{% else %}📦{% endif %} {{ category.name }}
+                        <a href="{% url 'item:items' %}?category={{ category.id }}" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-700 hover:text-[#9A7432] hover:bg-amber-50 transition-all">
+                            <span>{% if category.icon %}{{ category.icon }}{% else %}📦{% endif %}</span>
+                            {{ category.name }}
                         </a>
                         {% endfor %}
                     </div>
                 </div>
-                <!-- Auth Links -->
+
                 {% if request.user.is_authenticated %}
-                    <a href="{% url 'dashboard:index' %}" class="px-5 py-2.5 bg-[#0b0f19] text-[#E5C158] text-[11px] font-extrabold rounded-full">Dashboard</a>
-                    <a href="{% url 'core:logout' %}" class="text-[11px] font-bold text-slate-400 uppercase">Logout</a>
+                    {% if request.user.user_type != 'Buyer' %}
+                    <a href="{% url 'item:new' %}" class="text-xs font-bold text-slate-600 hover:text-[#9A7432] uppercase tracking-wider transition-colors">+ Add Item</a>
+                    {% endif %}
+
+                    <!-- Notification -->
+                    <a href="{% url 'core:notifications' %}" class="relative text-slate-500 hover:text-[#9A7432] transition-colors">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        {% if notification_count > 0 %}
+                        <span class="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">{{ notification_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Messages -->
+                    <a href="{% url 'conversation:inbox' %}" class="text-slate-500 hover:text-[#9A7432] transition-colors">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </a>
+
+                    <a href="{% url 'dashboard:index' %}" class="px-5 py-2.5 bg-[#0b0f19] text-[#E5C158] border border-[#D4AF37]/30 text-[11px] font-extrabold uppercase tracking-wider rounded-full hover:bg-[#D4AF37] hover:text-black shadow-md transition-all duration-300 hover:-translate-y-0.5">Dashboard</a>
+                    <a href="{% url 'core:logout' %}" class="text-[11px] font-bold text-slate-400 hover:text-red-500 uppercase tracking-wider transition-colors">Logout</a>
                 {% else %}
-                    <a href="{% url 'core:login' %}" class="text-xs font-extrabold text-slate-800 uppercase">Log In</a>
-                    <a href="{% url 'core:signup' %}" class="px-5 py-2.5 text-[11px] font-extrabold bg-[#0b0f19] text-[#E5C158] rounded-full">Get Started</a>
+                    <a href="{% url 'core:login' %}" class="text-xs font-extrabold uppercase tracking-wider text-slate-800 hover:text-[#9A7432] transition-colors">Log In</a>
+                    <a href="{% url 'core:signup' %}" class="px-5 py-2.5 text-[11px] font-extrabold uppercase tracking-wider bg-[#0b0f19] text-[#E5C158] border border-[#D4AF37]/40 rounded-full hover:bg-[#D4AF37] hover:text-black shadow-md transition-all duration-300 hover:-translate-y-0.5">Get Started</a>
                 {% endif %}
             </div>
 
-            <button class="md:hidden" onclick="toggleMobileMenu()">Menu</button>
+            <!-- Mobile Hamburger -->
+            <button class="md:hidden flex flex-col gap-1.5 p-2" onclick="toggleMobileMenu()">
+                <span class="w-5 h-0.5 bg-slate-800 rounded"></span>
+                <span class="w-5 h-0.5 bg-slate-800 rounded"></span>
+                <span class="w-5 h-0.5 bg-slate-800 rounded"></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-100 mt-3 pt-3 pb-2 space-y-1">
+            <a href="/" class="block px-4 py-2.5 text-xs font-bold text-slate-800 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">Home</a>
+            <a href="{% url 'item:items' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">Browse</a>
+            <div class="px-4 py-1 text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">Categories</div>
+            <a href="{% url 'item:items' %}" class="block px-6 py-2 text-xs font-semibold text-slate-500 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all">🏪 All Items</a>
+            {% for category in categories %}
+            <a href="{% url 'item:items' %}?category={{ category.id }}" class="block px-6 py-2 text-xs font-semibold text-slate-600 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all">
+                {% if category.icon %}{{ category.icon }}{% else %}📦{% endif %} {{ category.name }}
+            </a>
+            {% endfor %}
+            <div class="border-t border-slate-100 mt-2 pt-2">
+                {% if request.user.is_authenticated %}
+                    {% if request.user.user_type != 'Buyer' %}
+                    <a href="{% url 'item:new' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">+ Add Item</a>
+                    {% endif %}
+                    <a href="{% url 'dashboard:index' %}" class="block px-4 py-2.5 text-xs font-bold text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">Dashboard</a>
+                    <a href="{% url 'core:logout' %}" class="block px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-50 rounded-xl transition-all uppercase">Logout</a>
+                {% else %}
+                    <a href="{% url 'core:login' %}" class="block px-4 py-2.5 text-xs font-bold text-slate-800 hover:text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">Log In</a>
+                    <a href="{% url 'core:signup' %}" class="block px-4 py-2.5 text-xs font-bold text-[#9A7432] hover:bg-amber-50 rounded-xl transition-all uppercase">Get Started</a>
+                {% endif %}
+            </div>
         </div>
     </nav>
 
@@ -93,16 +165,76 @@
 
     <!-- Footer -->
     <footer class="bg-[#0b0f19] text-white pt-20 pb-10 px-6 md:px-12 mt-auto border-t border-[#D4AF37]/20">
-        <div class="max-w-7xl mx-auto text-center">
-            <p class="text-xs text-slate-500">&copy; 2026 CADO Fashion. Designed & Developed by Sakib</p>
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#9A7432] via-[#E5C158] to-[#FDF0A6] p-[1.5px]">
+                            <div class="w-full h-full bg-[#0b0f19] rounded-full flex items-center justify-center">
+                                <span class="gold-gradient-text font-serif-brand font-black text-2xl">C</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-black text-white font-serif-brand leading-none">CADO</span>
+                            <span class="text-[9px] font-bold text-[#E5C158] tracking-[0.35em] uppercase mt-1">— FASHION —</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <a href="mailto:info.cadobd@gmail.com" class="group flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl hover:border-[#D4AF37]/50 transition-all">
+                            <div class="w-9 h-9 rounded-xl bg-[#D4AF37]/10 text-[#E5C158] flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[9px] uppercase font-black text-slate-500">General Query</p>
+                                <p class="text-xs font-semibold text-slate-300">info.cadobd@gmail.com</p>
+                            </div>
+                        </a>
+                        <a href="mailto:support.cadobd@gmail.com" class="group flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl hover:border-[#D4AF37]/50 transition-all">
+                            <div class="w-9 h-9 rounded-xl bg-[#D4AF37]/10 text-[#E5C158] flex items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[9px] uppercase font-black text-slate-500">Support</p>
+                                <p class="text-xs font-semibold text-slate-300">support.cadobd@gmail.com</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:col-span-7">
+                    <h3 class="text-xs font-black uppercase tracking-[0.25em] text-[#E5C158] mb-3">Connect With Us</h3>
+                    <p class="text-slate-400 text-sm mb-6 font-medium">Follow CADO Fashion across social channels for new drops & exclusive releases.</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <a href="https://www.facebook.com/cadofashion/" target="_blank" class="social-btn-fb flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                            <span class="text-xs font-bold">Facebook</span>
+                        </a>
+                        <a href="https://www.instagram.com/cadobd/" target="_blank" class="social-btn-insta flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            <span class="text-xs font-bold">Instagram</span>
+                        </a>
+                        <a href="https://x.com/cadobd" target="_blank" class="social-btn-x flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all hover:-translate-y-1">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <span class="text-xs font-bold">Twitter / X</span>
+                        </a>
+                        <a href="https://www.youtube.com/@cadobd" target="_blank" class="social-btn-yt flex items-center gap-3 p-3 bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition-all hover:-translate-y-1">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            <span class="text-xs font-bold">YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800/80 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 CADO Fashion. All rights reserved.</p>
+                <p>Designed & Developed by Sakib</p>
+            </div>
         </div>
     </footer>
 
     <script>
-    // Dropdown Logic
     document.addEventListener('DOMContentLoaded', function() {
         const catBtn = document.getElementById('catBtn');
         const catDropdown = document.getElementById('catDropdown');
+        const catArrow = document.getElementById('catArrow');
 
         if(catBtn && catDropdown) {
             catBtn.addEventListener('click', function(e) {
@@ -111,18 +243,25 @@
                 if(isOpen) {
                     catDropdown.style.opacity = '0';
                     catDropdown.style.visibility = 'hidden';
+                    catDropdown.style.transform = 'translateY(8px)';
                     catDropdown.dataset.open = 'false';
+                    if(catArrow) catArrow.style.transform = 'rotate(0deg)';
                 } else {
                     catDropdown.style.opacity = '1';
                     catDropdown.style.visibility = 'visible';
+                    catDropdown.style.transform = 'translateY(0)';
                     catDropdown.dataset.open = 'true';
+                    if(catArrow) catArrow.style.transform = 'rotate(180deg)';
                 }
             });
+
             document.addEventListener('click', function(e) {
-                if(!catBtn.contains(e.target)) {
+                if(!catBtn.contains(e.target) && !catDropdown.contains(e.target)) {
                     catDropdown.style.opacity = '0';
                     catDropdown.style.visibility = 'hidden';
+                    catDropdown.style.transform = 'translateY(8px)';
                     catDropdown.dataset.open = 'false';
+                    if(catArrow) catArrow.style.transform = 'rotate(0deg)';
                 }
             });
         }
