@@ -42,6 +42,15 @@
 }
 .dp-img-main.zoomed img#mainImg { transform:scale(1.9); }
 
+/* Main Video Element Styling */
+.dp-img-main video#mainVideo {
+    max-width:100%; max-height:460px;
+    object-fit:contain;
+    display:none;
+    width: 100%;
+    height: 100%;
+}
+
 /* Zoom hint */
 .dp-zoom-hint {
     position:absolute; bottom:14px; right:14px;
@@ -79,11 +88,13 @@
     overflow:hidden; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
     background:#f8f7f4; padding:5px;
+    position: relative;
     transition:border-color .2s, transform .2s;
 }
 .dp-thumb:hover { transform:scale(1.05); }
 .dp-thumb.active { border-color:#c84b31; }
 .dp-thumb img { width:100%; height:100%; object-fit:contain; }
+.dp-thumb video { width:100%; height:100%; object-fit:cover; pointer-events: none; }
 
 /* Lightbox */
 .dp-lightbox {
@@ -153,7 +164,7 @@
 .dp-desc-text { font-size:13px; font-weight:500; color:#555; line-height:1.7; }
 
 .dp-meta { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:20px; }
-.dp-meta-tag { padding:4px 10px; background:#f8f7f4; border:1px solid #e8e5e0; border-radius:7px; font-size:10px; font-weight:600; color:#555; }
+.dp-meta-tag { padding:4px 10px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:7px; font-size:10px; font-weight:600; color:#555; }
 .dp-meta-tag b { color:#1a1a2e; }
 
 .dp-ctas { display:flex; flex-direction:column; gap:9px; }
@@ -226,7 +237,8 @@
         <img id="mainImg"
           src="{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}"
           alt="{{ item.name }}">
-        <div class="dp-zoom-hint">🔍 Click to zoom</div>
+        <video id="mainVideo" controls></video>
+        <div class="dp-zoom-hint" id="zoomHint">🔍 Click to zoom</div>
         {% if request.user.is_authenticated %}
         <a href="{% url 'core:toggle_wishlist' item.id %}" class="dp-wl-img" title="Wishlist">♡</a>
         {% endif %}
@@ -244,6 +256,12 @@
           <img src="{{ img.image.url }}" alt="">
         </div>
         {% endfor %}
+        <!-- Video thumbnail (Assuming item.video or similar model field exists, adjust variable as needed) -->
+        {% if item.video %}
+        <div class="dp-thumb" onclick="switchToVideo(this, '{{ item.video.url }}', {{ extra_images|length|add:1 }})">
+          <video src="{{ item.video.url }}"></video>
+        </div>
+        {% endif %}
       </div>
     </div>
 
@@ -388,28 +406,71 @@ gsap.utils.toArray('.dp-rel-card').forEach((el,i)=>{
     scrollTrigger:{trigger:el,start:'top 90%'} });
 });
 
-// Image gallery
+// Image gallery variables & arrays
 const allImgs = [
   '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}'
   {% for img in extra_images %},'{{ img.image.url }}'{% endfor %}
 ];
 let currentIdx = 0;
 
-function switchImg(thumb, url, idx) {
+function switchToVideo(thumb, url, idx) {
   currentIdx = idx;
   const mainImg = document.getElementById('mainImg');
+  const mainVideo = document.getElementById('mainVideo');
+  const zoomHint = document.getElementById('zoomHint');
+  
+  // Pause/hide image, show video
+  mainImg.style.display = 'none';
+  if(zoomHint) zoomHint.style.display = 'none';
+  
+  gsap.to(mainVideo, { opacity:0, duration:.1, onComplete:()=>{
+    mainVideo.src = url;
+    mainVideo.style.display = 'block';
+    gsap.to(mainVideo, { opacity:1, duration:.3 });
+  }});
+  
+  document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+  
+  // Disable lightbox for video
+  document.getElementById('imgMain').onclick = null;
+}
+
+const origSwitchImg = switchImg = function(thumb, url, idx) {
+  currentIdx = idx;
+  const mainVideo = document.getElementById('mainVideo');
+  const mainImg = document.getElementById('mainImg');
+  const zoomHint = document.getElementById('zoomHint');
+
+  if(mainVideo) {
+    mainVideo.pause();
+    mainVideo.style.display = 'none';
+  }
+  
+  mainImg.style.display = 'block';
+  if(zoomHint) zoomHint.style.display = 'block';
+
+  // Restore lightbox click event for images
+  document.getElementById('imgMain').onclick = () => {
+    document.getElementById('lbImg').src = allImgs[currentIdx];
+    document.getElementById('lightbox').classList.add('open');
+  };
+
   gsap.to(mainImg, { opacity:0, scale:.96, duration:.15, onComplete:()=>{
     mainImg.src = url;
     gsap.to(mainImg, { opacity:1, scale:1, duration:.25 });
   }});
+  
   document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
   thumb.classList.add('active');
 }
 
-// Click to open lightbox
+// Click to open lightbox initially for main image
 document.getElementById('imgMain').addEventListener('click', ()=>{
-  document.getElementById('lbImg').src = allImgs[currentIdx];
-  document.getElementById('lightbox').classList.add('open');
+  if(document.getElementById('mainImg').style.display !== 'none') {
+    document.getElementById('lbImg').src = allImgs[currentIdx];
+    document.getElementById('lightbox').classList.add('open');
+  }
 });
 
 function closeLightbox(e) {
