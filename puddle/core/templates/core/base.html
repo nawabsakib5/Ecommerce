@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}{% endblock title %} | Cotton Web</title>
     
-    <!-- Google Fonts & GSAP Animation CDN Packages (Loaded globally in Head) -->
+    <!-- Google Fonts & GSAP Animation CDN Packages -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -30,25 +30,25 @@
             height: 2px; 
             bottom: -4px; 
             left: 0; 
-            background-color: #e94560; /* Bazaar brand crimson */
+            background-color: #e94560;
             transition: width 0.3s ease; 
         }
         .nav-link:hover::after { width: 100%; }
         
-        /* Premium custom scrollbar configuration */
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f6f9fc; }
         ::-webkit-scrollbar-thumb { background: #0f172a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #1e293b; }
         
-        /* Glass Navbar Styling overrides */
+        /* Glass Navbar Styling */
         .glass-nav { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(15px); 
             -webkit-backdrop-filter: blur(15px); 
         }
         
-        /* Categories Dropdown Configurations */
+        /* Categories Dropdown */
         .dropdown:hover .dropdown-menu { display: block; }
         .dropdown-menu {
             display: none; 
@@ -73,7 +73,7 @@
 
 <body class="bg-[#f6f9fc] flex flex-col min-h-screen text-[#0f172a] leading-tight">
 
-    <!-- ✅ Section 1: Narrow Dark Topbar (Class top-bar-el added for GSAP) -->
+    <!-- ✅ Section 1: Narrow Dark Topbar (With Social Links) -->
     <div class="top-bar-el bg-[#0f172a] text-white py-2.5 px-6 md:px-12 text-xs font-semibold border-b border-white/5 relative z-50 opacity-0">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
@@ -82,23 +82,33 @@
             </div>
             <div class="flex items-center gap-6 text-white/80">
                 <span class="hover:text-white cursor-pointer transition">EN v</span>
+                
+                <!-- Quick Header Social Icons -->
                 <div class="flex items-center gap-3">
-                    <a href="#" class="hover:text-white transition">𝕏</a>
-                    <a href="#" class="hover:text-white transition">fb</a>
-                    <a href="#" class="hover:text-white transition">ig</a>
+                    <a href="https://www.facebook.com/cadofashion/" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="Facebook">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/cadobd/" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="Instagram">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="https://x.com/cadobd" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="X (Twitter)">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/@cadobd" target="_blank" rel="noopener noreferrer" class="hover:text-[#e94560] transition" title="YouTube">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ✅ Section 2: Floating Sticky Glass Header (Class glass-nav added for GSAP) -->
+    <!-- ✅ Section 2: Floating Sticky Header -->
     <nav class="glass-nav sticky top-0 z-50 bg-white border-b border-slate-100 py-4.5 px-6 md:px-12 shadow-sm opacity-0">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
 
-            <!-- Logo Design with original "Cotton Web" brand name (Class nav-logo-wrap added for GSAP) -->
+            <!-- Logo Design -->
             <a href="/" class="nav-logo-wrap group flex items-center gap-3 opacity-0">
                 <div class="logo-container relative w-11 h-11 flex items-center justify-center overflow-hidden rounded-2xl bg-slate-50 border border-slate-100 group-hover:border-slate-200 shadow-sm transition-all">
-                    <!-- Crimson Shopping Bag icon -->
                     <svg class="h-6 w-6 text-[#e94560]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
@@ -135,17 +145,15 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Conditional Link: Add Item -->
                     {% if not request.user.is_authenticated or request.user.user_type == 'Seller' or request.user.is_staff %}
                         <a href="{% url 'item:new' %}" class="nav-link nav-link-item text-xs font-bold text-slate-500 hover:text-[#0f172a] uppercase tracking-wider opacity-0">Add Item</a>
                     {% endif %}
                 </div>
 
-                <!-- Right Controls and User indicators with exact matching circular sizes -->
+                <!-- Right Controls -->
                 <div class="flex items-center gap-3.5 pl-8 border-l border-slate-100">
                     {% if request.user.is_authenticated %}
 
-                        <!-- ✅ 1. Buyer View Only: Shopping Cart Icon (Class nav-ctrl-icon added for GSAP) -->
                         {% if request.user.user_type == 'Buyer' %}
                             <a href="{% url 'cart:detail' %}"
                                class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
@@ -156,7 +164,6 @@
                             </a>
                         {% endif %}
 
-                        <!-- ✅ 2. Message/Inbox Icon (Class nav-ctrl-icon added for GSAP) -->
                         <a href="{% url 'conversation:inbox' %}"
                            class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
                            title="Messages">
@@ -165,7 +172,6 @@
                             </svg>
                         </a>
 
-                        <!-- ✅ 3. Universal Notification Icon (Class nav-ctrl-icon added for GSAP) -->
                         <a href="{% url 'core:notifications' %}"
                            class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0"
                            title="Notifications">
@@ -179,7 +185,6 @@
                             {% endif %}
                         </a>
 
-                        <!-- Dashboard Control Button (Class nav-dash-btn added for GSAP) -->
                         <a href="{% url 'dashboard:index' %}" class="nav-dash-btn flex items-center gap-2 px-6 py-3 bg-[#0f172a] text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-slate-800 transition-all duration-200 shadow-md active:scale-95 opacity-0">
                             Dashboard
                         </a>
@@ -190,8 +195,6 @@
                             </a>
                         {% endif %}
 
-                        <!-- ✅ 4. Security & Exit Controls (Class nav-ctrl-icon added for GSAP) [301] -->
-                        <!-- Change Password (Key Icon) -->
                         <a href="{% url 'core:changePass' %}" 
                            title="Change Password" 
                            class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-[#e94560]/10 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
@@ -199,7 +202,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
                             </svg>
                         </a>
-                        <!-- Logout (Sign-out Door Arrow Icon) -->
+
                         <a href="{% url 'core:logout' %}" 
                            title="Logout" 
                            class="nav-ctrl-icon group relative p-2.5 bg-slate-50 hover:bg-rose-50 rounded-full border border-slate-100 transition-colors duration-300 opacity-0">
@@ -224,36 +227,71 @@
         </div>
     </nav>
 
-    <!-- Main Content Container (Paddings and margins handled inside individual views) -->
+    <!-- Main Content Container -->
     <main class="flex-grow">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- ✅ Section 3: Premium Cotton Web Footer in Dark Navy -->
+    <!-- ✅ Section 3: Premium Footer with Social & Email Links -->
     <footer class="bg-[#0f172a] text-[#f6f9fc] pt-20 pb-12 px-6 md:px-12 mt-auto border-t border-slate-800">
         <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-16 mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
                 
-                <div class="md:col-span-5">
+                <!-- 1. Brand & Social Media SVG Buttons -->
+                <div class="md:col-span-4">
                     <a href="/" class="flex items-center gap-3 mb-6">
                         <img src="{% static 'images/logo.jpg' %}" alt="Cotton Web"
                              class="w-10 h-10 object-contain rounded-xl border border-white/10 shadow-xs"
                              onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=CW&background=0f172a&color=fff'">
                         <span class="bazaar-title text-2xl font-black text-white">Cotton Web<span class="text-[#e94560]">.</span></span>
                     </a>
-                    <p class="text-slate-400 leading-relaxed max-w-sm mb-8 font-medium text-sm">
-                        Bangladesh's premium online trading platform. Powered by Bazaar design structures. Easy, secure, and fully reliable.
+                    <p class="text-slate-400 leading-relaxed max-w-sm mb-6 font-medium text-sm">
+                        Bangladesh's premium online trading platform. Easy, secure, and fully reliable.
                     </p>
-                    <div class="flex gap-4">
-                        <a href="https://www.facebook.com/cottonweb3/" target="_blank"
-                           class="w-10 h-10 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-white transition-all shadow-xs">
-                            <svg class="w-4.5 h-4.5 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    
+                    <!-- All Social Media Buttons -->
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Facebook -->
+                        <a href="https://www.facebook.com/cadofashion/" target="_blank" rel="noopener noreferrer" title="Facebook"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/cadobd/" target="_blank" rel="noopener noreferrer" title="Instagram"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <!-- Twitter/X -->
+                        <a href="https://x.com/cadobd" target="_blank" rel="noopener noreferrer" title="X (Twitter)"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <!-- YouTube -->
+                        <a href="https://www.youtube.com/@cadobd" target="_blank" rel="noopener noreferrer" title="YouTube"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <!-- TikTok -->
+                        <a href="https://www.tiktok.com/@cadobd" target="_blank" rel="noopener noreferrer" title="TikTok"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.98-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.67 2.58-4.8 1.41-1.1 3.22-1.61 5.02-1.44.02 1.41.01 2.82.01 4.23-.96-.13-1.96.11-2.73.68-.82.59-1.3 1.56-1.31 2.57.01 1.2.66 2.33 1.68 2.93 1.02.6 2.3.62 3.34.05 1.02-.54 1.72-1.57 1.83-2.72.08-1.12.04-2.25.04-3.37V.02z"/></svg>
+                        </a>
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/cadobd/" target="_blank" rel="noopener noreferrer" title="LinkedIn"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.63a1.6 1.6 0 1 0 1.6 1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>
+                        </a>
+                        <!-- Pinterest -->
+                        <a href="https://www.pinterest.com/cadobd/" target="_blank" rel="noopener noreferrer" title="Pinterest"
+                           class="w-9 h-9 bg-white/5 hover:bg-[#e94560] hover:text-white rounded-xl flex items-center justify-center text-slate-300 transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345c-.091.378-.293 1.189-.333 1.355-.053.225-.173.272-.401.165-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
                         </a>
                     </div>
                 </div>
 
-                <div class="md:col-span-2 md:col-start-8">
+                <!-- 2. Marketplace Navigation -->
+                <div class="md:col-span-2 md:col-start-6">
                     <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Marketplace</h3>
                     <ul class="space-y-4 font-bold text-xs text-slate-400">
                         <li><a href="{% url 'item:items' %}" class="hover:text-white transition-colors">All Items</a></li>
@@ -263,13 +301,45 @@
                     </ul>
                 </div>
 
+                <!-- 3. Support -->
                 <div class="md:col-span-2">
                     <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Support</h3>
                     <ul class="space-y-4 font-bold text-xs text-slate-400">
-                        <li><a href="{% url 'core:contact' %}" class="hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="{% url 'core:help_center' %}" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="{% url 'core:privacy_policy' %}" class="hover:text-white transition-colors">Privacy Policy</a></li>
                     </ul>
                 </div>
+
+                <!-- 4. Email & Contact Cards -->
+                <div class="md:col-span-4">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#e94560] mb-6">Get In Touch</h3>
+                    <div class="space-y-3 text-xs font-semibold text-slate-300">
+                        
+                        <!-- General Email -->
+                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-[#e94560]/30 transition-all">
+                            <div class="w-8 h-8 rounded-lg bg-[#e94560]/10 flex items-center justify-center text-[#e94560]">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase text-slate-400 font-bold">General Query</p>
+                                <a href="mailto:info.cadobd@gmail.com" class="hover:text-[#e94560] transition-colors">info.cadobd@gmail.com</a>
+                            </div>
+                        </div>
+
+                        <!-- Support Email -->
+                        <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5 hover:border-[#e94560]/30 transition-all">
+                            <div class="w-8 h-8 rounded-lg bg-[#e94560]/10 flex items-center justify-center text-[#e94560]">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase text-slate-400 font-bold">Support Mail</p>
+                                <a href="mailto:support.cadobd@gmail.com" class="hover:text-[#e94560] transition-colors">support.cadobd@gmail.com</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
             <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -291,82 +361,20 @@
 
 <!-- Global GSAP Animations Script -->
 <script>
-    // 1. Top Bar entrance reveal
-    gsap.to(".top-bar-el", {
-        y: 0,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out"
-    });
+    gsap.to(".top-bar-el", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" });
+    gsap.to(".glass-nav", { y: 0, opacity: 1, duration: 0.65, delay: 0.15, ease: "power2.out" });
+    gsap.to(".nav-logo-wrap", { scale: 1, opacity: 1, duration: 0.75, delay: 0.35, ease: "back.out(1.15)" });
+    gsap.to(".nav-link-item", { x: 0, opacity: 1, stagger: 0.05, duration: 0.5, delay: 0.4, ease: "power2.out" });
+    gsap.to(".nav-ctrl-icon", { scale: 1, opacity: 1, stagger: 0.04, duration: 0.5, delay: 0.45, ease: "back.out(1.15)" });
+    gsap.to(".nav-dash-btn", { scale: 1, opacity: 1, duration: 0.55, delay: 0.5, ease: "back.out(1.1)" });
 
-    // 2. Navigation Header slide-down reveal
-    gsap.to(".glass-nav", {
-        y: 0,
-        opacity: 1,
-        duration: 0.65,
-        delay: 0.15,
-        ease: "power2.out"
-    });
-
-    // 3. Logo elastic reveal
-    gsap.to(".nav-logo-wrap", {
-        scale: 1,
-        opacity: 1,
-        duration: 0.75,
-        delay: 0.35,
-        ease: "back.out(1.15)"
-    });
-
-    // 4. Staggered navigation links reveal
-    gsap.to(".nav-link-item", {
-        x: 0,
-        opacity: 1,
-        stagger: 0.05,
-        duration: 0.5,
-        delay: 0.4,
-        ease: "power2.out"
-    });
-
-    // 5. Staggered circular buttons reveal
-    gsap.to(".nav-ctrl-icon", {
-        scale: 1,
-        opacity: 1,
-        stagger: 0.04,
-        duration: 0.5,
-        delay: 0.45,
-        ease: "back.out(1.15)"
-    });
-
-    // 6. Dashboard button slide-in
-    gsap.to(".nav-dash-btn", {
-        scale: 1,
-        opacity: 1,
-        duration: 0.55,
-        delay: 0.5,
-        ease: "back.out(1.1)"
-    });
-
-    // 7. Global Micro-physics Hover Interaction listeners for standalone circular buttons
     const navButtons = document.querySelectorAll('.nav-ctrl-icon');
     navButtons.forEach(btn => {
         btn.addEventListener('mouseenter', () => {
-            gsap.to(btn, {
-                scale: 1.08,
-                backgroundColor: "rgba(233, 69, 96, 0.08)",
-                borderColor: "rgba(233, 69, 96, 0.15)",
-                duration: 0.3,
-                ease: "power2.out"
-            });
+            gsap.to(btn, { scale: 1.08, backgroundColor: "rgba(233, 69, 96, 0.08)", borderColor: "rgba(233, 69, 96, 0.15)", duration: 0.3, ease: "power2.out" });
         });
-
         btn.addEventListener('mouseleave', () => {
-            gsap.to(btn, {
-                scale: 1,
-                backgroundColor: "#f8fafc",
-                borderColor: "#e2e8f0",
-                duration: 0.3,
-                ease: "power2.out"
-            });
+            gsap.to(btn, { scale: 1, backgroundColor: "#f8fafc", borderColor: "#e2e8f0", duration: 0.3, ease: "power2.out" });
         });
     });
 </script>

@@ -133,3 +133,10 @@ def add_review(request, item_id):
         )
         messages.success(request, "Review submitted! ⭐")
     return redirect('item:detail', pk=item_id)
+
+
+def help_center(request):
+    return render(request, 'core/help_center.html')
+
+def privacy_policy(request):
+    return render(request, 'core/privacy_policy.html')
