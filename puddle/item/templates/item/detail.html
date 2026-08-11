@@ -31,7 +31,6 @@
     min-height:480px; overflow:hidden; cursor:zoom-in;
 }
 
-/* Zoom lens overlay */
 .dp-img-main img#mainImg {
     max-width:100%; max-height:460px;
     object-fit:contain;
@@ -42,7 +41,6 @@
 }
 .dp-img-main.zoomed img#mainImg { transform:scale(1.9); }
 
-/* Main Video Element Styling */
 .dp-img-main video#mainVideo {
     max-width:100%; max-height:460px;
     object-fit:contain;
@@ -51,7 +49,6 @@
     height: 100%;
 }
 
-/* Zoom hint */
 .dp-zoom-hint {
     position:absolute; bottom:14px; right:14px;
     background:rgba(26,26,46,.6); color:#fff;
@@ -252,11 +249,19 @@
         </div>
         <!-- Extra images -->
         {% for img in extra_images %}
-        <div class="dp-thumb" onclick="switchImg(this, '{{ img.image.url }}', {{ forloop.counter }})">
-          <img src="{{ img.image.url }}" alt="">
-        </div>
+          {% if img.media_type == 'video' or img.video %}
+          <div class="dp-thumb" onclick="switchToVideo(this, '{{ img.video.url }}', {{ forloop.counter }})">
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1a1a2e;border-radius:8px;">
+              <span style="font-size:16px;">▶️</span>
+            </div>
+          </div>
+          {% elif img.image %}
+          <div class="dp-thumb" onclick="switchImg(this, '{{ img.image.url }}', {{ forloop.counter }})">
+            <img src="{{ img.image.url }}" alt="">
+          </div>
+          {% endif %}
         {% endfor %}
-        <!-- Video thumbnail (Assuming item.video or similar model field exists, adjust variable as needed) -->
+        <!-- Video thumbnail from item model if exists -->
         {% if item.video %}
         <div class="dp-thumb" onclick="switchToVideo(this, '{{ item.video.url }}', {{ extra_images|length|add:1 }})">
           <video src="{{ item.video.url }}"></video>
@@ -409,7 +414,7 @@ gsap.utils.toArray('.dp-rel-card').forEach((el,i)=>{
 // Image gallery variables & arrays
 const allImgs = [
   '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}'
-  {% for img in extra_images %},'{{ img.image.url }}'{% endfor %}
+  {% for img in extra_images %}{% if img.image %},'{{ img.image.url }}'{% endif %}{% endfor %}
 ];
 let currentIdx = 0;
 
@@ -419,7 +424,6 @@ function switchToVideo(thumb, url, idx) {
   const mainVideo = document.getElementById('mainVideo');
   const zoomHint = document.getElementById('zoomHint');
   
-  // Pause/hide image, show video
   mainImg.style.display = 'none';
   if(zoomHint) zoomHint.style.display = 'none';
   
@@ -432,11 +436,10 @@ function switchToVideo(thumb, url, idx) {
   document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
   thumb.classList.add('active');
   
-  // Disable lightbox for video
   document.getElementById('imgMain').onclick = null;
 }
 
-const origSwitchImg = switchImg = function(thumb, url, idx) {
+const switchImg = function(thumb, url, idx) {
   currentIdx = idx;
   const mainVideo = document.getElementById('mainVideo');
   const mainImg = document.getElementById('mainImg');
@@ -450,7 +453,6 @@ const origSwitchImg = switchImg = function(thumb, url, idx) {
   mainImg.style.display = 'block';
   if(zoomHint) zoomHint.style.display = 'block';
 
-  // Restore lightbox click event for images
   document.getElementById('imgMain').onclick = () => {
     document.getElementById('lbImg').src = allImgs[currentIdx];
     document.getElementById('lightbox').classList.add('open');
@@ -465,7 +467,6 @@ const origSwitchImg = switchImg = function(thumb, url, idx) {
   thumb.classList.add('active');
 }
 
-// Click to open lightbox initially for main image
 document.getElementById('imgMain').addEventListener('click', ()=>{
   if(document.getElementById('mainImg').style.display !== 'none') {
     document.getElementById('lbImg').src = allImgs[currentIdx];
@@ -486,12 +487,10 @@ function lbNav(dir) {
     lbImg.src = allImgs[currentIdx];
     gsap.fromTo(lbImg,{ opacity:0, x:-dir*30 },{ opacity:1, x:0, duration:.2 });
   }});
-  // sync main image
   document.getElementById('mainImg').src = allImgs[currentIdx];
   document.querySelectorAll('.dp-thumb').forEach((t,i)=> t.classList.toggle('active', i===currentIdx));
 }
 
-// Keyboard nav in lightbox
 document.addEventListener('keydown', e=>{
   if(!document.getElementById('lightbox').classList.contains('open')) return;
   if(e.key==='ArrowLeft') lbNav(-1);
@@ -499,7 +498,6 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape') document.getElementById('lightbox').classList.remove('open');
 });
 
-// 3D tilt
 const ip = document.getElementById('imgPanel');
 ip.addEventListener('mousemove', e=>{
   const r=ip.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
