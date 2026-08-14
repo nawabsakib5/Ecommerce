@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'cart',
     'wishlist',
+    'axes',
 ]
 
 MIDDLEWARE = [
@@ -45,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'puddle.urls'
@@ -90,6 +92,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
@@ -130,3 +137,44 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
+
+
+# ── Security Settings ──
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Session Security
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+
+# CSRF Security
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_TRUSTED_ORIGINS = [
+    'https://cottonweb.up.railway.app',
+    'https://web-production-30f2d.up.railway.app',
+    'https://ecommerce-iyil.onrender.com',
+]
+
+# Production only (HTTPS)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+
+    # ── Axes (Brute Force Protection) ──
+AXES_FAILURE_LIMIT = 5          # ৫ বার wrong password = block
+AXES_COOLOFF_TIME = 1           # ১ ঘণ্টা পর unblock
+AXES_LOCK_OUT_AT_FAILURE = True
+AXES_LOCKOUT_TEMPLATE = None
+AXES_RESET_ON_SUCCESS = True    # সফল login এ failure count reset
+AXES_ENABLE_ADMIN = True
+AXES_IP_BLACKLIST = None

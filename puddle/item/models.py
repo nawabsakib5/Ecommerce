@@ -1,6 +1,10 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.core.validators import FileExtensionValidator
+
+
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -114,8 +118,16 @@ class ItemImage(models.Model):
         related_name='images',
         on_delete=models.CASCADE,
     )
-    image = models.ImageField(upload_to='item_images/', blank=True, null=True)
-    video = models.FileField(upload_to='item_videos/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='item_images/',
+        blank=True, null=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
+    )
+    video = models.FileField(
+        upload_to='item_videos/',
+        blank=True, null=True,
+        validators=[FileExtensionValidator(['mp4', 'mov', 'webm'])]
+    )
     media_type = models.CharField(
         max_length=10,
         choices=MEDIA_TYPE_CHOICES,
