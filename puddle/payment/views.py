@@ -182,31 +182,85 @@ def sslcommerz_success(request, transaction_id):
     if request.method == 'POST':
         val_id = request.POST.get('val_id')
         status = request.POST.get('status')
+        amount_received = request.POST.get('amount')
 
-        if status == 'VALID':
-            transaction.status = 'completed'
-            transaction.gateway_transaction_id = val_id
-            transaction.completed_at = timezone.now()
-            transaction.gateway_response = dict(request.POST)
-            transaction.save()
+        if status == 'VALID' and val_id:
+            try:
+                from sslcommerz_lib import SSLCOMMERZ
 
-            # Order update
-            order = transaction.order
-            order.status = 'payment_confirmed'
-            order.save()
+                ssl_settings = {
+                    'store_id': settings.SSLCOMMERZ_STORE_ID,
+                    'store_pass': settings.SSLCOMMERZ_STORE_PASSWORD,
+                    'issandbox': settings.SSLCOMMERZ_SANDBOX,
+                }
+                sslcz = SSLCOMMERZ(ssl_settings)
 
-            # Item sold mark করো
-            item = transaction.item
-            item.is_sold = True
-            item.status = 'sold'
-            item.save()
+                # ✅ Server-side validation — gateway তে সরাসরি query
+                validation = sslcz.hash_validate_ipn(dict(request.POST))
 
-            messages.success(request, "Payment successful! 🎉")
-            return redirect('payment:success', transaction_id=transaction_id)
+                if validation.get('status') == 'VALID':
+                    # ✅ Amount মিলিয়ে দেখো — client data বিশ্বাস করো না
+                    validated_amount = float(validation.get('amount', 0))
+                    expected_amount = float(transaction.amount)
+
+                    if abs(validated_amount - expected_amount) > 0.01:
+                        # Amount mismatch — fraud attempt!
+                        transaction.status = 'failed'
+                        transaction.gateway_response = {
+                            'error': 'Amount mismatch',
+                            'expected': expected_amount,
+                            'received': validated_amount,
+                        }
+                        transaction.save()
+                        messages.error(request, "Payment verification failed — amount mismatch.")
+                        return redirect('payment:failed', transaction_id=transaction_id)
+
+                    # ✅ সব ঠিক আছে — complete করো
+                    transaction.status = 'completed'
+                    transaction.gateway_transaction_id = val_id
+                    transaction.completed_at = timezone.now()
+                    transaction.gateway_response = dict(request.POST)
+                    transaction.save()
+
+                    order = transaction.order
+                    order.status = 'payment_confirmed'
+                    order.save()
+
+                    # Item sold mark
+                    item = transaction.item
+                    item.is_sold = True
+                    item.status = 'sold'
+                    item.save()
+
+                    # Seller কে notification পাঠাও
+                    from core.models import Notification
+                    Notification.objects.create(
+                        user=item.user,
+                        title="Item Sold! 🎉",
+                        message=f"Your item '{item.name}' has been sold for ৳{transaction.amount}",
+                        notification_type='sale',
+                        link=f"/items/{item.id}/",
+                    )
+
+                    messages.success(request, "Payment successful! 🎉")
+                    return redirect('payment:success', transaction_id=transaction_id)
+
+                else:
+                    transaction.status = 'failed'
+                    transaction.save()
+                    messages.error(request, "Payment validation failed.")
+                    return redirect('payment:failed', transaction_id=transaction_id)
+
+            except Exception as e:
+                transaction.status = 'failed'
+                transaction.save()
+                messages.error(request, f"Payment error: {str(e)}")
+                return redirect('payment:failed', transaction_id=transaction_id)
+
         else:
             transaction.status = 'failed'
             transaction.save()
-            messages.error(request, "Payment verification failed.")
+            messages.error(request, "Payment failed.")
             return redirect('payment:failed', transaction_id=transaction_id)
 
     return redirect('payment:success', transaction_id=transaction_id)
