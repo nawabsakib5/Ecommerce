@@ -94,21 +94,27 @@ def new(request):
                 item.shop = request.user.shop
             item.save()
 
-            # Extra images save
+            # Extra images save — max 5MB each
             from .models import ItemImage
             extra_images = request.FILES.getlist('extra_images')
             for i, img in enumerate(extra_images[:5]):
+                if img.size > 5 * 1024 * 1024:
+                    messages.warning(request, f"'{img.name}' is too large. Max 5MB per image.")
+                    continue
                 ItemImage.objects.create(item=item, image=img, order=i)
 
-            # Video save
+            # Video save — max 50MB
             product_video = request.FILES.get('product_video')
             if product_video:
-                ItemImage.objects.create(
-                    item=item,
-                    video=product_video,
-                    media_type='video',
-                    order=99
-                )
+                if product_video.size > 50 * 1024 * 1024:
+                    messages.warning(request, "Video too large. Max 50MB allowed.")
+                else:
+                    ItemImage.objects.create(
+                        item=item,
+                        video=product_video,
+                        media_type='video',
+                        order=99
+                    )
 
             cache.delete('all_categories')
             messages.success(request, 'Your item is live!')
@@ -135,19 +141,29 @@ def edit(request, pk):
         if form.is_valid():
             form.save()
 
-            # নতুন extra images যোগ করা
+            # নতুন extra images যোগ করা — max 5MB each
             from .models import ItemImage
             extra_images = request.FILES.getlist('extra_images')
             for i, img in enumerate(extra_images[:5]):
+                if img.size > 5 * 1024 * 1024:
+                    messages.warning(request, f"'{img.name}' is too large. Max 5MB per image.")
+                    continue
                 existing_count = item.images.filter(media_type='image').count()
                 ItemImage.objects.create(item=item, image=img, order=existing_count + i)
 
-            # নতুন video যোগ করা
+            # নতুন video যোগ করা — max 50MB
             product_video = request.FILES.get('product_video')
             if product_video:
-                from .models import ItemImage
-                item.images.filter(media_type='video').delete()
-                ItemImage.objects.create(item=item, video=product_video, media_type='video', order=99)
+                if product_video.size > 50 * 1024 * 1024:
+                    messages.warning(request, "Video too large. Max 50MB allowed.")
+                else:
+                    item.images.filter(media_type='video').delete()
+                    ItemImage.objects.create(
+                        item=item,
+                        video=product_video,
+                        media_type='video',
+                        order=99
+                    )
 
             # পুরানো images delete request
             delete_ids = request.POST.getlist('delete_image')

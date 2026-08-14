@@ -10,8 +10,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'chat_{self.conversation_id}'
         self.user = self.scope['user']
 
+        # Authentication check
         if not self.user.is_authenticated:
-            await self.close()
+            await self.close(code=4001)
+            return
+
+        # Authorization check — user এই conversation এর member কিনা
+        is_member = await self.check_membership()
+        if not is_member:
+            await self.close(code=4003)
             return
 
         await self.channel_layer.group_add(
@@ -29,7 +36,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message = data.get('message', '').strip()
+
+        # Empty message reject
         if not message:
+            return
+
+        # Message length limit — max 1000 characters
+        if len(message) > 1000:
             return
 
         msg_obj = await self.save_message(message)
@@ -52,6 +65,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender_id': event['sender_id'],
             'timestamp': event['timestamp'],
         }))
+
+    @database_sync_to_async
+    def check_membership(self):
+        """User এই conversation এর member কিনা check করো"""
+        from .models import Conversation
+        return Conversation.objects.filter(
+            id=self.conversation_id,
+            members=self.user
+        ).exists()
 
     @database_sync_to_async
     def save_message(self, content):
