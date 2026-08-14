@@ -1,0 +1,41 @@
+# Security & Environment Variables (🔒 খুবই জরুরি)
+.env
+.env.*
+*.env
+!.env.example
+
+# Python & Django Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Virtual Environments
+env/
+venv/
+ENV/
+.venv/
+
+# Database & Media
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/
+
+# IDE & System Files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+
+# Testing / Coverage
+.coverage
+htmlcov/
+.pytest_cache/
