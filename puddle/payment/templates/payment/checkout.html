@@ -1,0 +1,735 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Checkout — {{ item.name }}{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- FontAwesome for high-end icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --co-bg: #f8fafc;
+    --co-surface: #ffffff;
+    --co-border: #e2e8f0;
+    --co-border-focus: #c5a059;
+    --co-primary: #1e293b;
+    --co-accent: #b8860b;
+    --co-accent-light: #fdfbf7;
+    --co-accent-border: #e6d5b8;
+    --co-text-main: #0f172a;
+    --co-text-muted: #64748b;
+    --co-radius-lg: 24px;
+    --co-radius-md: 16px;
+    --co-radius-sm: 12px;
+    --co-shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    --co-shadow-hover: 0 10px 30px -4px rgba(184, 134, 11, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+.co {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--co-bg);
+    min-height: 100vh;
+    padding: 48px 16px 80px;
+    color: var(--co-text-main);
+}
+
+.co-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 32px;
+    align-items: start;
+}
+
+@media(max-width: 900px) {
+    .co-wrap { grid-template-columns: 1fr; }
+}
+
+/* Card Styling */
+.co-card {
+    background: var(--co-surface);
+    border: 1px solid var(--co-border);
+    border-radius: var(--co-radius-lg);
+    padding: 36px;
+    box-shadow: var(--co-shadow-subtle);
+    position: relative;
+    overflow: hidden;
+}
+
+.co-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #b8860b, #e6d5b8);
+}
+
+.co-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--co-primary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.01em;
+}
+
+.co-title i {
+    color: var(--co-accent);
+    font-size: 18px;
+}
+
+/* Item Summary inside Left/Right */
+.co-item {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    background: #fdfbf7;
+    border: 1px solid var(--co-accent-border);
+    border-radius: var(--co-radius-md);
+    margin-bottom: 24px;
+}
+
+.co-item-img {
+    width: 76px;
+    height: 76px;
+    border-radius: var(--co-radius-sm);
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.co-item-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--co-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.co-item-cat {
+    font-size: 12px;
+    color: var(--co-text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.co-item-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--co-accent);
+}
+
+/* Saved Methods Section */
+.co-saved {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--co-border);
+}
+
+.co-saved-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--co-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+}
+
+.co-saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.co-saved-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border: 1.5px solid var(--co-border);
+    border-radius: var(--co-radius-md);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fff;
+}
+
+.co-saved-item:hover {
+    border-color: var(--co-accent);
+    background: var(--co-accent-light);
+    transform: translateY(-1px);
+    box-shadow: var(--co-shadow-hover);
+}
+
+.co-saved-item.active {
+    border-color: var(--co-accent);
+    background: var(--co-accent-light);
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+}
+
+/* Payment Methods Grid */
+.co-methods-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+@media(max-width: 500px) {
+    .co-methods-grid { grid-template-columns: 1fr; }
+}
+
+.co-method-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1.5px solid var(--co-border);
+    border-radius: var(--co-radius-md);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fff;
+    position: relative;
+}
+
+.co-method-card:hover {
+    border-color: var(--co-accent);
+    background: var(--co-accent-light);
+    transform: translateY(-1px);
+    box-shadow: var(--co-shadow-hover);
+}
+
+.co-method-card.selected {
+    border-color: var(--co-accent);
+    background: var(--co-accent-light);
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+}
+
+.co-method-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.co-method-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.co-method-card.selected .co-method-icon-wrap {
+    background: #fff;
+    color: var(--co-accent);
+}
+
+.co-method-info {
+    flex-grow: 1;
+}
+
+.co-method-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--co-primary);
+    margin-bottom: 2px;
+}
+
+.co-method-sub {
+    font-size: 11px;
+    color: var(--co-text-muted);
+    font-weight: 500;
+}
+
+.co-method-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.co-method-card.selected .co-method-check {
+    border-color: var(--co-accent);
+    background: var(--co-accent);
+}
+
+.co-method-card.selected .co-method-check::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Form Group Layout */
+.co-form-group {
+    margin-bottom: 20px;
+}
+
+.co-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--co-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.co-input-wrap {
+    position: relative;
+}
+
+.co-input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.co-input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: #f8fafc;
+    border: 1.5px solid var(--co-border);
+    border-radius: var(--co-radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--co-primary);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.co-textarea {
+    padding-left: 16px !important;
+    height: 90px;
+    resize: vertical;
+}
+
+.co-input:focus {
+    border-color: var(--co-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.08);
+}
+
+.co-input:focus ~ .co-input-icon,
+.co-input-wrap:focus-within .co-input-icon {
+    color: var(--co-accent);
+}
+
+/* Pay Button */
+.co-pay-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--co-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--co-radius-md);
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 24px;
+    box-shadow: 0 4px 14px rgba(30, 41, 59, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.co-pay-btn:hover {
+    background: var(--co-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.3);
+}
+
+.co-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--co-text-muted);
+    font-weight: 600;
+}
+
+/* Order Summary Card Right */
+.co-summary-card {
+    position: sticky;
+    top: 32px;
+}
+
+.co-seller-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid var(--co-border);
+    border-radius: var(--co-radius-sm);
+    margin-bottom: 24px;
+}
+
+.co-seller-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.co-summary-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--co-border);
+}
+
+.co-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.co-summary-label {
+    color: var(--co-text-muted);
+    font-weight: 500;
+}
+
+.co-summary-value {
+    color: var(--co-primary);
+    font-weight: 700;
+}
+
+.co-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+}
+
+.co-total-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--co-primary);
+}
+
+.co-total-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--co-accent);
+}
+
+.co-selected-preview {
+    display: none;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: var(--co-accent-light);
+    border: 1px solid var(--co-accent-border);
+    border-radius: var(--co-radius-sm);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.op0 { opacity: 0; transform: translateY(20px); }
+</style>
+
+<div class="co">
+<div class="co-wrap">
+
+  <!-- Left Column: Payment & Shipping Form -->
+  <div>
+    <div class="co-card op0" id="payCard">
+      <div class="co-title">
+        <i class="fa-solid fa-wallet"></i> Choose Payment Method
+      </div>
+
+      <!-- Saved Methods -->
+      {% if saved_methods %}
+      <div class="co-saved">
+        <div class="co-saved-title"><i class="fa-solid fa-bookmark me-1"></i> Your Saved Methods</div>
+        <div class="co-saved-list">
+          {% for method in saved_methods %}
+          <div class="co-saved-item" onclick="selectSavedMethod('{{ method.method_type }}', this)">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:var(--co-accent); font-size:16px;">
+                {% if method.method_type == 'bkash' %}<i class="fa-solid fa-mobile-screen"></i>
+                {% elif method.method_type == 'nagad' %}<i class="fa-solid fa-mobile-screen-button"></i>
+                {% elif method.method_type == 'rocket' %}<i class="fa-solid fa-rocket"></i>
+                {% else %}<i class="fa-solid fa-credit-card"></i>{% endif %}
+              </div>
+              <div>
+                <div style="font-size:13px; font-weight:700; color:var(--co-primary);">{{ method.get_method_type_display }}</div>
+                <div style="font-size:11px; color:var(--co-text-muted);">{{ method.get_display_name }}</div>
+              </div>
+            </div>
+            <i class="fa-solid fa-circle-chevron-right text-muted" style="font-size:14px;"></i>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'payment:initiate' item.id %}" id="payForm">
+        {% csrf_token %}
+        <input type="hidden" name="payment_type" id="selectedMethod" value="">
+
+        <!-- Payment Options Grid -->
+        <div class="co-methods-grid">
+          <label class="co-method-card" onclick="selectMethod('bkash', this)">
+            <input type="radio" name="_method" value="bkash">
+            <div class="co-method-icon-wrap" style="color: #e2136e;"><i class="fa-solid fa-mobile-screen"></i></div>
+            <div class="co-method-info">
+              <div class="co-method-label">bKash</div>
+              <div class="co-method-sub">Mobile Banking</div>
+            </div>
+            <div class="co-method-check"></div>
+          </label>
+
+          <label class="co-method-card" onclick="selectMethod('nagad', this)">
+            <input type="radio" name="_method" value="nagad">
+            <div class="co-method-icon-wrap" style="color: #ec1c24;"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="co-method-info">
+              <div class="co-method-label">Nagad</div>
+              <div class="co-method-sub">Mobile Banking</div>
+            </div>
+            <div class="co-method-check"></div>
+          </label>
+
+          <label class="co-method-card" onclick="selectMethod('rocket', this)">
+            <input type="radio" name="_method" value="rocket">
+            <div class="co-method-icon-wrap" style="color: #8934be;"><i class="fa-solid fa-rocket"></i></div>
+            <div class="co-method-info">
+              <div class="co-method-label">Rocket</div>
+              <div class="co-method-sub">Dutch-Bangla</div>
+            </div>
+            <div class="co-method-check"></div>
+          </label>
+
+          <label class="co-method-card" onclick="selectMethod('sslcommerz', this)">
+            <input type="radio" name="_method" value="sslcommerz">
+            <div class="co-method-icon-wrap" style="color: #0070ba;"><i class="fa-solid fa-credit-card"></i></div>
+            <div class="co-method-info">
+              <div class="co-method-label">Card / SSL</div>
+              <div class="co-method-sub">Visa, Mastercard</div>
+            </div>
+            <div class="co-method-check"></div>
+          </label>
+
+          <label class="co-method-card" style="grid-column: 1 / -1;" onclick="selectMethod('cod', this)">
+            <input type="radio" name="_method" value="cod">
+            <div class="co-method-icon-wrap" style="color: #059669;"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="co-method-info">
+              <div class="co-method-label">Cash on Delivery</div>
+              <div class="co-method-sub">Pay securely when your package arrives at your doorstep</div>
+            </div>
+            <div class="co-method-check"></div>
+          </label>
+        </div>
+
+        <!-- Delivery Section Heading -->
+        <div class="co-title" style="font-size:18px; margin-top:32px; margin-bottom:20px;">
+          <i class="fa-solid fa-box-open"></i> Delivery Information
+        </div>
+
+        <div class="co-form-group">
+          <label class="co-label">Full Name</label>
+          <div class="co-input-wrap">
+            <input class="co-input" type="text" name="delivery_name" placeholder="Enter your full name" required value="{{ request.user.full_name|default:'' }}">
+            <i class="fa-solid fa-user co-input-icon"></i>
+          </div>
+        </div>
+
+        <div class="co-form-group">
+          <label class="co-label">Phone Number</label>
+          <div class="co-input-wrap">
+            <input class="co-input" type="tel" name="delivery_phone" placeholder="01XXXXXXXXX" required value="{{ request.user.phone|default:'' }}">
+            <i class="fa-solid fa-phone co-input-icon"></i>
+          </div>
+        </div>
+
+        <div class="co-form-group" style="margin-bottom:0;">
+          <label class="co-label">Delivery Address</label>
+          <div class="co-input-wrap">
+            <textarea class="co-input co-textarea" name="delivery_address" placeholder="House no, Road, Area, City..." required></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="co-pay-btn" id="payBtn" onclick="return validateForm()">
+          <i class="fa-solid fa-lock"></i> Proceed to Pay — ৳{{ price|floatformat:0 }}
+        </button>
+
+        <div class="co-secure">
+          <i class="fa-solid fa-shield-halved text-success"></i> 256-bit Bank Grade SSL Encrypted &nbsp;|&nbsp; 🛡️ Secure Checkout
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Column: Order Summary Card -->
+  <div>
+    <div class="co-card co-summary-card op0" id="summaryCard">
+      <div class="co-title" style="font-size:18px; margin-bottom:18px;">
+        <i class="fa-solid fa-bag-shopping"></i> Order Summary
+      </div>
+
+      <!-- Item Preview -->
+      <div class="co-item">
+        {% if item.image %}
+        <img class="co-item-img" src="{{ item.image.url }}" alt="{{ item.name }}">
+        {% else %}
+        <img class="co-item-img" src="https://picsum.photos/seed/{{ item.id }}/200/200" alt="">
+        {% endif %}
+        <div style="flex-grow:1; min-width:0;">
+          <div class="co-item-name text-truncate">{{ item.name }}</div>
+          <div class="co-item-cat">{{ item.category.name }} · {{ item.get_condition_display }}</div>
+          <div class="co-item-price">৳{{ price|floatformat:0 }}</div>
+        </div>
+      </div>
+
+      <!-- Seller Info Block -->
+      <div class="co-seller-box">
+        <div class="co-seller-avatar">{{ item.user.username|first|upper }}</div>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:var(--co-primary);">{{ item.user.username }}</div>
+          <div style="font-size:11px; color:var(--co-text-muted);">Verified Marketplace Seller</div>
+        </div>
+      </div>
+
+      <!-- Price Breakdown -->
+      <div class="co-summary-rows">
+        <div class="co-summary-row">
+          <span class="co-summary-label">Item Price</span>
+          <span class="co-summary-value">৳{{ price|floatformat:0 }}</span>
+        </div>
+        {% if item.is_on_sale %}
+        <div class="co-summary-row">
+          <span class="co-summary-label">Original Price</span>
+          <span style="text-decoration: line-through; color: #94a3b8; font-size: 13px;">৳{{ item.original_price|floatformat:0 }}</span>
+        </div>
+        <div class="co-summary-row">
+          <span class="co-summary-label" style="color: #059669; font-weight: 600;"><i class="fa-solid fa-tag me-1"></i>You Save</span>
+          <span class="co-summary-value" style="color: #059669;">৳{{ item.original_price|floatformat:0|add:"-"|add:price|floatformat:0 }}</span>
+        </div>
+        {% endif %}
+        <div class="co-summary-row">
+          <span class="co-summary-label">Delivery Fee</span>
+          <span class="co-summary-value" style="color: #059669;">Free Delivery</span>
+        </div>
+      </div>
+
+      <!-- Total Row -->
+      <div class="co-total-row">
+        <span class="co-total-label">Total Amount</span>
+        <span class="co-total-value">৳{{ price|floatformat:0 }}</span>
+      </div>
+
+      <!-- Dynamic Selected Method Notification Box -->
+      <div id="selectedMethodDisplay" class="co-selected-preview">
+        <div style="font-size: 10px; font-weight: 700; color: var(--co-accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px;">Selected Payment</div>
+        <div id="selectedMethodText" style="font-size: 13px; font-weight: 700; color: var(--co-primary);"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+// GSAP smooth load entry animations
+gsap.to('#payCard', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', delay: 0.1 });
+gsap.to('#summaryCard', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', delay: 0.2 });
+
+const methodNames = {
+    'bkash': '📱 bKash Mobile Banking',
+    'nagad': '📱 Nagad Mobile Banking',
+    'rocket': '🚀 DBBL Rocket',
+    'sslcommerz': '💳 Debit/Credit Card (SSLCommerz)',
+    'cod': '🚚 Cash on Delivery',
+};
+
+function selectMethod(type, el) {
+    document.querySelectorAll('.co-method-card').forEach(m => m.classList.remove('selected'));
+    document.querySelectorAll('.co-saved-item').forEach(m => m.classList.remove('active'));
+    
+    el.classList.add('selected');
+    const radio = el.querySelector('input[type="radio"]');
+    if(radio) radio.checked = true;
+
+    document.getElementById('selectedMethod').value = type;
+    showSelectedPreview(type);
+}
+
+function selectSavedMethod(type, el) {
+    document.querySelectorAll('.co-saved-item').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.co-method-card').forEach(m => m.classList.remove('selected'));
+    
+    el.classList.add('active');
+    document.getElementById('selectedMethod').value = type;
+    showSelectedPreview(type);
+}
+
+function showSelectedPreview(type) {
+    const display = document.getElementById('selectedMethodDisplay');
+    const text = document.getElementById('selectedMethodText');
+    display.style.display = 'block';
+    text.innerHTML = methodNames[type] || type;
+}
+
+function validateForm() {
+    const method = document.getElementById('selectedMethod').value;
+    if (!method) {
+        alert('Please select a preferred payment method before proceeding.');
+        return false;
+    }
+    const btn = document.getElementById('payBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Secure Request...';
+    btn.style.opacity = '0.85';
+    btn.disabled = true;
+    return true;
+}
+</script>
+{% endblock %}
