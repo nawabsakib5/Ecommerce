@@ -1,142 +1,178 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Log In{% endblock %}
+{% block title %}Log In | CADO Fashion{% endblock %}
 
 {% block content %}
-<!-- Google Fonts & GSAP Animation CDN Packages -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 
 <style>
-    .bazaar-container {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .bazaar-title {
-        font-family: 'Playfair Display', serif;
-    }
-    .login-input-wrapper input {
-        width: 100%;
-        padding: 1rem 1.25rem;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        color: #0f172a;
-        transition: border-color 0.3s ease, background-color 0.3s ease;
-        outline: none;
-    }
-    .login-input-wrapper input:focus {
-        border-color: #e94560;
-        background-color: #ffffff;
-    }
+* { box-sizing: border-box; }
+.li { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 16px; }
+.li-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:24px; padding:40px; width:100%; max-width:420px; box-shadow:0 8px 32px rgba(0,0,0,.04); }
+@media(max-width:480px){ .li-card{ padding:24px; } }
+
+.li-header { text-align:center; margin-bottom:28px; }
+.li-icon { font-size:36px; margin-bottom:10px; }
+.li-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; margin-bottom:6px; }
+.li-sub { font-size:12px; font-weight:500; color:#aaa; }
+
+.li-label { display:block; font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+.li-input { width:100%; padding:12px 14px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:11px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#1a1a2e; outline:none; transition:border-color .2s, box-shadow .2s; }
+.li-input:focus { border-color:#9A7432; background:#fff; box-shadow:0 0 0 3px rgba(154,116,50,.08); }
+.li-input.error { border-color:#ef4444; }
+
+.li-group { margin-bottom:16px; }
+.li-pwd-wrap { position:relative; }
+.li-pwd-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:16px; color:#aaa; }
+
+/* Error box */
+.li-error-box { background:#fee2e2; border:1.5px solid #fecaca; border-radius:12px; padding:14px 16px; margin-bottom:16px; }
+.li-error-title { font-size:11px; font-weight:700; color:#c84b31; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.li-error-item { font-size:12px; font-weight:600; color:#7f1d1d; margin-bottom:3px; }
+
+/* Attempts warning */
+.li-attempts { background:#fff8e1; border:1.5px solid #fde68a; border-radius:12px; padding:12px 16px; margin-bottom:16px; font-size:12px; font-weight:600; color:#92400e; display:none; }
+
+.li-btn { width:100%; padding:14px; background:#1a1a2e; color:#fff; border:none; border-radius:12px; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; transition:background .2s, transform .2s; margin-top:8px; }
+.li-btn:hover { background:#9A7432; transform:translateY(-2px); }
+.li-btn:disabled { background:#aaa; cursor:not-allowed; transform:none; }
+
+.li-signup { text-align:center; margin-top:16px; font-size:12px; font-weight:500; color:#aaa; }
+.li-signup a { color:#9A7432; font-weight:700; text-decoration:none; }
+.li-signup a:hover { text-decoration:underline; }
+
+.li-secure { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:14px; font-size:10px; color:#bbb; font-weight:600; }
+
+.op0 { opacity:0; transform:translateY(14px); }
 </style>
 
-<div class="bazaar-container min-h-[80vh] flex items-center justify-center bg-[#f6f9fc] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-    <!-- Main Card Container (Class main-card added for GSAP) -->
-    <div class="main-card max-w-md w-full space-y-8 bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 opacity-0">
-        
-        <div class="text-center">
-            <span class="inline-block text-3xl mb-2">🔑</span>
-            <h2 class="bazaar-title text-4xl font-extrabold text-[#0f172a] tracking-tight">Welcome Back</h2>
-            <p class="mt-2 text-xs font-bold text-slate-400">Please enter your details to sign in</p>
-        </div>
+<div class="li">
+<div class="li-card op0" id="liCard">
 
-        <form class="mt-8 space-y-5" method="POST" action=".">
-            {% csrf_token %}
-            
-            <div class="space-y-5">
-                <!-- Username Input Wrapper (Class form-row added for GSAP) -->
-                <div class="form-row login-input-wrapper opacity-0">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Username</label>
-                    {{ form.username }}
-                </div>
+  <div class="li-header">
+    <div class="li-icon">🔑</div>
+    <div class="li-title">Welcome Back</div>
+    <div class="li-sub">Sign in to your CADO Fashion account</div>
+  </div>
 
-                <!-- Password Input Wrapper (Class form-row added for GSAP) -->
-                <div class="form-row login-input-wrapper opacity-0">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Password</label>
-                    {{ form.password }}
-                </div>
-            </div>
-
-            <!-- Error Alerts Panel (Class form-row added for GSAP) -->
-            {% if form.errors or form.non_field_errors %}
-            <div class="form-row rounded-xl bg-rose-50 p-4 border border-rose-100 text-xs text-rose-800 opacity-0">
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <p class="italic font-bold">• {{ error }}</p>
-                    {% endfor %}
-                {% endfor %}
-                <span class="font-bold">{{ form.non_field_errors }}</span>
-            </div>
-            {% endif %}
-
-            <!-- Submit CTA Button (Class form-row added for GSAP) -->
-            <div class="form-row pt-2 opacity-0">
-                <button type="submit" class="submit-btn w-full py-4 px-4 rounded-xl text-xs font-extrabold text-white bg-[#e94560] hover:bg-[#d23f57] transition-all duration-300 uppercase tracking-widest shadow-md shadow-[#e94560]/10 transform active:scale-95">
-                    Sign In
-                </button>
-            </div>
-
-            <!-- SignUp Redirection (Class form-row added for GSAP) -->
-            <div class="form-row text-center pt-2 opacity-0">
-                <p class="text-xs font-bold text-slate-400">
-                    New to Cotton Web? 
-                    <a href="{% url 'core:signup' %}" class="font-extrabold text-[#e94560] hover:text-[#d23f57] hover:underline">Create an account</a>
-                </p>
-            </div>
-        </form>
+  <!-- Error messages — user friendly -->
+  {% if form.errors or form.non_field_errors %}
+  <div class="li-error-box op0">
+    <div class="li-error-title">⚠️ Login Failed</div>
+    {% if form.non_field_errors %}
+      <div class="li-error-item">❌ Incorrect username or password. Please try again.</div>
+    {% endif %}
+    {% for field in form %}
+      {% for error in field.errors %}
+        <div class="li-error-item">❌ {{ error }}</div>
+      {% endfor %}
+    {% endfor %}
+    <div style="font-size:11px;color:#92400e;margin-top:8px;">
+      ⚡ After 5 failed attempts, your account will be temporarily locked for 1 hour.
     </div>
+  </div>
+  {% endif %}
+
+  <form method="POST" action="." id="loginForm">
+    {% csrf_token %}
+
+    <!-- Username -->
+    <div class="li-group op0">
+      <label class="li-label">Username</label>
+      <input class="li-input {% if form.username.errors %}error{% endif %}"
+             type="text" name="username" id="username"
+             placeholder="Enter your username"
+             value="{{ form.username.value|default:'' }}"
+             autocomplete="username" autofocus>
+    </div>
+
+    <!-- Password -->
+    <div class="li-group op0">
+      <label class="li-label">Password</label>
+      <div class="li-pwd-wrap">
+        <input class="li-input {% if form.password.errors %}error{% endif %}"
+               type="password" name="password" id="password"
+               placeholder="Enter your password"
+               autocomplete="current-password">
+        <button type="button" class="li-pwd-toggle" onclick="togglePwd()">👁️</button>
+      </div>
+    </div>
+
+    <!-- Attempts tracker -->
+    <div class="li-attempts" id="attemptsWarn">
+      ⚠️ <span id="attemptsText"></span>
+    </div>
+
+    <div class="op0" id="btnWrap">
+      <button type="submit" class="li-btn" id="loginBtn" onclick="trackAttempt()">
+        🔐 Sign In
+      </button>
+    </div>
+  </form>
+
+  <div class="li-signup op0">
+    New to CADO Fashion? <a href="{% url 'core:signup' %}">Create an account</a>
+  </div>
+
+  <div class="li-secure op0">
+    🔒 256-bit SSL Encrypted &nbsp;|&nbsp; 🛡️ Protected by AXES
+  </div>
+
+</div>
 </div>
 
 <script>
-    // 1. Main card fade-and-rise entrance animation
-    gsap.to(".main-card", {
-        y: 0,
-        opacity: 1,
-        duration: 0.85,
-        ease: "power3.out"
-    });
+gsap.to('#liCard', { opacity:1, y:0, duration:.7, ease:'power3.out' });
+gsap.utils.toArray('.op0').forEach((el,i) => {
+  if(el.id==='liCard') return;
+  gsap.to(el, { opacity:1, y:0, duration:.5, delay:.1+i*.06, ease:'power2.out' });
+});
 
-    // 2. Staggered reveal for form rows
-    gsap.to(".form-row", {
-        y: 0,
-        opacity: 1,
-        stagger: 0.08,
-        duration: 0.6,
-        ease: "power2.out",
-        delay: 0.2
-    });
+// Password toggle
+function togglePwd() {
+  const input = document.getElementById('password');
+  const btn = document.querySelector('.li-pwd-toggle');
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+}
 
-    // 3. Dynamic micro-physics hover / focus on input fields
-    const inputs = document.querySelectorAll('.login-input-wrapper input');
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => {
-            gsap.to(input, {
-                scale: 1.008,
-                boxShadow: "0 10px 25px -5px rgba(233, 69, 96, 0.08)",
-                duration: 0.3,
-                ease: "power2.out"
-            });
-        });
-        input.addEventListener('blur', () => {
-            gsap.to(input, {
-                scale: 1,
-                boxShadow: "none",
-                duration: 0.3,
-                ease: "power2.out"
-            });
-        });
-    });
+// Track failed attempts locally (just UI warning — real block is server-side AXES)
+let attempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+const MAX = 5;
 
-    // 4. Smooth scale hover effect for submit button
-    const submitBtn = document.querySelector('.submit-btn');
-    if (submitBtn) {
-        submitBtn.addEventListener('mouseenter', () => {
-            gsap.to(submitBtn, { y: -2, duration: 0.2, ease: "power1.out" });
-        });
-        submitBtn.addEventListener('mouseleave', () => {
-            gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
-        });
-    }
+// If there were errors on this page, increment
+{% if form.errors or form.non_field_errors %}
+attempts++;
+localStorage.setItem('loginAttempts', attempts);
+{% endif %}
+
+if(attempts > 0 && attempts < MAX) {
+  const warn = document.getElementById('attemptsWarn');
+  const text = document.getElementById('attemptsText');
+  warn.style.display = 'block';
+  text.textContent = `Warning: ${attempts} failed attempt${attempts>1?'s':''}. After ${MAX} attempts your account will be locked for 1 hour.`;
+}
+
+function trackAttempt() {
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = '⏳ Signing in...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '🔐 Sign In';
+    btn.disabled = false;
+  }, 3000);
+}
+
+// Clear attempts on successful login (page won't have form errors)
+{% if not form.errors and not form.non_field_errors %}
+localStorage.removeItem('loginAttempts');
+{% endif %}
+
+// Input focus animation
+document.querySelectorAll('.li-input').forEach(el => {
+  el.addEventListener('focus', () => gsap.to(el, {scale:1.005,duration:.2,ease:'power2.out'}));
+  el.addEventListener('blur', () => gsap.to(el, {scale:1,duration:.2,ease:'power2.out'}));
+});
 </script>
 {% endblock %}

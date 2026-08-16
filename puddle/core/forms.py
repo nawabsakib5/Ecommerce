@@ -5,12 +5,16 @@ from .models import CustomUserModel
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
-        'placeholder': 'Your Username',
-        'class': 'w-full py-4 px-6 rounded-xl'
+        'placeholder': 'Enter your username',
+        'class': 'li-input',
+        'id': 'username',
+        'autocomplete': 'username',
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
-        'placeholder': 'Your Password',
-        'class': 'w-full py-4 px-6 rounded-xl'
+        'placeholder': 'Enter your password',
+        'class': 'li-input',
+        'id': 'password',
+        'autocomplete': 'current-password',
     }))
 
 
