@@ -18,13 +18,15 @@
 .li-sub { font-size:12px; font-weight:500; color:#aaa; }
 
 .li-label { display:block; font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
-.li-input { width:100%; padding:12px 14px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:11px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#1a1a2e; outline:none; transition:border-color .2s, box-shadow .2s; }
-.li-input:focus { border-color:#9A7432; background:#fff; box-shadow:0 0 0 3px rgba(154,116,50,.08); }
-.li-input.error { border-color:#ef4444; }
+
+/* Django form widget custom styling overrides */
+.li-input, .li-card input[type="text"], .li-card input[type="password"], .li-card input[type="email"] { width:100%; padding:12px 14px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:11px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#1a1a2e; outline:none; transition:border-color .2s, box-shadow .2s; }
+.li-input:focus, .li-card input[type="text"]:focus, .li-card input[type="password"]:focus, .li-card input[type="email"]:focus { border-color:#9A7432; background:#fff; box-shadow:0 0 0 3px rgba(154,116,50,.08); }
+.li-input.error, .li-card input.error { border-color:#ef4444; }
 
 .li-group { margin-bottom:16px; }
 .li-pwd-wrap { position:relative; }
-.li-pwd-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:16px; color:#aaa; }
+.li-pwd-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:16px; color:#aaa; z-index:10; }
 
 /* Error box */
 .li-error-box { background:#fee2e2; border:1.5px solid #fecaca; border-radius:12px; padding:14px 16px; margin-bottom:16px; }
@@ -80,23 +82,22 @@
     <!-- Username -->
     <div class="li-group op0">
       <label class="li-label">Username</label>
-      <input class="li-input {% if form.username.errors %}error{% endif %}"
-             type="text" name="username" id="username"
-             placeholder="Enter your username"
-             value="{{ form.username.value|default:'' }}"
-             autocomplete="username" autofocus>
+      {{ form.username }}
+      {% if form.username.errors %}
+      <div style="font-size:11px;color:#ef4444;margin-top:5px;">{{ form.username.errors.0 }}</div>
+      {% endif %}
     </div>
 
     <!-- Password -->
     <div class="li-group op0">
       <label class="li-label">Password</label>
       <div class="li-pwd-wrap">
-        <input class="li-input {% if form.password.errors %}error{% endif %}"
-               type="password" name="password" id="password"
-               placeholder="Enter your password"
-               autocomplete="current-password">
+        {{ form.password }}
         <button type="button" class="li-pwd-toggle" onclick="togglePwd()">👁️</button>
       </div>
+      {% if form.password.errors %}
+      <div style="font-size:11px;color:#ef4444;margin-top:5px;">{{ form.password.errors.0 }}</div>
+      {% endif %}
     </div>
 
     <!-- Attempts tracker -->
@@ -105,7 +106,7 @@
     </div>
 
     <div class="op0" id="btnWrap">
-      <button type="submit" class="li-btn" id="loginBtn" onclick="trackAttempt()">
+      <button type="submit" class="li-btn" id="loginBtn">
         🔐 Sign In
       </button>
     </div>
@@ -123,6 +124,15 @@
 </div>
 
 <script>
+// Add custom class to Django rendered inputs dynamically for uniform look
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#loginForm input').forEach(input => {
+    if(!input.classList.contains('li-input')) {
+      input.classList.add('li-input');
+    }
+  });
+});
+
 gsap.to('#liCard', { opacity:1, y:0, duration:.7, ease:'power3.out' });
 gsap.utils.toArray('.op0').forEach((el,i) => {
   if(el.id==='liCard') return;
@@ -131,8 +141,9 @@ gsap.utils.toArray('.op0').forEach((el,i) => {
 
 // Password toggle
 function togglePwd() {
-  const input = document.getElementById('password');
+  const input = document.getElementById('id_password') || document.querySelector('input[name="password"]');
   const btn = document.querySelector('.li-pwd-toggle');
+  if (!input) return;
   input.type = input.type === 'password' ? 'text' : 'password';
   btn.textContent = input.type === 'password' ? '👁️' : '🙈';
 }
@@ -150,19 +161,20 @@ localStorage.setItem('loginAttempts', attempts);
 if(attempts > 0 && attempts < MAX) {
   const warn = document.getElementById('attemptsWarn');
   const text = document.getElementById('attemptsText');
-  warn.style.display = 'block';
-  text.textContent = `Warning: ${attempts} failed attempt${attempts>1?'s':''}. After ${MAX} attempts your account will be locked for 1 hour.`;
+  if (warn && text) {
+    warn.style.display = 'block';
+    text.textContent = `Warning: ${attempts} failed attempt${attempts>1?'s':''}. After ${MAX} attempts your account will be locked for 1 hour.`;
+  }
 }
 
-function trackAttempt() {
+// Form submit event handler
+document.getElementById('loginForm').addEventListener('submit', function() {
   const btn = document.getElementById('loginBtn');
+  if (!btn) return;
   btn.textContent = '⏳ Signing in...';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = '🔐 Sign In';
-    btn.disabled = false;
-  }, 3000);
-}
+  btn.style.background = '#aaa';
+  // Form submission continues naturally without being disabled
+});
 
 // Clear attempts on successful login (page won't have form errors)
 {% if not form.errors and not form.non_field_errors %}
