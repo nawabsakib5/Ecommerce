@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% block title %}Payment Successful | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing:border-box; }
+.ps { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 16px; }
+.ps-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:24px; padding:40px; width:100%; max-width:480px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.04); }
+.ps-icon { font-size:64px; margin-bottom:16px; animation:popIn .5s ease; }
+@keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+.ps-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; margin-bottom:8px; }
+.ps-sub { font-size:13px; color:#aaa; font-weight:500; margin-bottom:28px; }
+.ps-info { background:#f8f7f4; border-radius:14px; padding:20px; margin-bottom:24px; text-align:left; }
+.ps-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f0ede8; font-size:12px; }
+.ps-row:last-child { border-bottom:none; }
+.ps-label { color:#888; font-weight:600; }
+.ps-value { color:#1a1a2e; font-weight:700; }
+.ps-amount { font-family:'Syne',sans-serif; font-size:20px; color:#22c55e; }
+.ps-btn { display:block; width:100%; padding:14px; background:#1a1a2e; color:#fff; border:none; border-radius:12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; text-decoration:none; transition:background .2s; margin-bottom:10px; cursor:pointer; }
+.ps-btn:hover { background:#9A7432; }
+.ps-btn.outline { background:#fff; color:#1a1a2e; border:1.5px solid #e8e5e0; }
+.ps-btn.outline:hover { border-color:#9A7432; color:#9A7432; }
+.op0 { opacity:0; transform:translateY(16px); }
+</style>
+
+<div class="ps">
+<div class="ps-card op0" id="psCard">
+  <div class="ps-icon">🎉</div>
+  <div class="ps-title">Payment Successful!</div>
+  <div class="ps-sub">Your order has been confirmed. Thank you for shopping with CADO Fashion!</div>
+
+  <div class="ps-info">
+    <div class="ps-row">
+      <span class="ps-label">Order Number</span>
+      <span class="ps-value">#{{ order.order_number|stringformat:"s"|slice:":8"|upper }}</span>
+    </div>
+    <div class="ps-row">
+      <span class="ps-label">Item</span>
+      <span class="ps-value">{{ transaction.item.name }}</span>
+    </div>
+    <div class="ps-row">
+      <span class="ps-label">Payment Method</span>
+      <span class="ps-value">{{ transaction.get_payment_type_display }}</span>
+    </div>
+    <div class="ps-row">
+      <span class="ps-label">Amount Paid</span>
+      <span class="ps-value ps-amount">৳{{ transaction.amount|floatformat:0 }}</span>
+    </div>
+    <div class="ps-row">
+      <span class="ps-label">Status</span>
+      <span class="ps-value" style="color:#22c55e;">✅ Confirmed</span>
+    </div>
+    <div class="ps-row">
+      <span class="ps-label">Delivery To</span>
+      <span class="ps-value">{{ order.delivery_name }}</span>
+    </div>
+  </div>
+
+  <a href="{% url 'core:index' %}" class="ps-btn">🏠 Back to Home</a>
+  <a href="{% url 'item:items' %}" class="ps-btn outline">🛍️ Continue Shopping</a>
+</div>
+</div>
+
+<script>
+gsap.to('#psCard', { opacity:1, y:0, duration:.7, ease:'power3.out' });
+// Confetti effect
+setTimeout(() => {
+  for(let i=0; i<20; i++) {
+    const div = document.createElement('div');
+    div.style.cssText = `position:fixed;width:8px;height:8px;border-radius:50%;background:${['#9A7432','#E5C158','#22c55e','#3b82f6'][Math.floor(Math.random()*4)]};left:${Math.random()*100}vw;top:-10px;z-index:9999;pointer-events:none;`;
+    document.body.appendChild(div);
+    gsap.to(div, { y:'110vh', x:(Math.random()-0.5)*200, rotation:Math.random()*360, duration:2+Math.random()*2, ease:'power1.in', onComplete:()=>div.remove() });
+  }
+}, 300);
+</script>
+{% endblock %}

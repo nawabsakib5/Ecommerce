@@ -1,0 +1,95 @@
+{% extends 'core/base.html' %}
+{% block title %}Payment Failed | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing:border-box; }
+.pf-wrapper { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+
+.pf-card { background:#ffffff; border:1.5px solid #e8e5e0; border-radius:28px; padding:48px 36px; width:100%; max-width:500px; text-align:center; box-shadow:0 20px 45px rgba(26,26,46,0.05); position:relative; overflow:hidden; }
+
+/* Top decorative warning accent */
+.pf-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #9A7432, #ef4444); }
+
+.pf-icon-box { width:80px; height:80px; background:rgba(239, 68, 68, 0.08); border:2px solid rgba(239, 68, 68, 0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; font-size:36px; animation:popIn .6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn { 0%{transform:scale(0); opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1); opacity:1;} }
+
+.pf-title { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#1a1a2e; margin-bottom:8px; letter-spacing:-0.02em; }
+.pf-sub { font-size:13px; color:#777; font-weight:500; margin-bottom:32px; line-height:1.5; }
+
+/* Error Receipt / Info Box */
+.pf-info { background:#fef2f2; border:1px solid #fecaca; border-radius:18px; padding:22px; margin-bottom:28px; text-align:left; }
+.pf-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #fca5a5; font-size:13px; }
+.pf-row:last-child { border-bottom:none; padding-bottom:0; }
+.pf-row:first-child { padding-top:0; }
+.pf-label { color:#991b1b; font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:0.04em; opacity:0.8; }
+.pf-value { color:#7f1d1d; font-weight:600; text-align:right; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.pf-amount { font-family:'Syne',sans-serif; font-size:22px; color:#ef4444; font-weight:700; }
+.pf-status-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(239, 68, 68, 0.1); color:#dc2626; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+
+/* Buttons */
+.pf-actions { display:flex; flex-direction:column; gap:12px; }
+.pf-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:15px; background:#1a1a2e; color:#fff; border:none; border-radius:14px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; text-decoration:none; transition:all .2s ease; cursor:pointer; box-shadow:0 4px 12px rgba(26,26,46,0.15); }
+.pf-btn:hover { background:#9A7432; transform:translateY(-2px); box-shadow:0 6px 16px rgba(154,116,50,0.25); color:#fff; }
+
+.pf-btn.outline { background:#fff; color:#1a1a2e; border:1.5px solid #e8e5e0; box-shadow:none; }
+.pf-btn.outline:hover { border-color:#9A7432; color:#9A7432; background:#fff; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.03); }
+
+.op0 { opacity:0; transform:translateY(20px); }
+
+@media(max-width:480px) {
+  .pf-card { padding:32px 20px; }
+  .pf-title { font-size:24px; }
+}
+</style>
+
+<div class="pf-wrapper">
+<div class="pf-card op0" id="pfCard">
+  <div class="pf-icon-box">❌</div>
+  <div class="pf-title">Payment Failed</div>
+  <div class="pf-sub">Something went wrong while processing your payment.<br>Don't worry — no money has been deducted from your account.</div>
+
+  <div class="pf-info">
+    <div class="pf-row">
+      <span class="pf-label">Transaction ID</span>
+      <span class="pf-value" style="font-family:monospace; font-weight:700; color:#b91c1c;">{{ transaction.transaction_id|stringformat:"s"|slice:":8"|upper }}</span>
+    </div>
+    <div class="pf-row">
+      <span class="pf-label">Item / Product</span>
+      <span class="pf-value">{{ transaction.item.name }}</span>
+    </div>
+    <div class="pf-row">
+      <span class="pf-label">Amount Attempted</span>
+      <span class="pf-value pf-amount">৳{{ transaction.amount|floatformat:0 }}</span>
+    </div>
+    <div class="pf-row">
+      <span class="pf-label">Status</span>
+      <span class="pf-value"><span class="pf-status-badge">❌ Failed</span></span>
+    </div>
+  </div>
+
+  <div class="pf-actions">
+    <a href="{% url 'payment:checkout' transaction.item.id %}" class="pf-btn">🔄 Try Again</a>
+    <a href="{% url 'core:index' %}" class="pf-btn outline">🏠 Back to Home</a>
+  </div>
+</div>
+</div>
+
+<script>
+// GSAP smooth entrance animation with subtle attention shake
+gsap.to('#pfCard', { 
+  opacity: 1, 
+  y: 0, 
+  duration: .8, 
+  ease: 'power3.out',
+  onComplete: () => {
+    // Subtle shake effect to indicate failed state attention
+    gsap.to('#pfCard', { x: -6, duration: 0.08, repeat: 3, yoyo: true, ease: 'power1.inOut' });
+  }
+});
+</script>
+{% endblock %}
