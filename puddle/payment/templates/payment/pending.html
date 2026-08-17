@@ -1,0 +1,107 @@
+{% extends 'core/base.html' %}
+{% block title %}Payment Pending | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing:border-box; }
+.pp-wrapper { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+
+.pp-card { background:#ffffff; border:1.5px solid #e8e5e0; border-radius:28px; padding:48px 36px; width:100%; max-width:500px; text-align:center; box-shadow:0 20px 45px rgba(26,26,46,0.05); position:relative; overflow:hidden; }
+
+/* Top decorative pending accent */
+.pp-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #9A7432, #f59e0b); }
+
+.pp-icon-box { width:80px; height:80px; background:rgba(245, 158, 11, 0.1); border:2px solid rgba(245, 158, 11, 0.25); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; font-size:36px; animation:popIn .6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn { 0%{transform:scale(0); opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1); opacity:1;} }
+
+.pp-title { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#1a1a2e; margin-bottom:8px; letter-spacing:-0.02em; }
+.pp-sub { font-size:13px; color:#777; font-weight:500; margin-bottom:28px; line-height:1.5; }
+
+/* Transaction Info Box */
+.pp-info { background:#fffbeb; border:1px solid #fde68a; border-radius:18px; padding:22px; margin-bottom:24px; text-align:left; }
+.pp-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #fcd34d; font-size:13px; }
+.pp-row:last-child { border-bottom:none; padding-bottom:0; }
+.pp-row:first-child { padding-top:0; }
+.pp-label { color:#92400e; font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:0.04em; opacity:0.85; }
+.pp-value { color:#78350f; font-weight:600; text-align:right; max-width:60%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.pp-amount { font-family:'Syne',sans-serif; font-size:22px; color:#d97706; font-weight:700; }
+.pp-status-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(245, 158, 11, 0.15); color:#b45309; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+
+/* Steps Section */
+.pp-steps { background:#faf9f6; border:1px solid #eeebe4; border-radius:18px; padding:20px; margin-bottom:28px; text-align:left; }
+.pp-steps-title { font-size:11px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+.pp-step { display:flex; align-items:center; gap:12px; padding:8px 0; font-size:12px; font-weight:600; color:#555; border-bottom:1px solid #f0ede8; }
+.pp-step:last-child { border-bottom:none; }
+.pp-step-icon { width:22px; height:22px; border-radius:50%; background:#1a1a2e; color:#E5C158; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
+
+/* Button */
+.pp-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:15px; background:#1a1a2e; color:#fff; border:none; border-radius:14px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; text-decoration:none; transition:all .2s ease; cursor:pointer; box-shadow:0 4px 12px rgba(26,26,46,0.15); }
+.pp-btn:hover { background:#9A7432; transform:translateY(-2px); box-shadow:0 6px 16px rgba(154,116,50,0.25); color:#fff; }
+
+.op0 { opacity:0; transform:translateY(20px); }
+
+@media(max-width:480px) {
+  .pp-card { padding:32px 20px; }
+  .pp-title { font-size:24px; }
+}
+</style>
+
+<div class="pp-wrapper">
+<div class="pp-card op0" id="ppCard">
+  <div class="pp-icon-box">⏳</div>
+  <div class="pp-title">Payment Pending</div>
+  <div class="pp-sub">Your payment is currently being verified by the gateway.<br>We will automatically confirm your order within 1 hour.</div>
+
+  <div class="pp-info">
+    <div class="pp-row">
+      <span class="pp-label">Transaction ID</span>
+      <span class="pp-value" style="font-family:monospace; font-weight:700; color:#b45309;">#{{ transaction.transaction_id|stringformat:"s"|slice:":8"|upper }}</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-label">Item / Product</span>
+      <span class="pp-value">{{ transaction.item.name }}</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-label">Amount</span>
+      <span class="pp-value pp-amount">৳{{ transaction.amount|floatformat:0 }}</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-label">Payment Gateway</span>
+      <span class="pp-value">{{ transaction.get_payment_type_display }}</span>
+    </div>
+    <div class="pp-row">
+      <span class="pp-label">Status</span>
+      <span class="pp-value"><span class="pp-status-badge">⏳ Verifying</span></span>
+    </div>
+  </div>
+
+  <div class="pp-steps">
+    <div class="pp-steps-title">📋 What happens next?</div>
+    <div class="pp-step"><div class="pp-step-icon">1</div> We verify your payment status with the gateway</div>
+    <div class="pp-step"><div class="pp-step-icon">2</div> You'll receive a confirmation notice once approved</div>
+    <div class="pp-step"><div class="pp-step-icon">3</div> Seller gets notified immediately to prepare shipping</div>
+    <div class="pp-step"><div class="pp-step-icon">4</div> Track your live order status from your dashboard</div>
+  </div>
+
+  <a href="{% url 'core:index' %}" class="pp-btn">🏠 Back to Home</a>
+</div>
+</div>
+
+<script>
+// GSAP smooth entrance animation with a gentle periodic icon rock
+gsap.to('#ppCard', { opacity:1, y:0, duration:.8, ease:'power3.out' });
+
+// Gentle rocking motion for the pending clock icon
+gsap.to('.pp-icon-box', {
+  rotate: 8,
+  duration: 1.5,
+  repeat: -1,
+  yoyo: true,
+  ease: 'sine.inOut'
+});
+</script>
+{% endblock %}
