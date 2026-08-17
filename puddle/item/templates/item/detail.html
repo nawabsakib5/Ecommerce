@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}{{ item.name }} | Cotton Web{% endblock %}
+{% block title %}{{ item.name }} | CADO Fashion{% endblock %}
 
 {% block content %}
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -330,7 +330,8 @@
           </div>
         {% elif request.user.is_authenticated and request.user.user_type == 'Buyer' %}
           {% if not item.is_sold %}
-          <a href="{% url 'cart:add' item.id %}" class="dp-btn-primary red">🛒 Add to Cart</a>
+          <a href="{% url 'payment:checkout' item.id %}" class="dp-btn-primary red">💳 Buy Now</a>
+          <a href="{% url 'cart:add' item.id %}" class="dp-btn-primary" style="background:#1a1a2e;">🛒 Add to Cart</a>
           {% else %}
           <div class="dp-sold-overlay">❌ This item has been sold</div>
           {% endif %}
