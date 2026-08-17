@@ -1,0 +1,159 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ transaction.get_payment_type_display }} Payment | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing:border-box; }
+.mb-wrapper { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; padding:40px 16px; display:flex; align-items:center; justify-content:center; }
+.mb-wrap { width:100%; max-width:520px; margin:0 auto; }
+
+.mb-card { background:#ffffff; border:1.5px solid #e8e5e0; border-radius:28px; padding:44px 36px; box-shadow:0 20px 45px rgba(26,26,46,0.05); position:relative; overflow:hidden; }
+
+/* Top decorative dynamic accent border */
+.mb-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #9A7432, #E5C158); }
+
+.mb-header { text-align:center; margin-bottom:32px; }
+.mb-icon-box { width:72px; height:72px; background:rgba(154, 116, 50, 0.08); border:2px solid rgba(154, 116, 50, 0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; font-size:32px; }
+.mb-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; margin-bottom:6px; letter-spacing:-0.02em; }
+.mb-sub { font-size:13px; color:#777; font-weight:500; line-height:1.5; }
+
+/* Send Money Gradient Box */
+.mb-send-box { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:20px; padding:28px 24px; margin-bottom:28px; text-align:center; box-shadow:0 10px 25px rgba(26,26,46,0.15); border:1px solid rgba(229,193,88,0.2); }
+.mb-send-label { font-size:10px; font-weight:700; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+.mb-send-amount { font-family:'Syne',sans-serif; font-size:38px; font-weight:800; color:#E5C158; margin-bottom:6px; letter-spacing:-0.02em; }
+.mb-send-to { font-size:12px; color:rgba(255,255,255,0.7); margin-bottom:12px; font-weight:500; }
+.mb-merchant { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#fff; letter-spacing:2.5px; margin-bottom:14px; }
+.mb-copy-btn { background:rgba(229,193,88,0.15); border:1px solid rgba(229,193,88,0.4); color:#E5C158; border-radius:10px; padding:8px 18px; font-size:11px; font-weight:700; cursor:pointer; transition:all .2s ease; display:inline-flex; align-items:center; gap:6px; text-transform:uppercase; letter-spacing:0.05em; }
+.mb-copy-btn:hover { background:rgba(229,193,88,0.25); transform:translateY(-1px); }
+
+/* Steps Section */
+.mb-steps { background:#faf9f6; border:1px solid #eeebe4; border-radius:18px; padding:22px; margin-bottom:28px; }
+.mb-steps-title { font-size:11px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.07em; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+.mb-step { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+.mb-step:last-child { margin-bottom:0; }
+.mb-step-num { width:24px; height:24px; border-radius:50%; background:#1a1a2e; color:#E5C158; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.mb-step-text { font-size:12px; font-weight:600; color:#555; line-height:1.5; }
+.mb-step-text b { color:#1a1a2e; }
+
+/* Form Controls */
+.mb-group { margin-bottom:18px; }
+.mb-label { font-size:11px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; display:block; }
+.mb-input { width:100%; padding:14px 16px; background:#faf9f6; border:1.5px solid #e8e5e0; border-radius:12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#1a1a2e; outline:none; transition:all .2s ease; }
+.mb-input:focus { border-color:#9A7432; background:#fff; box-shadow:0 0 0 3px rgba(154,116,50,0.08); }
+
+.mb-btn { width:100%; padding:15px; background:#1a1a2e; color:#fff; border:none; border-radius:14px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:all .2s ease; box-shadow:0 4px 12px rgba(26,26,46,0.15); margin-top:4px; }
+.mb-btn:hover { background:#9A7432; transform:translateY(-2px); box-shadow:0 6px 16px rgba(154,116,50,0.25); }
+
+.op0 { opacity:0; transform:translateY(20px); }
+
+@media(max-width:480px) {
+  .mb-card { padding:32px 20px; }
+  .mb-send-amount { font-size:32px; }
+  .mb-merchant { font-size:22px; }
+}
+</style>
+
+<div class="mb-wrapper">
+<div class="mb-wrap">
+<div class="mb-card op0" id="mbCard">
+
+  <div class="mb-header">
+    <div class="mb-icon-box">
+      {% if transaction.payment_type == 'bkash' %}📱
+      {% elif transaction.payment_type == 'nagad' %}📱
+      {% elif transaction.payment_type == 'rocket' %}🚀
+      {% else %}💳
+      {% endif %}
+    </div>
+    <div class="mb-title">{{ transaction.get_payment_type_display }} Payment</div>
+    <div class="mb-sub">Complete your transaction securely by sending money to our verified merchant number.</div>
+  </div>
+
+  <!-- Send money box -->
+  <div class="mb-send-box">
+    <div class="mb-send-label">Send Exactly</div>
+    <div class="mb-send-amount">৳{{ transaction.amount|floatformat:0 }}</div>
+    <div class="mb-send-to">to this {{ transaction.get_payment_type_display }} merchant number:</div>
+    <div class="mb-merchant" id="merchantNum">{{ merchant_number }}</div>
+    <button type="button" class="mb-copy-btn" onclick="copyNumber()">📋 Copy Number</button>
+  </div>
+
+  <!-- Steps -->
+  <div class="mb-steps">
+    <div class="mb-steps-title">📋 How to complete payment:</div>
+    <div class="mb-step">
+      <div class="mb-step-num">1</div>
+      <div class="mb-step-text">Open your <b>{{ transaction.get_payment_type_display }}</b> app or dial code</div>
+    </div>
+    <div class="mb-step">
+      <div class="mb-step-num">2</div>
+      <div class="mb-step-text">Select <b>Send Money</b> and enter: <b>{{ merchant_number }}</b></div>
+    </div>
+    <div class="mb-step">
+      <div class="mb-step-num">3</div>
+      <div class="mb-step-text">Input exact amount: <b>৳{{ transaction.amount|floatformat:0 }}</b> and confirm with your PIN</div>
+    </div>
+    <div class="mb-step">
+      <div class="mb-step-num">4</div>
+      <div class="mb-step-text">Copy the <b>Transaction ID (TrxID)</b> from your SMS confirmation</div>
+    </div>
+    <div class="mb-step">
+      <div class="mb-step-num">5</div>
+      <div class="mb-step-text">Provide your sender number & TrxID below to verify</div>
+    </div>
+  </div>
+
+  <!-- Confirmation form -->
+  <form method="post" action="." id="paymentForm">
+    {% csrf_token %}
+    
+    <div class="mb-group">
+      <label class="mb-label">Your {{ transaction.get_payment_type_display }} Mobile Number</label>
+      <input class="mb-input" type="tel" name="sender_number" placeholder="01XXXXXXXXX" required>
+    </div>
+
+    <div class="mb-group">
+      <label class="mb-label">Transaction / Reference ID (TrxID)</label>
+      <input class="mb-input" type="text" name="reference_id" placeholder="e.g. 8N7A2K1B3X" required style="text-transform:uppercase;">
+    </div>
+
+    <button type="submit" class="mb-btn" id="submitBtn">✅ I've Sent the Payment</button>
+  </form>
+
+</div>
+</div>
+</div>
+
+<script>
+// GSAP smooth card entrance animation
+gsap.to('#mbCard', { opacity:1, y:0, duration:.8, ease:'power3.out' });
+
+// Copy merchant number clipboard function with button feedback
+function copyNumber() {
+  const num = document.getElementById('merchantNum').textContent.trim();
+  navigator.clipboard.writeText(num).then(() => {
+    const btn = document.querySelector('.mb-copy-btn');
+    btn.innerHTML = '✅ Copied to Clipboard!';
+    btn.style.background = 'rgba(34, 197, 94, 0.25)';
+    btn.style.borderColor = '#22c55e';
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copy Number';
+      btn.style.background = 'rgba(229,193,88,0.15)';
+      btn.style.borderColor = 'rgba(229,193,88,0.4)';
+    }, 2500);
+  });
+}
+
+// Button loading state on submit
+document.getElementById('paymentForm').addEventListener('submit', function() {
+  const btn = document.getElementById('submitBtn');
+  if (btn) {
+    btn.textContent = '⏳ Verifying Transaction...';
+    btn.style.background = '#aaa';
+  }
+});
+</script>
+{% endblock %}
