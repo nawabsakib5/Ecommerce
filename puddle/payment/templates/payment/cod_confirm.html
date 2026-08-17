@@ -7,59 +7,96 @@
 
 <style>
 * { box-sizing:border-box; }
-.cod { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px 16px; }
-.cod-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:24px; padding:40px; width:100%; max-width:460px; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,.04); }
-.cod-icon { font-size:56px; margin-bottom:16px; }
-.cod-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; color:#1a1a2e; margin-bottom:8px; }
-.cod-sub { font-size:13px; color:#aaa; font-weight:500; margin-bottom:28px; line-height:1.6; }
-.cod-info { background:#f8f7f4; border-radius:14px; padding:20px; margin-bottom:24px; text-align:left; }
-.cod-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0ede8; font-size:12px; }
-.cod-row:last-child { border-bottom:none; }
-.cod-label { color:#888; font-weight:600; }
-.cod-value { color:#1a1a2e; font-weight:700; }
-.cod-note { background:#fff8e1; border:1.5px solid #fde68a; border-radius:12px; padding:14px; margin-bottom:24px; font-size:12px; color:#92400e; font-weight:600; text-align:left; line-height:1.6; }
-.cod-btn { display:block; width:100%; padding:14px; background:#1a1a2e; color:#fff; border:none; border-radius:12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:background .2s; margin-bottom:10px; }
-.cod-btn:hover { background:#22c55e; }
-.cod-cancel { display:block; width:100%; padding:12px; background:#fff; color:#aaa; border:1.5px solid #e8e5e0; border-radius:12px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; text-decoration:none; transition:all .2s; }
-.cod-cancel:hover { border-color:#c84b31; color:#c84b31; }
-.op0 { opacity:0; transform:translateY(16px); }
+.cod-wrapper { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 16px; }
+
+.cod-card { background:#ffffff; border:1.5px solid #e8e5e0; border-radius:28px; padding:48px 36px; width:100%; max-width:500px; text-align:center; box-shadow:0 20px 45px rgba(26,26,46,0.05); position:relative; overflow:hidden; }
+
+/* Top decorative luxury & green accent border */
+.cod-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #9A7432, #22c55e); }
+
+.cod-icon-box { width:80px; height:80px; background:rgba(34, 197, 94, 0.08); border:2px solid rgba(34, 197, 94, 0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto; font-size:36px; animation:popIn .6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn { 0%{transform:scale(0); opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1); opacity:1;} }
+
+.cod-title { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#1a1a2e; margin-bottom:8px; letter-spacing:-0.02em; }
+.cod-sub { font-size:13px; color:#777; font-weight:500; margin-bottom:28px; line-height:1.5; }
+
+/* Order Summary Box */
+.cod-info { background:#faf9f6; border:1px solid #eeebe4; border-radius:18px; padding:22px; margin-bottom:24px; text-align:left; }
+.cod-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #e8e5e0; font-size:13px; }
+.cod-row:last-child { border-bottom:none; padding-bottom:0; }
+.cod-row:first-child { padding-top:0; }
+.cod-label { color:#888; font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:0.04em; }
+.cod-value { color:#1a1a2e; font-weight:600; text-align:right; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.cod-amount { font-family:'Syne',sans-serif; font-size:22px; color:#9A7432; font-weight:700; }
+
+/* Notice Note Box */
+.cod-note { background:#fffbeb; border:1px solid #fde68a; border-radius:16px; padding:18px; margin-bottom:28px; font-size:12px; color:#92400e; font-weight:600; text-align:left; line-height:1.6; }
+.cod-note b { color:#78350f; }
+
+/* Buttons */
+.cod-actions { display:flex; flex-direction:column; gap:12px; }
+.cod-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:15px; background:#1a1a2e; color:#fff; border:none; border-radius:14px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; cursor:pointer; transition:all .2s ease; box-shadow:0 4px 12px rgba(26,26,46,0.15); }
+.cod-btn:hover { background:#22c55e; transform:translateY(-2px); box-shadow:0 6px 16px rgba(34,197,94,0.25); color:#fff; }
+
+.cod-cancel { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:14px; background:#fff; color:#777; border:1.5px solid #e8e5e0; border-radius:14px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; text-decoration:none; transition:all .2s ease; }
+.cod-cancel:hover { border-color:#ef4444; color:#ef4444; background:#fff; transform:translateY(-1px); }
+
+.op0 { opacity:0; transform:translateY(20px); }
+
+@media(max-width:480px) {
+  .cod-card { padding:32px 20px; }
+  .cod-title { font-size:24px; }
+}
 </style>
 
-<div class="cod">
+<div class="cod-wrapper">
 <div class="cod-card op0" id="codCard">
-  <div class="cod-icon">🚚</div>
+  <div class="cod-icon-box">🚚</div>
   <div class="cod-title">Cash on Delivery</div>
-  <div class="cod-sub">Pay when your item arrives at your doorstep. Safe and easy!</div>
+  <div class="cod-sub">Pay securely with cash when your package arrives at your doorstep. No advance payment required!</div>
 
   <div class="cod-info">
     <div class="cod-row">
-      <span class="cod-label">Item</span>
+      <span class="cod-label">Item / Product</span>
       <span class="cod-value">{{ transaction.item.name }}</span>
     </div>
     <div class="cod-row">
       <span class="cod-label">Amount to Pay</span>
-      <span class="cod-value" style="color:#9A7432;font-family:'Syne',sans-serif;font-size:18px;">৳{{ transaction.amount|floatformat:0 }}</span>
+      <span class="cod-value cod-amount">৳{{ transaction.amount|floatformat:0 }}</span>
     </div>
     <div class="cod-row">
       <span class="cod-label">Delivery Address</span>
-      <span class="cod-value">{{ transaction.order.delivery_address|truncatechars:40 }}</span>
+      <span class="cod-value">{{ transaction.order.delivery_address }}</span>
     </div>
   </div>
 
   <div class="cod-note">
-    ⚠️ Please have exact change ready when the delivery arrives.<br>
-    🕐 Expected delivery: 2-5 business days.
+    ⚠️ <b>Important Note:</b> Please keep exact cash change ready when the delivery rider arrives.<br>
+    🕐 Estimated door delivery time: <strong>2–5 business days</strong>.
   </div>
 
-  <form method="post" action=".">
+  <form method="post" action="." id="codForm">
     {% csrf_token %}
-    <button type="submit" class="cod-btn">✅ Confirm Order</button>
+    <div class="cod-actions">
+      <button type="submit" class="cod-btn" id="confirmBtn">✅ Confirm Order</button>
+      <a href="{% url 'item:detail' transaction.item.id %}" class="cod-cancel">❌ Cancel Order</a>
+    </div>
   </form>
-  <a href="{% url 'item:detail' transaction.item.id %}" class="cod-cancel">Cancel</a>
 </div>
 </div>
 
 <script>
-gsap.to('#codCard', { opacity:1, y:0, duration:.7, ease:'power3.out' });
+// GSAP smooth entrance animation
+gsap.to('#codCard', { opacity:1, y:0, duration:.8, ease:'power3.out' });
+
+// Button loading state on submit
+document.getElementById('codForm').addEventListener('submit', function() {
+  const btn = document.getElementById('confirmBtn');
+  if (btn) {
+    btn.textContent = '⏳ Processing Order...';
+    btn.style.background = '#aaa';
+  }
+});
 </script>
 {% endblock %}
