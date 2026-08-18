@@ -56,47 +56,87 @@ def initiate_payment(request, item_pk):
     item = get_object_or_404(Item, pk=item_pk)
 
     if item.user == request.user:
-        return JsonResponse({'error': 'Cannot buy your own item'}, status=400)
+        messages.error(request, "You cannot buy your own item.")
+        return redirect('payment:checkout', item_pk=item_pk)
 
     if item.is_sold or item.status != 'active':
-        return JsonResponse({'error': 'Item not available'}, status=400)
+        messages.error(request, "This item is no longer available.")
+        return redirect('item:detail', pk=item_pk)
 
     payment_type = request.POST.get('payment_type')
     delivery_name = request.POST.get('delivery_name', '').strip()
     delivery_phone = request.POST.get('delivery_phone', '').strip()
     delivery_address = request.POST.get('delivery_address', '').strip()
+    notes = request.POST.get('notes', '').strip()
+    delivery_zone = request.POST.get('delivery_zone', 'dhaka')
+    free_delivery = request.POST.get('free_delivery', '0') == '1'
+
+    # Quantity validate
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity < 1:
+            quantity = 1
+        if quantity > item.stock_count:
+            messages.error(request, f"Only {item.stock_count} items available.")
+            return redirect('payment:checkout', item_pk=item_pk)
+    except (ValueError, TypeError):
+        quantity = 1
 
     if not all([payment_type, delivery_name, delivery_phone, delivery_address]):
         messages.error(request, "Please fill all delivery information.")
         return redirect('payment:checkout', item_pk=item_pk)
 
-    price = item.sale_price if item.is_on_sale else item.original_price
+    # Free delivery — শুধু seller বা admin দিতে পারবে
+    if free_delivery and not (request.user.user_type == 'Seller' or request.user.is_staff):
+        free_delivery = False
 
-    # Transaction তৈরি করো
+    # Delivery charge — Steadfast
+    if free_delivery:
+        delivery_charge = 0
+    elif delivery_zone == 'outside':
+        delivery_charge = 150
+    else:
+        delivery_charge = 80
+
+    # Price calculation
+    unit_price = item.sale_price if item.is_on_sale else item.original_price
+    subtotal = unit_price * quantity
+    total_amount = subtotal + delivery_charge
+
+    # Transaction তৈরি
     transaction = Transaction.objects.create(
         buyer=request.user,
         seller=item.user,
         item=item,
         payment_type=payment_type,
-        amount=price,
+        amount=total_amount,
         currency='BDT',
         status='pending',
         ip_address=get_client_ip(request),
         user_agent=request.META.get('HTTP_USER_AGENT', '')[:500],
+        gateway_response={
+            'delivery_zone': delivery_zone,
+            'delivery_charge': delivery_charge,
+            'free_delivery': free_delivery,
+            'quantity': quantity,
+            'unit_price': float(unit_price),
+            'subtotal': float(subtotal),
+        }
     )
 
-    # Order তৈরি করো
+    # Order তৈরি
     order = Order.objects.create(
         buyer=request.user,
         item=item,
         transaction=transaction,
-        quantity=1,
-        unit_price=price,
-        total_amount=price,
+        quantity=quantity,
+        unit_price=unit_price,
+        total_amount=total_amount,
         delivery_name=delivery_name,
         delivery_phone=delivery_phone,
         delivery_address=delivery_address,
         status='pending_payment',
+        notes=f"Zone: {'Inside Dhaka' if delivery_zone == 'dhaka' else 'Outside Dhaka'} | Delivery: ৳{delivery_charge} | {notes}".strip(' |'),
     )
 
     # Payment type অনুযায়ী redirect

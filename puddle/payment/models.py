@@ -134,10 +134,18 @@ class Order(models.Model):
         ('pending_payment', 'Pending Payment'),
         ('payment_confirmed', 'Payment Confirmed'),
         ('processing', 'Processing'),
-        ('shipped', 'Shipped'),
+        ('picked_up', 'Picked Up by Courier'),
+        ('in_transit', 'In Transit'),
+        ('out_for_delivery', 'Out for Delivery'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
         ('refunded', 'Refunded'),
+        ('returned', 'Returned'),
+    ]
+
+    ZONE_CHOICES = [
+        ('dhaka', 'Inside Dhaka'),
+        ('outside', 'Outside Dhaka'),
     ]
 
     order_number = models.UUIDField(
@@ -166,11 +174,24 @@ class Order(models.Model):
 
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_charge = models.DecimalField(max_digits=8, decimal_places=2, default=80)
+    free_delivery = models.BooleanField(default=False)
+    delivery_zone = models.CharField(max_length=20, choices=ZONE_CHOICES, default='dhaka')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     delivery_address = models.TextField()
     delivery_phone = models.CharField(max_length=20)
     delivery_name = models.CharField(max_length=100)
+    delivery_city = models.CharField(max_length=100, blank=True, null=True)
+
+    # Steadfast tracking
+    steadfast_consignment_id = models.CharField(max_length=100, blank=True, null=True)
+    steadfast_tracking_code = models.CharField(max_length=100, blank=True, null=True, db_index=True)
+    tracking_url = models.URLField(blank=True, null=True)
+
+    # Tracking history (JSON)
+    tracking_history = models.JSONField(default=list, blank=True)
 
     status = models.CharField(
         max_length=20,
@@ -182,9 +203,28 @@ class Order(models.Model):
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    delivered_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ('-created_at',)
 
     def __str__(self):
         return f"Order #{str(self.order_number)[:8]} — {self.item.name}"
+
+    def get_delivery_charge_display(self):
+        if self.free_delivery:
+            return "Free (Seller Sponsored)"
+        return f"৳{self.delivery_charge}"
+
+    def add_tracking_event(self, status, message, location=''):
+        """Tracking history তে নতুন event যোগ করো"""
+        from django.utils import timezone
+        if not isinstance(self.tracking_history, list):
+            self.tracking_history = []
+        self.tracking_history.append({
+            'status': status,
+            'message': message,
+            'location': location,
+            'timestamp': timezone.now().isoformat(),
+        })
+        self.save()
