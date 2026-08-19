@@ -8,6 +8,8 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.conf import settings
+import requests as http_requests
+
 
 from item.models import Item
 from .models import PaymentMethod, Transaction, Order
@@ -519,3 +521,94 @@ def delete_payment_method(request, pk):
     method.save()
     messages.success(request, "Payment method removed.")
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+
+
+# ── Steadfast Integration ──
+def create_steadfast_order(order):
+    """Steadfast এ consignment তৈরি করো"""
+    try:
+        response = http_requests.post(
+            'https://portal.steadfast.com.bd/api/v1/create_order',
+            headers={
+                'Api-Key': settings.STEADFAST_API_KEY,
+                'Secret-Key': settings.STEADFAST_SECRET_KEY,
+                'Content-Type': 'application/json',
+            },
+            json={
+                'invoice': str(order.order_number)[:8].upper(),
+                'recipient_name': order.delivery_name,
+                'recipient_phone': order.delivery_phone,
+                'recipient_address': order.delivery_address,
+                'cod_amount': float(order.total_amount) if order.transaction.payment_type == 'cod' else 0,
+                'note': order.notes or '',
+            },
+            timeout=10
+        )
+        data = response.json()
+        if data.get('status') == 200:
+            order.steadfast_consignment_id = data['consignment']['consignment_id']
+            order.steadfast_tracking_code = data['consignment']['tracking_code']
+            order.tracking_url = f"https://steadfast.com.bd/t/{data['consignment']['tracking_code']}"
+            order.add_tracking_event('processing', 'Order submitted to Steadfast Courier')
+            order.save()
+            return True
+    except Exception as e:
+        print(f"Steadfast error: {e}")
+    return False
+
+
+@login_required
+def track_order(request, order_number):
+    """Real-time order tracking page"""
+    order = get_object_or_404(
+        Order,
+        order_number=order_number,
+    )
+
+    # Buyer, seller অথবা admin দেখতে পারবে
+    if not (request.user == order.buyer or
+            request.user == order.item.user or
+            request.user.is_staff):
+        messages.error(request, "You don't have access to this order.")
+        return redirect('core:index')
+
+    # Steadfast থেকে live tracking update নাও
+    if order.steadfast_tracking_code:
+        try:
+            response = http_requests.get(
+                f'https://portal.steadfast.com.bd/api/v1/status/by_tracking_id/{order.steadfast_tracking_code}',
+                headers={
+                    'Api-Key': settings.STEADFAST_API_KEY,
+                    'Secret-Key': settings.STEADFAST_SECRET_KEY,
+                },
+                timeout=5
+            )
+            data = response.json()
+            if data.get('status') == 200:
+                sf_status = data.get('delivery_status', '')
+                # Status map করো
+                status_map = {
+                    'in_review': 'processing',
+                    'partially_dispatched': 'picked_up',
+                    'dispatched': 'in_transit',
+                    'partially_delivered': 'out_for_delivery',
+                    'delivered': 'delivered',
+                    'partial_return': 'returned',
+                    'returned': 'returned',
+                }
+                new_status = status_map.get(sf_status)
+                if new_status and order.status != new_status:
+                    order.status = new_status
+                    order.add_tracking_event(new_status, f'Status updated: {sf_status}')
+                    if new_status == 'delivered':
+                        from django.utils import timezone
+                        order.delivered_at = timezone.now()
+                        order.save()
+        except Exception:
+            pass
+
+    return render(request, 'payment/tracking.html', {
+        'order': order,
+    })
