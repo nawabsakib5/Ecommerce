@@ -174,7 +174,7 @@
         <label class="co-label">Phone Number</label>
         <input class="co-input" type="tel" name="delivery_phone" placeholder="01XXXXXXXXX" required value="{{ request.user.phone|default:'' }}">
 
-        <label class="co-label">Delivery Address</label>
+        <label class="co-label">Delivery Address (Auto-detects Inside/Outside Dhaka)</label>
         <textarea class="co-input co-textarea" name="delivery_address" placeholder="House no, Road, Area, City..." required></textarea>
 
         <label class="co-label">Special Instructions (Optional)</label>
@@ -339,6 +339,52 @@ function validateAndSubmit() {
   btn.textContent = '⏳ Processing Secure Payment...';
   btn.style.background = '#1a1a2e';
   return true;
+}
+
+// Dhaka areas list — auto detect keywords
+const DHAKA_KEYWORDS = [
+  'dhaka', 'ঢাকা', 'dhanmondi', 'gulshan', 'banani', 'mirpur', 'uttara',
+  'motijheel', 'mohammadpur', 'rampura', 'badda', 'khilgaon', 'demra',
+  'jatrabari', 'shyampur', 'keraniganj', 'savar', 'gazipur', 'narayanganj',
+  'tongi', 'ashulia', 'tejgaon', 'farmgate', 'paltan', 'wari', 'lalbagh',
+  'hazaribagh', 'kamrangirchar', 'new market', 'elephant road', 'bailey road'
+];
+
+function autoDetectZone(address) {
+  const lower = address.toLowerCase();
+  const isDhaka = DHAKA_KEYWORDS.some(k => lower.includes(k));
+  
+  const dhakaZoneEl = document.querySelector('.co-zone[onclick*="dhaka"]');
+  const outsideZoneEl = document.querySelector('.co-zone[onclick*="outside"]');
+
+  if(isDhaka) {
+    document.querySelectorAll('.co-zone').forEach(e => e.classList.remove('selected'));
+    if(dhakaZoneEl) dhakaZoneEl.classList.add('selected');
+    const radio = document.querySelector('input[value="dhaka"]');
+    if(radio) radio.checked = true;
+    zone = 'dhaka';
+    deliveryCharge = DHAKA_CHARGE;
+    document.getElementById('selectedZone').value = 'dhaka';
+  } else if(address.trim().length > 6) {
+    document.querySelectorAll('.co-zone').forEach(e => e.classList.remove('selected'));
+    if(outsideZoneEl) outsideZoneEl.classList.add('selected');
+    const radio = document.querySelector('input[value="outside"]');
+    if(radio) radio.checked = true;
+    zone = 'outside';
+    deliveryCharge = OUTSIDE_CHARGE;
+    document.getElementById('selectedZone').value = 'outside';
+  }
+  updateSummary();
+}
+
+// Auto detect zone listener on address textarea
+const addrInput = document.querySelector('textarea[name="delivery_address"]');
+if(addrInput) {
+  let detectTimer;
+  addrInput.addEventListener('input', function() {
+    clearTimeout(detectTimer);
+    detectTimer = setTimeout(() => autoDetectZone(this.value), 400);
+  });
 }
 
 updateSummary();
