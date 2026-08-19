@@ -29,4 +29,7 @@ urlpatterns = [
     # Saved methods
     path('method/save/', views.save_payment_method, name='save_method'),
     path('method/delete/<int:pk>/', views.delete_payment_method, name='delete_method'),
+
+    # STEADFAST
+    path('track/<uuid:order_number>/', views.track_order, name='track'),
 ]

@@ -1,0 +1,296 @@
+{% extends 'core/base.html' %}
+{% block title %}Track Order #{{ order.order_number|stringformat:"s"|slice:":8"|upper }} | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+.tr { font-family: 'Inter', sans-serif; background: #f8f7f4; min-height: 100vh; padding: 32px 16px; }
+.tr-wrap { max-width: 860px; margin: 0 auto; }
+
+.tr-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:20px; padding:28px; margin-bottom:20px; box-shadow:0 4px 16px rgba(0,0,0,.02); }
+.tr-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#1a1a2e; margin-bottom:4px; }
+.tr-sub { font-size:12px; color:#aaa; font-weight:500; }
+
+/* Status banner */
+.tr-status-banner {
+    display: flex; align-items: center; gap: 18px;
+    padding: 22px 26px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,.06);
+}
+.tr-status-icon { font-size: 38px; flex-shrink: 0; }
+.tr-status-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.tr-status-text { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+
+/* Progress bar */
+.tr-progress { margin-bottom: 12px; }
+.tr-steps { display: flex; align-items: center; justify-content: space-between; position: relative; }
+.tr-steps::before { content: ''; position: absolute; top: 16px; left: 15px; right: 15px; height: 2px; background: #e8e5e0; z-index: 0; }
+.tr-step { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 1; flex: 1; }
+.tr-step-dot { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #e8e5e0; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all .3s; color: #888; }
+.tr-step.done .tr-step-dot { background: #22c55e; border-color: #22c55e; color: #fff; }
+.tr-step.active .tr-step-dot { background: #c84b31; border-color: #c84b31; color: #fff; box-shadow: 0 0 0 5px rgba(200,75,49,.15); }
+.tr-step-label { font-size: 9px; font-weight: 700; color: #aaa; text-align: center; text-transform: uppercase; letter-spacing: .05em; }
+.tr-step.done .tr-step-label, .tr-step.active .tr-step-label { color: #1a1a2e; }
+
+/* Order info grid */
+.tr-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:600px){ .tr-info-grid{ grid-template-columns: 1fr; } }
+.tr-info-item { background: #f8f7f4; border-radius: 12px; padding: 14px; border: 1.5px solid #f0ede8; }
+.tr-info-label { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+.tr-info-value { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+
+/* Tracking code box */
+.tr-code-box { background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(26,26,46,.15); }
+.tr-code-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.tr-code { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #e5c158; letter-spacing: 3px; }
+.tr-code-copy { background: rgba(229,193,88,.15); border: 1.5px solid rgba(229,193,88,.3); color: #e5c158; border-radius: 10px; padding: 8px 18px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: background .2s, transform .2s; display: inline-block; }
+.tr-code-copy:hover { background: rgba(229,193,88,.25); transform: translateY(-1px); }
+
+/* Timeline */
+.tr-tl-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+.tr-tl-item { display: flex; gap: 14px; margin-bottom: 16px; }
+.tr-tl-left { display: flex; flex-direction: column; align-items: center; }
+.tr-tl-dot { width: 12px; height: 12px; border-radius: 50%; background: #c84b31; flex-shrink: 0; margin-top: 4px; box-shadow: 0 0 0 4px rgba(200,75,49,.1); }
+.tr-tl-line { width: 2px; flex: 1; background: #e8e5e0; margin: 4px 0; min-height: 24px; }
+.tr-tl-item:last-child .tr-tl-line { display: none; }
+.tr-tl-content { flex: 1; background: #f8f7f4; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #f0ede8; }
+.tr-tl-status { font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+.tr-tl-msg { font-size: 11px; color: #555; font-weight: 500; margin-bottom: 3px; }
+.tr-tl-time { font-size: 10px; color: #aaa; font-weight: 600; }
+
+/* Item preview */
+.tr-item-row { display: flex; gap: 14px; align-items: center; background: #f8f7f4; padding: 14px; border-radius: 14px; border: 1.5px solid #f0ede8; }
+.tr-item-img { width: 64px; height: 64px; border-radius: 10px; object-fit: contain; background: #fff; border: 1.5px solid #e8e5e0; flex-shrink: 0; }
+.tr-item-name { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; }
+.tr-item-meta { font-size: 10px; color: #aaa; font-weight: 500; margin-bottom: 4px; }
+.tr-item-price { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: #c84b31; }
+
+.tr-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #1a1a2e; color: #fff; border-radius: 11px; font-size: 12px; font-weight: 700; text-decoration: none; transition: background .2s, transform .2s; }
+.tr-btn:hover { background: #b03d26; transform: translateY(-1px); }
+.tr-btn.outline { background: #fff; color: #1a1a2e; border: 1.5px solid #e8e5e0; }
+.tr-btn.outline:hover { border-color: #c84b31; color: #c84b31; background: #fff8f6; }
+
+.op0 { opacity: 0; transform: translateY(14px); }
+</style>
+
+<div class="tr">
+<div class="tr-wrap">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;" class="op0">
+    <div>
+      <div class="tr-title">📦 Order Tracking</div>
+      <div class="tr-sub">Order #{{ order.order_number|stringformat:"s"|slice:":8"|upper }} · Placed on {{ order.created_at|date:"d M Y, h:i A" }}</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <a href="{% url 'core:index' %}" class="tr-btn outline">🏠 Home</a>
+      {% if order.tracking_url %}
+      <a href="{{ order.tracking_url }}" target="_blank" class="tr-btn">🔗 Steadfast Portal</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Status Banner -->
+  {% if order.status == 'pending_payment' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+    <div class="tr-status-icon">⏳</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Pending Payment</div></div>
+  </div>
+  {% elif order.status == 'payment_confirmed' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+    <div class="tr-status-icon">✅</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Payment Confirmed</div></div>
+  </div>
+  {% elif order.status == 'processing' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
+    <div class="tr-status-icon">📦</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Processing Order</div></div>
+  </div>
+  {% elif order.status == 'picked_up' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#0d7377,#14a085);">
+    <div class="tr-status-icon">🚚</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Picked Up by Courier</div></div>
+  </div>
+  {% elif order.status == 'in_transit' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#c84b31,#e5c158);">
+    <div class="tr-status-icon">🛣️</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">In Transit</div></div>
+  </div>
+  {% elif order.status == 'out_for_delivery' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#f97316,#ea580c);">
+    <div class="tr-status-icon">🏃</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Out for Delivery</div></div>
+  </div>
+  {% elif order.status == 'delivered' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+    <div class="tr-status-icon">🎉</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Delivered Successfully!</div></div>
+  </div>
+  {% else %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#6b7280,#4b5563);">
+    <div class="tr-status-icon">ℹ️</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">{{ order.get_status_display }}</div></div>
+  </div>
+  {% endif %}
+
+  <!-- Progress Steps -->
+  <div class="tr-card op0">
+    <div class="tr-tl-title" style="margin-bottom:18px;">📋 Progress Timeline</div>
+    <div class="tr-progress">
+      {% with s=order.status %}
+      <div class="tr-steps">
+        <div class="tr-step {% if s != 'pending_payment' %}done{% elif s == 'pending_payment' %}active{% endif %}">
+          <div class="tr-step-dot">{% if s != 'pending_payment' %}✓{% else %}1{% endif %}</div>
+          <div class="tr-step-label">Payment</div>
+        </div>
+        <div class="tr-step {% if s in 'processing,picked_up,in_transit,out_for_delivery,delivered' %}done{% elif s == 'payment_confirmed' %}active{% endif %}">
+          <div class="tr-step-dot">{% if s in 'processing,picked_up,in_transit,out_for_delivery,delivered' %}✓{% else %}2{% endif %}</div>
+          <div class="tr-step-label">Confirmed</div>
+        </div>
+        <div class="tr-step {% if s in 'picked_up,in_transit,out_for_delivery,delivered' %}done{% elif s == 'processing' %}active{% endif %}">
+          <div class="tr-step-dot">{% if s in 'picked_up,in_transit,out_for_delivery,delivered' %}✓{% else %}3{% endif %}</div>
+          <div class="tr-step-label">Processing</div>
+        </div>
+        <div class="tr-step {% if s in 'in_transit,out_for_delivery,delivered' %}done{% elif s == 'picked_up' %}active{% endif %}">
+          <div class="tr-step-dot">{% if s in 'in_transit,out_for_delivery,delivered' %}✓{% else %}4{% endif %}</div>
+          <div class="tr-step-label">Picked Up</div>
+        </div>
+        <div class="tr-step {% if s == 'delivered' %}done{% elif s == 'out_for_delivery' %}active{% endif %}">
+          <div class="tr-step-dot">{% if s == 'delivered' %}✓{% else %}5{% endif %}</div>
+          <div class="tr-step-label">Out for Delivery</div>
+        </div>
+        <div class="tr-step {% if s == 'delivered' %}done active{% endif %}">
+          <div class="tr-step-dot">{% if s == 'delivered' %}✓{% else %}6{% endif %}</div>
+          <div class="tr-step-label">Delivered</div>
+        </div>
+      </div>
+      {% endwith %}
+    </div>
+  </div>
+
+  <!-- Tracking Code Box -->
+  {% if order.steadfast_tracking_code %}
+  <div class="tr-code-box op0">
+    <div class="tr-code-label">Steadfast Tracking Code</div>
+    <div class="tr-code" id="trackCode">{{ order.steadfast_tracking_code }}</div>
+    <button class="tr-code-copy" onclick="copyCode()">📋 Copy Tracking Code</button>
+  </div>
+  {% endif %}
+
+  <!-- Grid Details -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;" class="op0">
+
+    <!-- Order Summary Info -->
+    <div class="tr-card" style="margin-bottom:0;">
+      <div class="tr-tl-title">Order Details</div>
+      <div class="tr-info-grid">
+        <div class="tr-info-item">
+          <div class="tr-info-label">Order ID</div>
+          <div class="tr-info-value">#{{ order.order_number|stringformat:"s"|slice:":8"|upper }}</div>
+        </div>
+        <div class="tr-info-item">
+          <div class="tr-info-label">Quantity</div>
+          <div class="tr-info-value">{{ order.quantity }} pcs</div>
+        </div>
+        <div class="tr-info-item">
+          <div class="tr-info-label">Delivery Zone</div>
+          <div class="tr-info-value">{{ order.get_delivery_zone_display }}</div>
+        </div>
+        <div class="tr-info-item">
+          <div class="tr-info-label">Delivery Charge</div>
+          <div class="tr-info-value">{{ order.get_delivery_charge_display }}</div>
+        </div>
+        <div class="tr-info-item" style="grid-column:1/-1; background:#fff; border-color:#e8e5e0;">
+          <div class="tr-info-label">Total Amount Paid</div>
+          <div class="tr-info-value" style="font-family:'Syne',sans-serif;font-size:18px;color:#c84b31;">৳{{ order.total_amount|floatformat:0 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipient Info -->
+    <div class="tr-card" style="margin-bottom:0;">
+      <div class="tr-tl-title">Recipient Information</div>
+      <div class="tr-info-grid">
+        <div class="tr-info-item" style="grid-column:1/-1;">
+          <div class="tr-info-label">Full Name</div>
+          <div class="tr-info-value">{{ order.delivery_name }}</div>
+        </div>
+        <div class="tr-info-item" style="grid-column:1/-1;">
+          <div class="tr-info-label">Phone Number</div>
+          <div class="tr-info-value">{{ order.delivery_phone }}</div>
+        </div>
+        <div class="tr-info-item" style="grid-column:1/-1;">
+          <div class="tr-info-label">Delivery Address</div>
+          <div class="tr-info-value" style="font-size:12px;font-weight:500;color:#444;line-height:1.4;">{{ order.delivery_address }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ordered Item Card -->
+  <div class="tr-card op0">
+    <div class="tr-tl-title">Ordered Item</div>
+    <div class="tr-item-row">
+      {% if order.item.image %}
+      <img class="tr-item-img" src="{{ order.item.image.url }}" alt="{{ order.item.name }}">
+      {% else %}
+      <img class="tr-item-img" src="https://picsum.photos/seed/{{ order.item.id }}/200/200" alt="">
+      {% endif %}
+      <div style="flex:1;">
+        <div class="tr-item-name">{{ order.item.name }}</div>
+        <div class="tr-item-meta">{{ order.item.category.name }} · Seller: <strong>{{ order.item.user.username }}</strong></div>
+        <div class="tr-item-price">৳{{ order.unit_price|floatformat:0 }} × {{ order.quantity }} item(s)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Timeline Logs -->
+  {% if order.tracking_history %}
+  <div class="tr-card op0">
+    <div class="tr-tl-title">⏱️ Activity Timeline</div>
+    <div class="tr-timeline" style="margin-top:14px;">
+      {% for event in order.tracking_history reversed %}
+      <div class="tr-tl-item">
+        <div class="tr-tl-left">
+          <div class="tr-tl-dot"></div>
+          <div class="tr-tl-line"></div>
+        </div>
+        <div class="tr-tl-content">
+          <div class="tr-tl-status">{{ event.status|title }}</div>
+          <div class="tr-tl-msg">{{ event.message }}</div>
+          {% if event.location %}<div class="tr-tl-msg">📍 {{ event.location }}</div>{% endif %}
+          <div class="tr-tl-time">{{ event.timestamp }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
+<script>
+gsap.utils.toArray('.op0').forEach((el,i) => {
+  gsap.to(el, { opacity:1, y:0, duration:.6, delay:i*.08, ease:'power3.out' });
+});
+
+function copyCode() {
+  const code = document.getElementById('trackCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.querySelector('.tr-code-copy');
+    btn.textContent = '✅ Copied to Clipboard!';
+    setTimeout(() => btn.textContent = '📋 Copy Tracking Code', 2000);
+  });
+}
+
+// Auto refresh page every 30 seconds for real-time tracking updates
+setTimeout(() => window.location.reload(), 30000);
+</script>
+{% endblock %}
