@@ -1,0 +1,211 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}My Orders | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+.od { font-family: 'Inter', sans-serif; background: #f8f7f4; min-height: 100vh; padding: 32px 16px; }
+.od-wrap { max-width: 960px; margin: 0 auto; }
+
+.od-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.od-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #1a1a2e; }
+.od-sub { font-size: 12px; color: #888; font-weight: 500; margin-top: 3px; }
+
+.od-card { background: #fff; border: 1.5px solid #e8e5e0; border-radius: 18px; overflow: hidden; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.02); transition: box-shadow .2s, border-color .2s; }
+.od-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.05); border-color: #d8d3cc; }
+
+.od-card-top { display: flex; align-items: center; gap: 16px; padding: 20px; }
+.od-img { width: 68px; height: 68px; border-radius: 12px; object-fit: contain; background: #fff; border: 1.5px solid #e8e5e0; flex-shrink: 0; }
+.od-info { flex: 1; min-width: 0; }
+.od-item-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.od-item-meta { font-size: 11px; color: #888; font-weight: 500; margin-bottom: 8px; }
+.od-price { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #c84b31; flex-shrink: 0; text-align: right; }
+
+.od-card-bottom { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #f8f7f4; border-top: 1.5px solid #f0ede8; flex-wrap: wrap; gap: 12px; }
+
+/* Status Badge */
+.od-status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.od-status.pending_payment { background: rgba(245,158,11,.15); color: #d97706; border: 1px solid rgba(245,158,11,.3); }
+.od-status.payment_confirmed { background: rgba(59,130,246,.15); color: #1d4ed8; border: 1px solid rgba(59,130,246,.3); }
+.od-status.processing { background: rgba(139,92,246,.15); color: #6d28d9; border: 1px solid rgba(139,92,246,.3); }
+.od-status.picked_up { background: rgba(13,115,119,.15); color: #0d7377; border: 1px solid rgba(13,115,119,.3); }
+.od-status.in_transit { background: rgba(229,193,88,.2); color: #9a7432; border: 1px solid rgba(229,193,88,.4); }
+.od-status.out_for_delivery { background: rgba(249,115,22,.15); color: #ea580c; border: 1px solid rgba(249,115,22,.3); }
+.od-status.delivered { background: rgba(34,197,94,.15); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
+.od-status.cancelled, .od-status.refunded { background: rgba(239,68,68,.15); color: #dc2626; border: 1px solid rgba(239,68,68,.3); }
+
+.od-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.od-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; transition: all .2s; }
+.od-btn-track { background: #1a1a2e; color: #e5c158; box-shadow: 0 4px 12px rgba(26,26,46,.15); }
+.od-btn-track:hover { background: #c84b31; color: #fff; transform: translateY(-1px); }
+.od-btn-outline { background: #fff; color: #555; border: 1.5px solid #e8e5e0; }
+.od-btn-outline:hover { border-color: #c84b31; color: #c84b31; background: #fff8f6; }
+
+/* Status Update Form (Seller/Admin) */
+.od-status-form { display: flex; align-items: center; gap: 8px; }
+.od-status-select { padding: 7px 12px; background: #fff; border: 1.5px solid #e8e5e0; border-radius: 10px; font-size: 11px; font-weight: 600; color: #1a1a2e; outline: none; cursor: pointer; transition: border-color .2s; }
+.od-status-select:focus { border-color: #c84b31; }
+.od-status-submit { padding: 8px 14px; background: #c84b31; color: #fff; border: none; border-radius: 10px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background .2s, transform .2s; }
+.od-status-submit:hover { background: #a53922; transform: translateY(-1px); }
+
+/* Expandable Details */
+.od-details { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s ease; background: #fff; }
+.od-details.open { max-height: 340px; padding: 18px 20px; border-top: 1.5px solid #f0ede8; }
+.od-details-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.od-detail-item { background: #f8f7f4; border-radius: 12px; padding: 12px 14px; border: 1.5px solid #f0ede8; }
+.od-detail-label { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.od-detail-value { font-size: 12px; font-weight: 700; color: #1a1a2e; }
+
+/* Empty State */
+.od-empty { text-align: center; padding: 64px 20px; background: #fff; border-radius: 20px; border: 1.5px dashed #e8e5e0; }
+.od-empty-icon { font-size: 48px; margin-bottom: 12px; }
+.od-empty-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+.od-empty-sub { font-size: 12px; color: #888; font-weight: 500; }
+
+.op0 { opacity: 0; transform: translateY(14px); }
+</style>
+
+<div class="od">
+<div class="od-wrap">
+
+  <!-- Header -->
+  <div class="od-header op0">
+    <div>
+      <div class="od-title">📦 My Orders</div>
+      <div class="od-sub">{{ orders|length }} order{{ orders|length|pluralize }} found in your history</div>
+    </div>
+    <a href="{% url 'dashboard:index' class="od-btn od-btn-outline" style="padding: 10px 18px; border-radius: 12px;">← Back to Dashboard</a>
+  </div>
+
+  {% if orders %}
+    {% for order in orders %}
+    <div class="od-card op0">
+      <div class="od-card-top">
+        {% if order.item.image %}
+        <img class="od-img" src="{{ order.item.image.url }}" alt="{{ order.item.name }}">
+        {% else %}
+        <img class="od-img" src="https://picsum.photos/seed/{{ order.item.id }}/200/200" alt="">
+        {% endif %}
+
+        <div class="od-info">
+          <div class="od-item-name">{{ order.item.name }}</div>
+          <div class="od-item-meta">
+            Qty: {{ order.quantity }} pcs &bull; 
+            {{ order.get_delivery_zone_display }} &bull; 
+            {{ order.created_at|date:"d M Y, h:i A" }} &bull; 
+            <strong style="color:#1a1a2e;">#{{ order.order_number|stringformat:"s"|slice:":8"|upper }}</strong>
+          </div>
+          <div>
+            <span class="od-status {{ order.status }}">
+              {% if order.status == 'pending_payment' %}⏳
+              {% elif order.status == 'payment_confirmed' %}✅
+              {% elif order.status == 'processing' %}📦
+              {% elif order.status == 'picked_up' %}🚚
+              {% elif order.status == 'in_transit' %}🛣️
+              {% elif order.status == 'out_for_delivery' %}🏃
+              {% elif order.status == 'delivered' %}🎉
+              {% elif order.status == 'cancelled' or order.status == 'refunded' %}❌
+              {% else %}ℹ️{% endif %}
+              {{ order.get_status_display }}
+            </span>
+          </div>
+        </div>
+
+        <div class="od-price">৳{{ order.total_amount|floatformat:0 }}</div>
+      </div>
+
+      <!-- Expandable details -->
+      <div class="od-details" id="details-{{ order.order_number }}">
+        <div class="od-details-grid">
+          <div class="od-detail-item">
+            <div class="od-detail-label">Unit Price</div>
+            <div class="od-detail-value">৳{{ order.unit_price|floatformat:0 }}</div>
+          </div>
+          <div class="od-detail-item">
+            <div class="od-detail-label">Delivery Charge</div>
+            <div class="od-detail-value">{{ order.get_delivery_charge_display }}</div>
+          </div>
+          <div class="od-detail-item">
+            <div class="od-detail-label">Payment Method</div>
+            <div class="od-detail-value">{{ order.transaction.get_payment_type_display|default:"Online / COD" }}</div>
+          </div>
+          <div class="od-detail-item">
+            <div class="od-detail-label">Recipient Name</div>
+            <div class="od-detail-value">{{ order.delivery_name }}</div>
+          </div>
+          <div class="od-detail-item">
+            <div class="od-detail-label">Contact Phone</div>
+            <div class="od-detail-value">{{ order.delivery_phone }}</div>
+          </div>
+          {% if order.steadfast_tracking_code %}
+          <div class="od-detail-item">
+            <div class="od-detail-label">Tracking Code</div>
+            <div class="od-detail-value" style="color: #9a7432; letter-spacing: 1px;">{{ order.steadfast_tracking_code }}</div>
+          </div>
+          {% endif %}
+        </div>
+        <div style="margin-top: 10px; font-size: 11px; color: #555; font-weight: 500; background: #f8f7f4; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #f0ede8;">
+          📍 <strong>Delivery Address:</strong> {{ order.delivery_address }}
+          {% if order.notes %}<br>📝 <strong>Notes:</strong> {{ order.notes }}{% endif %}
+        </div>
+      </div>
+
+      <!-- Card Bottom Actions -->
+      <div class="od-card-bottom">
+        <div class="od-actions">
+          <a href="{% url 'payment:track' order.order_number %}" class="od-btn od-btn-track">📍 Track Order</a>
+          <button class="od-btn od-btn-outline" onclick="toggleDetails('{{ order.order_number }}', this)">🔽 Details</button>
+          <a href="{% url 'item:detail' order.item.id %}" class="od-btn od-btn-outline">👁️ View Item</a>
+        </div>
+
+        <!-- Seller/Admin status update control -->
+        {% if request.user == order.item.user or request.user.is_staff or request.user.is_superuser %}
+        <form method="post" action="{% url 'dashboard:update_order_status' order.order_number %}" class="od-status-form">
+          {% csrf_token %}
+          <select name="status" class="od-status-select">
+            {% for value, label in order.STATUS_CHOICES %}
+            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="od-status-submit">Update ✓</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <div class="od-empty op0">
+    <div class="od-empty-icon">📭</div>
+    <div class="od-empty-title">No orders found</div>
+    <div class="od-empty-sub">
+      {% if request.user.user_type == 'Buyer' %}
+      Explore our collections and place your first order today!
+      {% else %}
+      Orders placed for your items will automatically show up here.
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
+<script>
+gsap.utils.toArray('.op0').forEach((el, i) => {
+  gsap.to(el, { opacity: 1, y: 0, duration: .5, delay: i * .06, ease: 'power3.out' });
+});
+
+function toggleDetails(orderNum, btn) {
+  const details = document.getElementById('details-' + orderNum);
+  const isOpen = details.classList.contains('open');
+  details.classList.toggle('open');
+  btn.textContent = isOpen ? '🔽 Details' : '🔼 Hide Details';
+}
+</script>
+{% endblock %}
