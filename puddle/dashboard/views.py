@@ -1,13 +1,12 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Sum, Count
-from django.shortcuts import render, redirect
 
 from item.models import Item, Category
-from item.seed_helpers import is_admin_user
-from .admin_stats import build_admin_dashboard_data
-from .forms import ProfileUpdateForm, UserUpdateForm
-from .models import Profile
+from dashboard.models import Profile
+from dashboard.forms import UserUpdateForm, ProfileUpdateForm
+from payment.models import Order, Transaction
 
 
 @login_required
@@ -78,6 +77,11 @@ def seller_dashboard(request):
     # Recent sales
     recent_sales = sales.select_related('item', 'buyer').order_by('-sold_at')[:10]
 
+    # Orders — seller এর items এর orders
+    seller_orders = Order.objects.filter(
+        item__user=request.user
+    ).select_related('item', 'buyer', 'transaction').order_by('-created_at')[:10]
+
     return render(request, 'dashboard/index.html', {
         'items': items,
         'active_count': active_items.count(),
@@ -94,14 +98,12 @@ def seller_dashboard(request):
         'message_count': message_count,
         'low_stock': low_stock,
         'recent_sales': recent_sales,
+        'orders': seller_orders,
     })
 
 
 @login_required
 def buyer_dashboard(request):
-    from cart.models import Cart, Order
-    from core.models import Wishlist, Review
-
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
@@ -116,47 +118,84 @@ def buyer_dashboard(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
 
-    cart, _ = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.cart_items.select_related('item', 'item__category').all()
-
-    orders = Order.objects.filter(
+    # Buyer এর orders
+    buyer_orders = Order.objects.filter(
         buyer=request.user
-    ).prefetch_related('order_items__item').order_by('-created_at')
+    ).select_related('item', 'transaction').order_by('-created_at')[:10]
 
-    total_spent = round(sum(o.total_amount for o in orders), 2)
-
+    # Wishlist
+    from core.models import Wishlist
     wishlist = Wishlist.objects.filter(
         user=request.user
-    ).select_related('item', 'item__category')
-
-    reviews = Review.objects.filter(
-        user=request.user
-    ).select_related('item')
-
-    wishlist_categories = wishlist.values_list('item__category', flat=True)
-    recommended = Item.objects.filter(
-        category__in=wishlist_categories,
-        is_sold=False
-    ).exclude(
-        wishlisted_by__user=request.user
-    ).select_related('category')[:6]
+    ).select_related('item', 'item__category')[:10]
 
     return render(request, 'dashboard/buyer.html', {
         'u_form': u_form,
         'p_form': p_form,
         'profile': profile,
-        'cart': cart,
-        'cart_items': cart_items,
-        'orders': orders,
-        'total_spent': total_spent,
+        'orders': buyer_orders,
         'wishlist': wishlist,
-        'reviews': reviews,
-        'recommended': recommended,
     })
 
 
 @login_required
-@user_passes_test(is_admin_user)
 def admin_dashboard(request):
-    context = build_admin_dashboard_data()
-    return render(request, 'dashboard/admin.html', context)
+    from dashboard.admin_stats import build_admin_dashboard_data
+    data = build_admin_dashboard_data()
+    return render(request, 'dashboard/admin_panel.html', data)
+
+
+@login_required
+def orders(request):
+    if request.user.user_type == 'Buyer':
+        all_orders = Order.objects.filter(
+            buyer=request.user
+        ).select_related('item', 'transaction').order_by('-created_at')
+    else:
+        all_orders = Order.objects.filter(
+            item__user=request.user
+        ).select_related('item', 'buyer', 'transaction').order_by('-created_at')
+
+    return render(request, 'dashboard/orders.html', {
+        'orders': all_orders,
+    })
+
+
+@login_required
+def update_order_status(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
+
+    if not (request.user == order.item.user or request.user.is_staff):
+        messages.error(request, "You don't have permission.")
+        return redirect('dashboard:orders')
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        valid_statuses = [s[0] for s in Order.STATUS_CHOICES]
+
+        if new_status in valid_statuses:
+            order.status = new_status
+            order.add_tracking_event(
+                new_status,
+                f'Status updated to {order.get_status_display()}',
+            )
+
+            if new_status == 'delivered':
+                from django.utils import timezone
+                order.delivered_at = timezone.now()
+
+            order.save()
+
+            from core.models import Notification
+            Notification.objects.create(
+                user=order.buyer,
+                title="Order Update 📦",
+                message=f"Your order for '{order.item.name}' is now: {order.get_status_display()}",
+                notification_type='general',
+                link=f"/payment/track/{order.order_number}/",
+            )
+            messages.success(request, f"Order updated: {order.get_status_display()}")
+        else:
+            messages.error(request, "Invalid status.")
+
+    return redirect('dashboard:orders')
