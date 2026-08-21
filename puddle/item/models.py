@@ -155,3 +155,41 @@ class ItemImage(models.Model):
 
     def __str__(self):
         return f"{self.item.name} — {self.media_type} {self.order}"
+
+
+
+class ProductVariant(models.Model):
+    item = models.ForeignKey(
+        Item,
+        related_name='variants',
+        on_delete=models.CASCADE
+    )
+    size = models.CharField(max_length=20, blank=True, null=True)
+    color = models.CharField(max_length=50, blank=True, null=True)
+    color_code = models.CharField(max_length=10, blank=True, null=True)  # hex color #FF0000
+    material = models.CharField(max_length=100, blank=True, null=True)
+    additional_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0,
+        help_text="Extra price on top of base price"
+    )
+    stock = models.PositiveIntegerField(default=0)
+    sku = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ('size', 'color')
+
+    def __str__(self):
+        parts = []
+        if self.size: parts.append(f"Size: {self.size}")
+        if self.color: parts.append(f"Color: {self.color}")
+        return f"{self.item.name} — {', '.join(parts) or 'Default'}"
+
+    @property
+    def final_price(self):
+        base = self.item.sale_price if self.item.is_on_sale else self.item.original_price
+        return float(base) + float(self.additional_price)
+
+    @property
+    def is_in_stock(self):
+        return self.stock > 0
