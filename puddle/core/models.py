@@ -134,3 +134,28 @@ class Shop(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class Banner(models.Model):
+    BANNER_TYPES = [
+        ('hero', 'Hero Slider'),
+        ('side', 'Side Banner'),
+        ('flash', 'Flash Sale Banner'),
+        ('category', 'Category Banner'),
+    ]
+
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=300, blank=True, null=True)
+    image = models.ImageField(upload_to='banners/')
+    link = models.CharField(max_length=500, blank=True, null=True)
+    banner_type = models.CharField(max_length=20, choices=BANNER_TYPES, default='hero')
+    is_active = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('order', '-created_at')
+
+    def __str__(self):
+        return f"{self.title} ({self.get_banner_type_display()})"
