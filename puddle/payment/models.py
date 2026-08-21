@@ -228,3 +228,71 @@ class Order(models.Model):
             'timestamp': timezone.now().isoformat(),
         })
         self.save()
+
+
+class Coupon(models.Model):
+    DISCOUNT_TYPES = [
+        ('percent', 'Percentage Discount'),
+        ('fixed', 'Fixed Amount Discount'),
+        ('free_delivery', 'Free Delivery'),
+    ]
+
+    code = models.CharField(max_length=20, unique=True, db_index=True)
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_TYPES, default='percent')
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    max_discount_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+    is_active = models.BooleanField(default=True)
+    usage_limit = models.PositiveIntegerField(default=1)
+    used_count = models.PositiveIntegerField(default=0)
+    per_user_limit = models.PositiveIntegerField(default=1)
+
+    valid_from = models.DateTimeField()
+    valid_until = models.DateTimeField()
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='created_coupons',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"{self.code} — {self.get_discount_type_display()}"
+
+    def is_valid(self):
+        from django.utils import timezone
+        now = timezone.now()
+        return (
+            self.is_active and
+            self.valid_from <= now <= self.valid_until and
+            self.used_count < self.usage_limit
+        )
+
+    def get_discount_amount(self, order_amount):
+        if self.discount_type == 'percent':
+            discount = order_amount * (self.discount_value / 100)
+            if self.max_discount_amount:
+                discount = min(discount, self.max_discount_amount)
+            return round(discount, 2)
+        elif self.discount_type == 'fixed':
+            return min(self.discount_value, order_amount)
+        return 0
+
+
+class CouponUsage(models.Model):
+    coupon = models.ForeignKey(Coupon, related_name='usages', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='coupon_usages', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, related_name='coupon_usage', on_delete=models.CASCADE, null=True, blank=True)
+    used_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('coupon', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} used {self.coupon.code}"
