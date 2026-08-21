@@ -9,14 +9,29 @@ from django.core.validators import FileExtensionValidator
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True, null=True)
-    icon = models.CharField(max_length=50, blank=True, null=True)  # emoji বা icon class
+    icon = models.CharField(max_length=50, blank=True, null=True)
+    parent = models.ForeignKey(
+        'self',
+        related_name='children',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    banner = models.ImageField(upload_to='category_banners/', blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    is_featured = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name_plural = 'Categories'
-        ordering = ('name',)
+        ordering = ('order', 'name')
 
     def __str__(self):
+        if self.parent:
+            return f"{self.parent.name} → {self.name}"
         return self.name
+
+    def get_children(self):
+        return self.children.all()
 
 
 class Item(models.Model):

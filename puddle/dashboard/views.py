@@ -142,7 +142,7 @@ def buyer_dashboard(request):
 def admin_dashboard(request):
     from dashboard.admin_stats import build_admin_dashboard_data
     data = build_admin_dashboard_data()
-    return render(request, 'dashboard/admin_panel.html', data)
+    return render(request, 'dashboard/admin.html', data)
 
 
 @login_required
