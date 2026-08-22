@@ -55,6 +55,12 @@
 .co-input:focus { border-color:#c84b31; background:#fff; }
 .co-textarea { height:75px; resize:vertical; }
 
+/* Coupon Section */
+.co-coupon-group { display: flex; gap: 8px; margin-bottom: 14px; }
+.co-coupon-input { flex: 1; margin-bottom: 0 !important; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
+.co-coupon-btn { padding: 0 16px; background: #1a1a2e; color: #fff; border: none; border-radius: 11px; font-size: 11px; font-weight: 700; cursor: pointer; transition: background .2s; white-space: nowrap; }
+.co-coupon-btn:hover { background: #c84b31; }
+
 /* Order summary */
 .co-item-row { display:flex; gap:12px; align-items:center; padding:14px; background:#f8f7f4; border-radius:14px; margin-bottom:16px; }
 .co-item-img { width:64px; height:64px; border-radius:10px; object-fit:contain; background:#fff; border:1.5px solid #e8e5e0; flex-shrink:0; }
@@ -167,6 +173,8 @@
         <input type="hidden" name="quantity" id="selectedQty" value="1">
         <input type="hidden" name="delivery_charge" id="deliveryCharge" value="80">
         <input type="hidden" name="free_delivery" id="freeDelivery_val" value="0">
+        <input type="hidden" name="coupon_code" id="couponCode" value="">
+        <input type="hidden" name="coupon_discount" id="couponDiscount" value="0">
 
         <label class="co-label">Full Name</label>
         <input class="co-input" type="text" name="delivery_name" placeholder="Your full name" required value="{{ request.user.full_name|default:request.user.username }}">
@@ -216,6 +224,16 @@
         </div>
       </div>
 
+      <!-- Coupon Input Box -->
+      <div style="margin-bottom: 16px;">
+        <label class="co-label">Promo / Coupon Code</label>
+        <div class="co-coupon-group">
+          <input class="co-input co-coupon-input" type="text" id="couponInput" placeholder="Enter coupon">
+          <button type="button" class="co-coupon-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div id="couponMsg" style="font-size:11px;margin-top:4px;font-weight:600;display:none;"></div>
+      </div>
+
       <!-- Price breakdown -->
       <div class="co-sum-row">
         <span class="co-sum-label">Item Price</span>
@@ -229,16 +247,25 @@
         <span class="co-sum-label">Subtotal</span>
         <span class="co-sum-value" id="sumSubtotal">৳{{ price|floatformat:0 }}</span>
       </div>
+      
+      <!-- Added Coupon Discount Row -->
+      <div class="co-sum-row" id="sumDiscount" style="display:none;">
+        <span class="co-sum-label" style="color:#22c55e;">🎟️ Coupon Discount</span>
+        <span class="co-sum-value" style="color:#22c55e;" id="sumDiscountVal">-৳0</span>
+      </div>
+
       <div class="co-sum-row">
         <span class="co-sum-label">Delivery (Steadfast)</span>
-        <span class="co-sum-value" id="sumDelivery" style="color:#c84b31;">৳80</span>
+        <span class="co-sum-value" id="sumDelivery" style="color:#9A7432;">৳80</span>
       </div>
+
       {% if item.is_on_sale %}
       <div class="co-sum-row">
         <span class="co-sum-label" style="color:#22c55e;">Flash Sale Savings</span>
         <span class="co-sum-value" style="color:#22c55e;" id="sumSave">৳{{ item.original_price|floatformat:0 }}</span>
       </div>
       {% endif %}
+
       <div class="co-total-row">
         <span class="co-total-label">Total</span>
         <span class="co-total-value" id="sumTotal">৳{{ price|floatformat:0 }}</span>
@@ -269,6 +296,8 @@ let qty = 1;
 let zone = 'dhaka';
 let deliveryCharge = DHAKA_CHARGE;
 let isFree = false;
+let couponDiscount = 0;
+let couponFreeDelivery = false;
 
 const methodNames = {
   'bkash':'📱 bKash Mobile Banking',
@@ -280,20 +309,28 @@ const methodNames = {
 
 function updateSummary() {
   const subtotal = ITEM_PRICE * qty;
-  const charge = isFree ? 0 : deliveryCharge;
-  const total = subtotal + charge;
+  const charge = (isFree || couponFreeDelivery) ? 0 : deliveryCharge;
+  const total = Math.max(0, subtotal + charge - couponDiscount);
 
   document.getElementById('sumQty').textContent = `× ${qty}`;
   document.getElementById('sumSubtotal').textContent = `৳${subtotal.toLocaleString()}`;
-  document.getElementById('sumDelivery').textContent = isFree ? '🎁 Free' : `৳${charge}`;
-  document.getElementById('sumDelivery').style.color = isFree ? '#22c55e' : '#c84b31';
+  
+  const sumDiscount = document.getElementById('sumDiscount');
+  if(sumDiscount) {
+    sumDiscount.style.display = couponDiscount > 0 ? 'flex' : 'none';
+    const discEl = document.getElementById('sumDiscountVal');
+    if(discEl) discEl.textContent = `-৳${couponDiscount.toLocaleString()}`;
+  }
+
+  document.getElementById('sumDelivery').textContent = (isFree || couponFreeDelivery) ? '🎁 Free' : `৳${charge}`;
+  document.getElementById('sumDelivery').style.color = (isFree || couponFreeDelivery) ? '#22c55e' : '#9A7432';
   document.getElementById('sumTotal').textContent = `৳${total.toLocaleString()}`;
   document.getElementById('totalDisplay').textContent = `৳${total.toLocaleString()}`;
 
   // Update hidden form fields
   document.getElementById('selectedQty').value = qty;
   document.getElementById('deliveryCharge').value = charge;
-  document.getElementById('freeDelivery_val').value = isFree ? 1 : 0;
+  document.getElementById('freeDelivery_val').value = (isFree || couponFreeDelivery) ? 1 : 0;
 }
 
 function changeQty(delta) {
@@ -326,6 +363,57 @@ function selectMethod(type, el) {
   const display = document.getElementById('methodDisplay');
   display.style.display = 'block';
   document.getElementById('methodText').textContent = methodNames[type];
+}
+
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const msg = document.getElementById('couponMsg');
+
+  if(!code) { 
+    msg.style.display = 'block';
+    msg.style.color = '#ef4444';
+    msg.textContent = '⚠️ Please enter a coupon code.';
+    return; 
+  }
+
+  const subtotal = ITEM_PRICE * qty;
+  const charge = (isFree || couponFreeDelivery) ? 0 : deliveryCharge;
+  const total = subtotal + charge;
+
+  fetch('/payment/coupon/apply/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}',
+    },
+    body: `code=${code}&order_amount=${total}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    msg.style.display = 'block';
+    if(data.success) {
+      msg.style.color = '#22c55e';
+      msg.textContent = '✅ ' + data.message;
+      couponDiscount = data.discount;
+      couponFreeDelivery = data.free_delivery;
+      document.getElementById('couponCode').value = code;
+      document.getElementById('couponDiscount').value = data.discount;
+      if(data.free_delivery) { isFree = true; }
+      updateSummary();
+    } else {
+      msg.style.color = '#ef4444';
+      msg.textContent = '❌ ' + data.error;
+      couponDiscount = 0;
+      couponFreeDelivery = false;
+      document.getElementById('couponCode').value = '';
+      document.getElementById('couponDiscount').value = 0;
+      updateSummary();
+    }
+  }).catch(err => {
+    msg.style.display = 'block';
+    msg.style.color = '#ef4444';
+    msg.textContent = '❌ Failed to apply coupon. Try again.';
+  });
 }
 
 function validateAndSubmit() {
