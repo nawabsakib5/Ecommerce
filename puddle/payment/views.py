@@ -612,3 +612,48 @@ def track_order(request, order_number):
     return render(request, 'payment/tracking.html', {
         'order': order,
     })
+
+
+
+@login_required
+@require_POST
+def apply_coupon(request):
+    """Coupon validate করো — AJAX call"""
+    from .models import Coupon, CouponUsage
+    import json
+
+    code = request.POST.get('code', '').strip().upper()
+    order_amount = float(request.POST.get('order_amount', 0))
+
+    try:
+        coupon = Coupon.objects.get(code=code)
+    except Coupon.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Invalid coupon code.'})
+
+    if not coupon.is_valid():
+        return JsonResponse({'success': False, 'error': 'This coupon has expired or is no longer valid.'})
+
+    # Per user limit check
+    user_usage = CouponUsage.objects.filter(
+        coupon=coupon, user=request.user
+    ).count()
+    if user_usage >= coupon.per_user_limit:
+        return JsonResponse({'success': False, 'error': 'You have already used this coupon.'})
+
+    # Min order check
+    if order_amount < float(coupon.min_order_amount):
+        return JsonResponse({
+            'success': False,
+            'error': f'Minimum order amount is ৳{coupon.min_order_amount} for this coupon.'
+        })
+
+    discount = float(coupon.get_discount_amount(order_amount))
+    free_delivery = coupon.discount_type == 'free_delivery'
+
+    return JsonResponse({
+        'success': True,
+        'discount': discount,
+        'free_delivery': free_delivery,
+        'message': f'Coupon applied! You save ৳{discount}',
+        'coupon_type': coupon.discount_type,
+    })

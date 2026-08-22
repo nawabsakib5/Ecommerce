@@ -32,4 +32,7 @@ urlpatterns = [
 
     # STEADFAST
     path('track/<uuid:order_number>/', views.track_order, name='track'),
+
+    # Coupon
+    path('coupon/apply/', views.apply_coupon, name='apply_coupon'),
 ]
