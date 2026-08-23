@@ -172,13 +172,15 @@ if not DEBUG:
 
 
     # ── Axes (Brute Force Protection) ──
-AXES_FAILURE_LIMIT = 5          # ৫ বার wrong password = block
-AXES_COOLOFF_TIME = 1           # ১ ঘণ্টা পর unblock
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1/6        # 10 minutes (1 hour / 6)
 AXES_LOCK_OUT_AT_FAILURE = True
-AXES_LOCKOUT_TEMPLATE = None
-AXES_RESET_ON_SUCCESS = True    # সফল login এ failure count reset
+AXES_RESET_ON_SUCCESS = True
 AXES_ENABLE_ADMIN = True
-AXES_IP_BLACKLIST = None
+AXES_LOCKOUT_TEMPLATE = None
+AXES_ONLY_USER_FAILURES = True  # শুধু ওই username lock হবে, IP নয়
+AXES_LOCK_OUT_BY_USER_OR_IP = False
+AXES_USERNAME_FORM_FIELD = 'username'
 
 
 

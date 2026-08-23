@@ -71,7 +71,7 @@
       {% endfor %}
     {% endfor %}
     <div style="font-size:11px;color:#92400e;margin-top:8px;">
-      ⚡ After 5 failed attempts, your account will be temporarily locked for 1 hour.
+      ⚡ After 5 failed attempts, your account will be locked for 10 minutes.
     </div>
   </div>
   {% endif %}
@@ -163,7 +163,7 @@ if(attempts > 0 && attempts < MAX) {
   const text = document.getElementById('attemptsText');
   if (warn && text) {
     warn.style.display = 'block';
-    text.textContent = `Warning: ${attempts} failed attempt${attempts>1?'s':''}. After ${MAX} attempts your account will be locked for 1 hour.`;
+    text.textContent = `Warning: ${attempts} failed attempt${attempts>1?'s':''}. After ${MAX} attempts your account will be locked for 10 minutes..`;
   }
 }
 
