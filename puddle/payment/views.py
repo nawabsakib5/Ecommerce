@@ -265,14 +265,14 @@ def sslcommerz_success(request, transaction_id):
                     transaction.save()
 
                     order = transaction.order
-                    order.status = 'payment_confirmed'
-                    order.save()
+                    if not order.confirm_payment():
+                        transaction.status = 'failed'
 
-                    # Item sold mark
-                    item = transaction.item
-                    item.is_sold = True
-                    item.status = 'sold'
-                    item.save()
+                        transaction.save()
+                        messages.error(request, "দুঃখিত, এই মুহূর্তে stock শেষ হয়ে গেছে। আপনার টাকা রিফান্ড করা হবে।")
+                        return redirect('payment:failed', transaction_id=transaction_id)
+                    
+                    
 
                     # Seller কে notification পাঠাও
                     from core.models import Notification
