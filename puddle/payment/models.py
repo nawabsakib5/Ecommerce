@@ -117,6 +117,7 @@ class Order(models.Model):
     STATUS_CHOICES = [
         ('pending_payment', 'Pending Payment'),
         ('payment_confirmed', 'Payment Confirmed'),
+        ('confirmed', 'Order Confirmed (COD)'),
         ('processing', 'Processing'),
         ('picked_up', 'Picked Up by Courier'),
         ('in_transit', 'In Transit'),
@@ -125,6 +126,7 @@ class Order(models.Model):
         ('cancelled', 'Cancelled'),
         ('refunded', 'Refunded'),
         ('returned', 'Returned'),
+        
     ]
 
     ZONE_CHOICES = [

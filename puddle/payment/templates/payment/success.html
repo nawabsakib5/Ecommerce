@@ -59,8 +59,9 @@
     </div>
   </div>
 
-  <a href="{% url 'core:index' %}" class="ps-btn">🏠 Back to Home</a>
-  <a href="{% url 'item:items' %}" class="ps-btn outline">🛍️ Continue Shopping</a>
+    <a href="{% url 'payment:track' order.order_number %}" class="ps-btn" style="background:#c84b31;">📦 Track My Order</a>
+    <a href="{% url 'core:index' %}" class="ps-btn">🏠 Back to Home</a>
+    <a href="{% url 'item:items' %}" class="ps-btn outline">🛍️ Continue Shopping</a>
 </div>
 </div>
 
