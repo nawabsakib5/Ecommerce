@@ -17,10 +17,22 @@ class ItemImageInline(admin.TabularInline):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'user', 'original_price', 'status', 'condition', 'stock_count', 'created_at')
+    list_display = ('name', 'category', 'user', 'original_price', 'status', 'condition', 'stock_display', 'created_at')
     list_filter = ('status', 'condition', 'category')
     search_fields = ('name', 'description', 'user__username')
     inlines = [ItemImageInline, ProductVariantInline]
+
+    def stock_display(self, obj):
+        from django.utils.html import format_html
+        total = obj.get_total_stock()
+        if total <= 0:
+            color = 'red'
+        elif obj.is_low_stock():
+            color = 'orange'
+        else:
+            color = 'green'
+        return format_html('<b style="color:{}">{}</b>', color, total)
+    stock_display.short_description = 'Stock'
 
 
 @admin.register(Category)
