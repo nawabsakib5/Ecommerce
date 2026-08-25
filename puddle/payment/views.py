@@ -51,7 +51,6 @@ def checkout(request, item_pk):
     })
 
 
-# ── Initiate Payment ──
 @login_required
 @require_POST
 def initiate_payment(request, item_pk):
@@ -74,12 +73,21 @@ def initiate_payment(request, item_pk):
     free_delivery = request.POST.get('free_delivery', '0') == '1'
 
     # Quantity validate
+    variant_id = request.POST.get('variant_id')
+    variant = None
+    available_stock = item.stock_count
+
+    if variant_id:
+        from item.models import ProductVariant
+        variant = get_object_or_404(ProductVariant, pk=variant_id, item=item, is_active=True)
+        available_stock = variant.stock
+
     try:
         quantity = int(request.POST.get('quantity', 1))
         if quantity < 1:
             quantity = 1
-        if quantity > item.stock_count:
-            messages.error(request, f"Only {item.stock_count} items available.")
+        if quantity > available_stock:
+            messages.error(request, f"Only {available_stock} items available.")
             return redirect('payment:checkout', item_pk=item_pk)
     except (ValueError, TypeError):
         quantity = 1
@@ -131,6 +139,7 @@ def initiate_payment(request, item_pk):
         buyer=request.user,
         item=item,
         transaction=transaction,
+        variant=variant,
         quantity=quantity,
         unit_price=unit_price,
         total_amount=total_amount,
@@ -419,8 +428,11 @@ def cod_confirm(request, transaction_id):
         transaction.save()
 
         order = transaction.order
-        order.status = 'payment_confirmed'
-        order.save()
+        if not order.confirm_payment():
+            transaction.status = 'failed'
+            transaction.save()
+            messages.error(request, "দুঃখিত, এই মুহূর্তে stock শেষ হয়ে গেছে।")
+            return redirect('item:detail', pk=transaction.item.pk)
 
         messages.success(request, "Order placed! Pay on delivery. 🚚")
         return redirect('payment:success', transaction_id=transaction_id)
