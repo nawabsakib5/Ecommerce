@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.utils import timezone
 from django.core.validators import FileExtensionValidator
-
-
 
 
 class Category(models.Model):
@@ -49,7 +48,6 @@ class Item(models.Model):
         ('expired', 'Expired'),
     ]
 
-    # existing fields
     category = models.ForeignKey(
         Category,
         related_name='items',
@@ -72,13 +70,14 @@ class Item(models.Model):
     image = models.ImageField(upload_to='item_images', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
-    # নতুন fields
     original_price = models.FloatField()
     sale_price = models.FloatField(blank=True, null=True)
     sale_start = models.DateTimeField(blank=True, null=True)
     sale_end = models.DateTimeField(blank=True, null=True)
 
     stock_count = models.PositiveIntegerField(default=1)
+    low_stock_threshold = models.PositiveIntegerField(default=5)
+
     condition = models.CharField(
         max_length=20,
         choices=CONDITION_CHOICES,
@@ -90,14 +89,10 @@ class Item(models.Model):
         default='active',
         db_index=True
     )
-
-    # পুরানো is_sold এর জায়গায় status ব্যবহার করবো
-    # কিন্তু backward compatibility এর জন্য রাখছি
     is_sold = models.BooleanField(default=False, db_index=True)
 
     @property
     def price(self):
-        """Flash sale active থাকলে sale_price, নাহলে original_price"""
         if self.is_on_sale:
             return self.sale_price
         return self.original_price
@@ -120,6 +115,33 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+
+    def has_variants(self):
+        return self.variants.exists()
+
+    def get_total_stock(self):
+        if self.has_variants():
+            return self.variants.filter(is_active=True).aggregate(
+                total=Sum('stock')
+            )['total'] or 0
+        return self.stock_count
+
+    def is_low_stock(self):
+        total = self.get_total_stock()
+        return 0 < total <= self.low_stock_threshold
+
+    def is_out_of_stock(self):
+        return self.get_total_stock() <= 0
+
+    def sync_status_from_stock(self):
+        if self.is_out_of_stock() and self.status == 'active':
+            self.status = 'sold'
+            self.is_sold = True
+            self.save(update_fields=['status', 'is_sold'])
+        elif not self.is_out_of_stock() and self.status == 'sold':
+            self.status = 'active'
+            self.is_sold = False
+            self.save(update_fields=['status', 'is_sold'])
 
 
 class ItemImage(models.Model):
@@ -157,7 +179,6 @@ class ItemImage(models.Model):
         return f"{self.item.name} — {self.media_type} {self.order}"
 
 
-
 class ProductVariant(models.Model):
     item = models.ForeignKey(
         Item,
@@ -166,7 +187,7 @@ class ProductVariant(models.Model):
     )
     size = models.CharField(max_length=20, blank=True, null=True)
     color = models.CharField(max_length=50, blank=True, null=True)
-    color_code = models.CharField(max_length=10, blank=True, null=True)  # hex color #FF0000
+    color_code = models.CharField(max_length=10, blank=True, null=True)
     material = models.CharField(max_length=100, blank=True, null=True)
     additional_price = models.DecimalField(
         max_digits=10, decimal_places=2, default=0,
