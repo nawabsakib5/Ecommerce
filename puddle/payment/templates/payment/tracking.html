@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% block title %}Track Order #{{ order.order_number|stringformat:"s"|slice:":8"|upper }} | CADO Fashion{% endblock %}
+{% block title %}Track Order {{ order.order_number|stringformat:"s"|slice:":8"|upper }} | CADO Fashion{% endblock %}
 
 {% block content %}
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,6 @@
 .tr-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#1a1a2e; margin-bottom:4px; }
 .tr-sub { font-size:12px; color:#aaa; font-weight:500; }
 
-/* Status banner */
 .tr-status-banner {
     display: flex; align-items: center; gap: 18px;
     padding: 22px 26px;
@@ -27,7 +26,6 @@
 .tr-status-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.7); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
 .tr-status-text { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
 
-/* Progress bar */
 .tr-progress { margin-bottom: 12px; }
 .tr-steps { display: flex; align-items: center; justify-content: space-between; position: relative; }
 .tr-steps::before { content: ''; position: absolute; top: 16px; left: 15px; right: 15px; height: 2px; background: #e8e5e0; z-index: 0; }
@@ -38,21 +36,18 @@
 .tr-step-label { font-size: 9px; font-weight: 700; color: #aaa; text-align: center; text-transform: uppercase; letter-spacing: .05em; }
 .tr-step.done .tr-step-label, .tr-step.active .tr-step-label { color: #1a1a2e; }
 
-/* Order info grid */
 .tr-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media(max-width:600px){ .tr-info-grid{ grid-template-columns: 1fr; } }
 .tr-info-item { background: #f8f7f4; border-radius: 12px; padding: 14px; border: 1.5px solid #f0ede8; }
 .tr-info-label { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
 .tr-info-value { font-size: 13px; font-weight: 700; color: #1a1a2e; }
 
-/* Tracking code box */
 .tr-code-box { background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 16px; padding: 22px; text-align: center; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(26,26,46,.15); }
 .tr-code-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
 .tr-code { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #e5c158; letter-spacing: 3px; }
 .tr-code-copy { background: rgba(229,193,88,.15); border: 1.5px solid rgba(229,193,88,.3); color: #e5c158; border-radius: 10px; padding: 8px 18px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 12px; transition: background .2s, transform .2s; display: inline-block; }
 .tr-code-copy:hover { background: rgba(229,193,88,.25); transform: translateY(-1px); }
 
-/* Timeline */
 .tr-tl-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
 .tr-tl-item { display: flex; gap: 14px; margin-bottom: 16px; }
 .tr-tl-left { display: flex; flex-direction: column; align-items: center; }
@@ -64,7 +59,6 @@
 .tr-tl-msg { font-size: 11px; color: #555; font-weight: 500; margin-bottom: 3px; }
 .tr-tl-time { font-size: 10px; color: #aaa; font-weight: 600; }
 
-/* Item preview */
 .tr-item-row { display: flex; gap: 14px; align-items: center; background: #f8f7f4; padding: 14px; border-radius: 14px; border: 1.5px solid #f0ede8; }
 .tr-item-img { width: 64px; height: 64px; border-radius: 10px; object-fit: contain; background: #fff; border: 1.5px solid #e8e5e0; flex-shrink: 0; }
 .tr-item-name { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; }
@@ -106,6 +100,11 @@
   <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
     <div class="tr-status-icon">✅</div>
     <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Payment Confirmed</div></div>
+  </div>
+  {% elif order.status == 'confirmed' %}
+  <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#16a34a,#15803d);">
+    <div class="tr-status-icon">🚚</div>
+    <div><div class="tr-status-label">Current Status</div><div class="tr-status-text">Order Confirmed — Pay on Delivery</div></div>
   </div>
   {% elif order.status == 'processing' %}
   <div class="tr-status-banner op0" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);">
@@ -149,7 +148,7 @@
           <div class="tr-step-dot">{% if s != 'pending_payment' %}✓{% else %}1{% endif %}</div>
           <div class="tr-step-label">Payment</div>
         </div>
-        <div class="tr-step {% if s in 'processing,picked_up,in_transit,out_for_delivery,delivered' %}done{% elif s == 'payment_confirmed' %}active{% endif %}">
+        <div class="tr-step {% if s in 'processing,picked_up,in_transit,out_for_delivery,delivered' %}done{% elif s == 'payment_confirmed' or s == 'confirmed' %}active{% endif %}">
           <div class="tr-step-dot">{% if s in 'processing,picked_up,in_transit,out_for_delivery,delivered' %}✓{% else %}2{% endif %}</div>
           <div class="tr-step-label">Confirmed</div>
         </div>
@@ -185,8 +184,6 @@
 
   <!-- Grid Details -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;" class="op0">
-
-    <!-- Order Summary Info -->
     <div class="tr-card" style="margin-bottom:0;">
       <div class="tr-tl-title">Order Details</div>
       <div class="tr-info-grid">
@@ -207,13 +204,12 @@
           <div class="tr-info-value">{{ order.get_delivery_charge_display }}</div>
         </div>
         <div class="tr-info-item" style="grid-column:1/-1; background:#fff; border-color:#e8e5e0;">
-          <div class="tr-info-label">Total Amount Paid</div>
+          <div class="tr-info-label">Total Amount</div>
           <div class="tr-info-value" style="font-family:'Syne',sans-serif;font-size:18px;color:#c84b31;">৳{{ order.total_amount|floatformat:0 }}</div>
         </div>
       </div>
     </div>
 
-    <!-- Recipient Info -->
     <div class="tr-card" style="margin-bottom:0;">
       <div class="tr-tl-title">Recipient Information</div>
       <div class="tr-info-grid">
@@ -290,7 +286,6 @@ function copyCode() {
   });
 }
 
-// Auto refresh page every 30 seconds for real-time tracking updates
 setTimeout(() => window.location.reload(), 30000);
 </script>
 {% endblock %}
