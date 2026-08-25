@@ -434,6 +434,10 @@ def cod_confirm(request, transaction_id):
             messages.error(request, "দুঃখিত, এই মুহূর্তে stock শেষ হয়ে গেছে।")
             return redirect('item:detail', pk=transaction.item.pk)
 
+        # COD এর জন্য আলাদা status
+        order.status = 'confirmed'
+        order.save(update_fields=['status'])
+
         messages.success(request, "Order placed! Pay on delivery. 🚚")
         return redirect('payment:success', transaction_id=transaction_id)
 
