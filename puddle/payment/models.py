@@ -326,3 +326,47 @@ class CouponUsage(models.Model):
 
     def __str__(self):
         return f"{self.user.username} used {self.coupon.code}"
+
+
+
+class ReturnRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('completed', 'Completed'),
+    ]
+
+    REASON_CHOICES = [
+        ('defective', 'Defective/Damaged Product'),
+        ('wrong_item', 'Wrong Item Received'),
+        ('not_as_described', 'Not as Described'),
+        ('changed_mind', 'Changed Mind'),
+        ('other', 'Other'),
+    ]
+
+    order = models.OneToOneField(
+        Order,
+        related_name='return_request',
+        on_delete=models.CASCADE
+    )
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES)
+    description = models.TextField()
+    image = models.ImageField(
+        upload_to='return_images/',
+        blank=True, null=True
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    admin_note = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f"Return #{str(self.order.order_number)[:8]} — {self.status}"
