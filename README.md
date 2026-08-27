@@ -17,7 +17,7 @@
 
 ## 🛒 About The Project
 
-**Puddle** is a scalable, full-stack **e-commerce platform** built with **Python & Django**, where users can browse and search products, list and manage items for sale, message sellers about products, and manage everything from a personal dashboard. It's designed with secure authentication and a clean, dynamic product-management flow for a seamless shopping experience.
+**Cado** is a scalable, full-stack **e-commerce platform** built with **Python & Django**, where users can browse and search products, list and manage items for sale, message sellers about products, and manage everything from a personal dashboard. It's designed with secure authentication and a clean, dynamic product-management flow for a seamless shopping experience.
 
 <div align="center">
 <img src="https://skillicons.dev/icons?i=python,django,tailwind,sqlite,html,js,git,github&theme=dark" />
