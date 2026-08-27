@@ -438,6 +438,10 @@ def cod_confirm(request, transaction_id):
         order.status = 'confirmed'
         order.save(update_fields=['status'])
 
+        # Email notification
+        from core.email_utils import send_order_confirmation
+        send_order_confirmation(order)
+
         messages.success(request, "Order placed! Pay on delivery. 🚚")
         return redirect('payment:success', transaction_id=transaction_id)
 
