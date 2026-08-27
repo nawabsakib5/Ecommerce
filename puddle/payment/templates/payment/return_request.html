@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% block title %}Return Request | CADO Fashion{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing:border-box; }
+.rr { font-family:'Inter',sans-serif; background:#f8f7f4; min-height:100vh; padding:40px 16px; display:flex; align-items:center; justify-content:center; }
+.rr-card { background:#fff; border:1.5px solid #e8e5e0; border-radius:24px; padding:36px; width:100%; max-width:520px; box-shadow:0 8px 32px rgba(0,0,0,.04); }
+.rr-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#1a1a2e; margin-bottom:6px; }
+.rr-sub { font-size:12px; color:#aaa; font-weight:500; margin-bottom:28px; }
+.rr-order-box { background:#f8f7f4; border-radius:14px; padding:16px; margin-bottom:24px; border:1.5px solid #f0ede8; }
+.rr-order-label { font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.rr-order-value { font-size:13px; font-weight:700; color:#1a1a2e; }
+.rr-group { margin-bottom:16px; }
+.rr-label { font-size:11px; font-weight:700; color:#666; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; display:block; }
+.rr-select, .rr-textarea, .rr-input { width:100%; padding:12px 14px; border:1.5px solid #e8e5e0; border-radius:11px; font-family:'Inter',sans-serif; font-size:13px; color:#1a1a2e; outline:none; transition:border-color .2s; background:#faf9f6; }
+.rr-select:focus, .rr-textarea:focus { border-color:#c84b31; background:#fff; }
+.rr-textarea { resize:vertical; min-height:100px; }
+.rr-btn { width:100%; padding:14px; background:#c84b31; color:#fff; border:none; border-radius:12px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:.06em; transition:background .2s; margin-top:8px; }
+.rr-btn:hover { background:#b03d26; }
+.rr-back { display:block; text-align:center; margin-top:14px; font-size:12px; color:#aaa; text-decoration:none; }
+.rr-back:hover { color:#c84b31; }
+.rr-warning { background:#fff8e1; border:1.5px solid #fde68a; border-radius:12px; padding:12px 16px; font-size:12px; color:#92400e; font-weight:500; margin-bottom:20px; }
+</style>
+
+<div class="rr">
+<div class="rr-card">
+  <div style="font-size:32px;margin-bottom:12px;">📦</div>
+  <div class="rr-title">Request Return</div>
+  <div class="rr-sub">Submit your return request and we'll review it within 24 hours.</div>
+
+  <div class="rr-order-box">
+    <div class="rr-order-label">Order</div>
+    <div class="rr-order-value">#{{ order.order_number|stringformat:"s"|slice:":8"|upper }} — {{ order.item.name }}</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">৳{{ order.total_amount|floatformat:0 }} · {{ order.created_at|date:"d M Y" }}</div>
+  </div>
+
+  <div class="rr-warning">
+    ⚠️ Please ensure the item is unused and in original condition before requesting a return.
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="rr-group">
+      <label class="rr-label">Reason for Return *</label>
+      <select name="reason" class="rr-select" required>
+        <option value="">Select a reason...</option>
+        {% for value, label in reason_choices %}
+        <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="rr-group">
+      <label class="rr-label">Description *</label>
+      <textarea name="description" class="rr-textarea"
+        placeholder="Please describe the issue in detail..." required></textarea>
+    </div>
+
+    <div class="rr-group">
+      <label class="rr-label">Photo Evidence (optional)</label>
+      <input type="file" name="image" accept="image/*" class="rr-input" style="padding:10px;">
+    </div>
+
+    <button type="submit" class="rr-btn">📤 Submit Return Request</button>
+  </form>
+
+  <a href="{% url 'dashboard:orders' %}" class="rr-back">← Back to Orders</a>
+</div>
+</div>
+{% endblock %}

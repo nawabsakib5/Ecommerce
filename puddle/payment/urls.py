@@ -35,4 +35,8 @@ urlpatterns = [
 
     # Coupon
     path('coupon/apply/', views.apply_coupon, name='apply_coupon'),
+
+    # Return/Refund flow
+    path('return/<uuid:order_number>/', views.request_return, name='request_return'),
+    path('return/<uuid:order_number>/process/', views.process_return, name='process_return'),
 ]
