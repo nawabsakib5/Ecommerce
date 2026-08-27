@@ -6,7 +6,8 @@ from django.utils import timezone
 
 from item.models import Item, Category
 from .forms import SignupForm
-from .models import Notification, Wishlist, Review
+from .models import Notification, Wishlist
+from item.models import Review
 
 
 def index(request):

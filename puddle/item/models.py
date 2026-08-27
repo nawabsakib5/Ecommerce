@@ -214,3 +214,42 @@ class ProductVariant(models.Model):
     @property
     def is_in_stock(self):
         return self.stock > 0
+
+
+
+class Review(models.Model):
+    RATING_CHOICES = [(i, i) for i in range(1, 6)]
+
+    item = models.ForeignKey(
+        Item,
+        related_name='reviews',
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='reviews',
+        on_delete=models.CASCADE
+    )
+    order = models.ForeignKey(
+        'payment.Order',
+        related_name='reviews',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    title = models.CharField(max_length=100, blank=True)
+    body = models.TextField()
+    image = models.ImageField(
+        upload_to='review_images/',
+        blank=True, null=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
+    )
+    is_verified_purchase = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        unique_together = ('item', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} — {self.item.name} ({self.rating}★)"
