@@ -128,3 +128,13 @@ def help_center(request):
 
 def privacy_policy(request):
     return render(request, 'core/privacy_policy.html')
+
+
+
+@login_required
+def wishlist(request):
+    from core.models import Wishlist
+    items = Wishlist.objects.filter(
+        user=request.user
+    ).select_related('item', 'item__category').order_by('-created_at')
+    return render(request, 'core/wishlist.html', {'wishlist': items})
