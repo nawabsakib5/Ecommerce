@@ -715,6 +715,10 @@ def request_return(request, order_number):
         order.status = 'returned'
         order.save(update_fields=['status'])
 
+        # Email notification
+        from core.email_utils import send_return_request_notification
+        send_return_request_notification(order)
+
         # Seller কে notification
         from core.models import Notification
         Notification.objects.create(

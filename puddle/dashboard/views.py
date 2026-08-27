@@ -186,6 +186,10 @@ def update_order_status(request, order_number):
 
             order.save()
 
+            # Email notification
+            from core.email_utils import send_order_status_update
+            send_order_status_update(order)
+
             from core.models import Notification
             Notification.objects.create(
                 user=order.buyer,
