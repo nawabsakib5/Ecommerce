@@ -1,41 +1,55 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8B5CF6,100:06B6D4&height=220&section=header&text=Puddle&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=32&desc=A%20Full-Stack%20E-Commerce%20Platform&descAlignY=55&descSize=22" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,50:EA580C,100:0F172A&height=230&section=header&text=CADO%20FASHION&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Shop%20Smarter%2C%20Save%20Bigger&descAlignY=58&descSize=20" width="100%"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Browse+%26+shop+products+with+ease;Built-in+customer-seller+messaging;Search+%2B+category+filtering;Full-Stack+Django+%2B+Tailwind+by+Mohammad+Sakib" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=21&pause=1000&color=EA580C&center=true&vCenter=true&width=680&lines=Full-stack+fashion+e-commerce+platform;Deals+from+verified+sellers+across+Bangladesh;Cart%2C+wishlist%2C+reviews+%26+real-time+messaging;Built+with+Django+by+Mohammad+Sakib" alt="Typing SVG" />
 
 <br/>
 
-[![Stars](https://img.shields.io/github/stars/nawabsakib5/Ecommerce?style=for-the-badge&color=8B5CF6&labelColor=1a1a2e)](https://github.com/nawabsakib5/Ecommerce/stargazers)
-[![Forks](https://img.shields.io/github/forks/nawabsakib5/Ecommerce?style=for-the-badge&color=06B6D4&labelColor=1a1a2e)](https://github.com/nawabsakib5/Ecommerce/network/members)
-[![Last Commit](https://img.shields.io/github/last-commit/nawabsakib5/Ecommerce?style=for-the-badge&color=EC4899&labelColor=1a1a2e)](https://github.com/nawabsakib5/Ecommerce/commits/main)
-[![Status](https://img.shields.io/badge/status-active%20development-F59E0B?style=for-the-badge&labelColor=1a1a2e)](#-status)
+[![Live Site](https://img.shields.io/badge/Live%20Demo-ecommerce--iyil.onrender.com-EA580C?style=for-the-badge&logo=render&logoColor=white)](https://ecommerce-iyil.onrender.com)
+[![Stars](https://img.shields.io/github/stars/nawabsakib5/Ecommerce?style=for-the-badge&color=F59E0B&labelColor=1a1a2e)](https://github.com/nawabsakib5/Ecommerce/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/nawabsakib5/Ecommerce?style=for-the-badge&color=8B5CF6&labelColor=1a1a2e)](https://github.com/nawabsakib5/Ecommerce/commits/main)
+[![Status](https://img.shields.io/badge/status-active%20development-10B981?style=for-the-badge&labelColor=1a1a2e)](#-status)
 
 </div>
 
 ---
 
-## 🛒 About The Project
+## 🛍️ About The Project
 
-**Cado** is a scalable, full-stack **e-commerce platform** built with **Python & Django**, where users can browse and search products, list and manage items for sale, message sellers about products, and manage everything from a personal dashboard. It's designed with secure authentication and a clean, dynamic product-management flow for a seamless shopping experience.
+**Cado Fashion** (repo: `Ecommerce`) is a full-stack **fashion e-commerce platform** built with **Python & Django** — originally started as *Puddle*, a second-hand marketplace prototype, and iteratively evolved into a full retail storefront for verified sellers across Bangladesh. Customers can browse curated categories (Men's, Baby items, Children's Drop Shoulders, Clothing, Adults Drop Shoulders), search products, add items to a cart or wishlist, leave reviews, message sellers in real time, and sellers get their own dashboard with **Chart.js**-powered analytics.
 
 <div align="center">
-<img src="https://skillicons.dev/icons?i=python,django,tailwind,sqlite,html,js,git,github&theme=dark" />
+<img src="https://skillicons.dev/icons?i=python,django,tailwind,postgresql,js,html,git,github,render&theme=dark" />
 </div>
 
 ---
 
 ## 📚 Table of Contents
 
+- [🖥️ Preview](#️-preview)
 - [✨ Features](#-features)
 - [🏗️ Architecture](#️-architecture)
 - [📁 Project Structure](#-project-structure)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🚀 Getting Started](#-getting-started)
-- [📖 Usage](#-usage)
-- [🚧 Status](#-status)
+- [⚙️ Environment Variables](#️-environment-variables)
+- [☁️ Deployment](#️-deployment)
+- [🔒 Security](#-security)
 - [🗺️ Roadmap](#️-roadmap)
 - [👤 Author](#-author)
+
+---
+
+## 🖥️ Preview
+
+<div align="center">
+
+| Home / Storefront |
+|:---:|
+| Hero banner, category quick-filters, live search, "Just Dropped" & "Trending Now" panels, and a latest-items feed — all in a clean, dark-accented storefront UI. |
+
+</div>
 
 ---
 
@@ -45,26 +59,32 @@
 <tr>
 <td width="50%" valign="top">
 
-### 🔐 Secure Authentication
-Full registration, login & logout flow built on Django's auth system.
+### 🏬 Storefront & Browsing
+Hero promo banners, category quick-filter chips (Men's, Baby, Kids, Clothing), and a live search bar across products, brands & categories.
 
-### 🖼️ Product Management
-Add, edit, and delete product listings — complete with images, price & category.
+### 🛒 Cart & Wishlist
+Add products to cart or save them to a wishlist for later.
 
-### 🔍 Search & Filter
-Find products instantly by name, description, or category.
+### ⭐ Reviews
+Customers can leave reviews on purchased or listed products.
+
+### 🔔 Notifications & Inbox
+In-app notification bell + real-time messaging between buyers and sellers.
 
 </td>
 <td width="50%" valign="top">
 
-### 💬 Customer–Seller Messaging
-Built-in conversation system so customers and sellers can chat about products without leaving the platform.
+### 📦 Seller Tools
+"+ Add Item" flow for sellers to list products, plus bulk-upload support via a custom Django management command that pushes images/videos straight to **Cloudinary**.
 
-### 📋 Personal Dashboard
-Manage all your own listings from a dedicated user dashboard.
+### 📊 Analytics Dashboard
+Seller dashboard with **Chart.js**-powered sales/activity visualizations.
 
-### 🎨 Modern UI
-Styled with **Tailwind CSS** for a fast, responsive, clean shopping experience.
+### 👥 Buyer / Seller Roles
+Role-aware access — separate flows for people browsing vs. people listing products.
+
+### 🔐 Secure Auth
+Full login / logout / dashboard access control.
 
 </td>
 </tr>
@@ -76,14 +96,23 @@ Styled with **Tailwind CSS** for a fast, responsive, clean shopping experience.
 
 ```mermaid
 flowchart LR
-    U["👤 User"] --> Auth["🔐 Register / Login"]
-    Auth --> Core["🏠 core\nHome & base templates"]
-    Auth --> Dash["📋 dashboard\nManage listings"]
-    Dash --> Item["🛍️ item\nAdd / Edit / Delete"]
-    Item --> Search["🔍 Search & Category Filter"]
-    Item --> Conv["💬 conversation\nCustomer ↔ Seller Chat"]
-    Conv --> Seller["🧑‍💼 Seller"]
-    Conv --> Buyer["🛒 Customer"]
+    U["👤 Customer"] --> Auth["🔐 Login / Register"]
+    Auth --> Home["🏠 Storefront\nHero + Categories + Search"]
+    Home --> Item["🛍️ Product Listings"]
+    Item --> Cart["🛒 Cart"]
+    Item --> Wish["💛 Wishlist"]
+    Item --> Rev["⭐ Reviews"]
+    Item --> Conv["💬 Real-time Messaging"]
+    S["🧑‍💼 Seller"] --> Add["➕ Add Item\n(Bulk Upload)"]
+    Add --> Cloud[("☁️ Cloudinary\nMedia Storage")]
+    S --> Dash["📊 Seller Dashboard\nChart.js Analytics"]
+    Conv --> S
+    Home --> Notif["🔔 Notifications"]
+    subgraph Deploy["Production"]
+        Gun["🦄 Gunicorn"] --> WN["📦 WhiteNoise\nStatic Files"]
+        Gun --> DB[("🗄️ PostgreSQL")]
+    end
+    Home -.-> Gun
 ```
 
 ---
@@ -92,16 +121,17 @@ flowchart LR
 
 ```text
 Ecommerce/
-└── puddle/
-    ├── core/             # Home page & base templates
-    ├── item/             # Product listings — add, edit, delete
-    ├── conversation/     # Messaging between customers & sellers
-    ├── dashboard/        # User dashboard
-    ├── templates/        # Shared HTML templates
-    ├── puddle/           # Project settings & URLs
+└── puddle/                # Root directory (deployed on Render)
+    ├── core/               # Home page & base templates
+    ├── item/               # Product listings — add, edit, delete, bulk upload
+    ├── conversation/       # Real-time buyer–seller messaging
+    ├── dashboard/          # Seller dashboard + Chart.js analytics
+    ├── templates/          # Shared HTML templates
+    ├── puddle/             # Django project settings & URLs
     ├── requirements.txt
     └── manage.py
-├── Procfile              # Deployment process config
+├── Procfile                # Gunicorn start command for deployment
+├── .gitignore               # Hardened after full security audit
 └── requirements.txt
 ```
 
@@ -111,10 +141,12 @@ Ecommerce/
 
 | Layer | Technology |
 |---|---|
-| **Backend** | ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Django](https://img.shields.io/badge/-Django-092E20?style=flat-square&logo=django&logoColor=white) |
-| **Frontend** | ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![Tailwind](https://img.shields.io/badge/-TailwindCSS-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white) |
-| **Database** | ![SQLite](https://img.shields.io/badge/-SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) |
-| **Auth** | Django built-in authentication |
+| **Backend** | ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Django](https://img.shields.io/badge/-Django-092E20?style=flat-square&logo=django&logoColor=white) ![Gunicorn](https://img.shields.io/badge/-Gunicorn-499848?style=flat-square&logo=gunicorn&logoColor=white) |
+| **Frontend** | ![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![Tailwind](https://img.shields.io/badge/-TailwindCSS-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white) ![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) ![Chart.js](https://img.shields.io/badge/-Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white) |
+| **Media Storage** | ![Cloudinary](https://img.shields.io/badge/-Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white) |
+| **Static Files** | ![WhiteNoise](https://img.shields.io/badge/-WhiteNoise-000000?style=flat-square) |
+| **Database** | ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white) |
+| **Hosting** | ![Render](https://img.shields.io/badge/-Render-46E3B7?style=flat-square&logo=render&logoColor=white) |
 
 ---
 
@@ -150,29 +182,54 @@ Open your browser and go to → **`http://127.0.0.1:8000`** 🎉
 
 ---
 
-## 📖 Usage
+## ⚙️ Environment Variables
 
-1. 📝 Register a new account or log in
-2. 🏷️ List products for sale with images, price & category
-3. 🔍 Browse or search products by name or category
-4. 💬 Contact sellers via the built-in messaging system
-5. 📋 Manage your listings from your personal dashboard
+Create a `.env` file inside `puddle/` — never commit this file:
+
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+DATABASE_URL=your-database-url
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+```
 
 ---
 
-## 🚧 Status
+## ☁️ Deployment
 
-> Under active development — new features being added regularly.
+<div align="left">
+<img src="https://img.shields.io/badge/Render-Live-46E3B7?style=for-the-badge&logo=render&logoColor=white" />
+</div>
+
+Live at **[ecommerce-iyil.onrender.com](https://ecommerce-iyil.onrender.com)** — deployed on **Render** with:
+- Root directory set to `puddle`
+- **Gunicorn** as the production WSGI server
+- **Cloudinary** for all product image/video storage
+- **WhiteNoise** for serving static files
+
+> Originally deployed on Railway; migrated to Render after Railway's free tier expired. A future move to a self-hosted home server is planned.
+
+---
+
+## 🔒 Security
+
+A full security audit was performed on this repository:
+- ✅ Removed all hardcoded secrets from source
+- ✅ Cleaned git history with `git filter-repo`
+- ✅ Added a proper, hardened `.gitignore`
+- ✅ Secrets now loaded exclusively via environment variables
 
 ---
 
 ## 🗺️ Roadmap
 
-- [ ] ⭐ Ratings & reviews for products
-- [ ] 💳 In-app payment / checkout flow
-- [ ] 🛒 Shopping cart & order history
-- [ ] 📱 Mobile-responsive polish
-- [ ] 🔔 Real-time chat notifications
+- [ ] 💳 Full checkout & payment gateway integration
+- [ ] 📦 Order tracking & history
+- [ ] ⭐ Verified seller badges
+- [ ] 📱 Mobile app companion
+- [ ] 🏠 Migrate hosting to self-hosted home server
 
 ---
 
@@ -192,5 +249,5 @@ BSc in CSE — Habibullah Bahar University College, Bangladesh
 ---
 
 <div align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:06B6D4,100:8B5CF6&height=100&section=footer" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0F172A,50:EA580C,100:0F172A&height=100&section=footer" width="100%"/>
 </div>
