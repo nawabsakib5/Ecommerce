@@ -58,12 +58,14 @@ def items(request):
 
 
 def detail(request, pk):
+    from .models import Review
+    from django.db.models import Avg
+
     item = get_object_or_404(
         Item.objects.select_related('category', 'user', 'shop'),
         pk=pk,
     )
 
-    # Multiple images — main image + extra images
     extra_images = item.images.all()
 
     related_items = Item.objects.filter(
@@ -72,10 +74,19 @@ def detail(request, pk):
         status='active',
     ).exclude(pk=pk).select_related('category', 'user')[:4]
 
+    reviews = Review.objects.filter(item=item).select_related('user')
+    avg_rating = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+    user_review = None
+    if request.user.is_authenticated:
+        user_review = reviews.filter(user=request.user).first()
+
     return render(request, 'item/detail.html', {
         'item': item,
         'related_items': related_items,
         'extra_images': extra_images,
+        'reviews': reviews,
+        'avg_rating': avg_rating,
+        'user_review': user_review,
     })
 
 
