@@ -673,3 +673,117 @@ def apply_coupon(request):
         'message': f'Coupon applied! You save ৳{discount}',
         'coupon_type': coupon.discount_type,
     })
+
+
+# ── Return Request ──
+@login_required
+def request_return(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number, buyer=request.user)
+
+    # শুধু delivered order-এ return করা যাবে
+    if order.status not in ['delivered', 'confirmed']:
+        messages.error(request, "Only delivered orders can be returned.")
+        return redirect('dashboard:orders')
+
+    # আগে থেকে return request আছে কিনা
+    if hasattr(order, 'return_request'):
+        messages.warning(request, "Return request already submitted.")
+        return redirect('dashboard:orders')
+
+    if request.method == 'POST':
+        from .models import ReturnRequest
+        reason = request.POST.get('reason')
+        description = request.POST.get('description', '').strip()
+        image = request.FILES.get('image')
+
+        if not reason or not description:
+            messages.error(request, "Please fill all required fields.")
+            return redirect('payment:request_return', order_number=order_number)
+
+        ReturnRequest.objects.create(
+            order=order,
+            reason=reason,
+            description=description,
+            image=image,
+        )
+
+        # Order status update
+        order.status = 'returned'
+        order.save(update_fields=['status'])
+
+        # Seller কে notification
+        from core.models import Notification
+        Notification.objects.create(
+            user=order.item.user,
+            title="Return Request 📦",
+            message=f"Buyer requested return for '{order.item.name}'",
+            notification_type='general',
+            link=f"/dashboard/orders/",
+        )
+
+        messages.success(request, "Return request submitted successfully.")
+        return redirect('dashboard:orders')
+
+    from .models import ReturnRequest
+    return render(request, 'payment/return_request.html', {
+        'order': order,
+        'reason_choices': ReturnRequest.REASON_CHOICES,
+    })
+
+
+@login_required
+def process_return(request, order_number):
+    """Admin/Seller return request process করবে"""
+    order = get_object_or_404(Order, order_number=order_number)
+
+    if not (request.user == order.item.user or request.user.is_staff):
+        messages.error(request, "Permission denied.")
+        return redirect('dashboard:orders')
+
+    if not hasattr(order, 'return_request'):
+        messages.error(request, "No return request found.")
+        return redirect('dashboard:orders')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        admin_note = request.POST.get('admin_note', '').strip()
+        return_req = order.return_request
+
+        if action == 'approve':
+            return_req.status = 'approved'
+            return_req.admin_note = admin_note
+            return_req.save()
+
+            # Stock restore
+            order.restore_stock()
+            order.status = 'refunded'
+            order.save(update_fields=['status'])
+
+            # Buyer কে notification
+            from core.models import Notification
+            Notification.objects.create(
+                user=order.buyer,
+                title="Return Approved ✅",
+                message=f"Your return request for '{order.item.name}' has been approved.",
+                notification_type='general',
+            )
+            messages.success(request, "Return approved, stock restored.")
+
+        elif action == 'reject':
+            return_req.status = 'rejected'
+            return_req.admin_note = admin_note
+            return_req.save()
+
+            order.status = 'delivered'
+            order.save(update_fields=['status'])
+
+            from core.models import Notification
+            Notification.objects.create(
+                user=order.buyer,
+                title="Return Rejected ❌",
+                message=f"Your return request for '{order.item.name}' was rejected. {admin_note}",
+                notification_type='general',
+            )
+            messages.warning(request, "Return rejected.")
+
+    return redirect('dashboard:orders')
