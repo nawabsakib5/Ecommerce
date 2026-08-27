@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib import messages
-from .models import PaymentMethod, Transaction, Order, Coupon, CouponUsage
+from .models import*
 
 
 @admin.register(Coupon)
@@ -57,3 +57,12 @@ class TransactionAdmin(admin.ModelAdmin):
 class PaymentMethodAdmin(admin.ModelAdmin):
     list_display = ('user', 'method_type', 'is_default', 'is_active')
     list_filter = ('method_type', 'is_active')
+
+
+
+@admin.register(ReturnRequest)
+class ReturnRequestAdmin(admin.ModelAdmin):
+    list_display = ('order', 'reason', 'status', 'created_at')
+    list_filter = ('status', 'reason')
+    list_editable = ('status',)
+    search_fields = ('order__order_number',)
