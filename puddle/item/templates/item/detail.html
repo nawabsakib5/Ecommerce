@@ -21,42 +21,12 @@
 .dp-grid { display:grid; grid-template-columns:1fr 420px; gap:24px; align-items:start; }
 @media(max-width:1024px){ .dp-grid{ grid-template-columns:1fr; } }
 
-/* ── IMAGE PANEL ── */
 .dp-img-panel { background:#fff; border-radius:24px; border:1.5px solid #e8e5e0; overflow:hidden; }
-
-.dp-img-main {
-    position:relative;
-    background:#f8f7f4;
-    display:flex; align-items:center; justify-content:center;
-    min-height:480px; overflow:hidden; cursor:zoom-in;
-}
-
-.dp-img-main img#mainImg {
-    max-width:100%; max-height:460px;
-    object-fit:contain;
-    filter:drop-shadow(0 20px 40px rgba(0,0,0,.12));
-    transition:transform .4s ease;
-    pointer-events:none;
-    user-select:none;
-}
+.dp-img-main { position:relative; background:#f8f7f4; display:flex; align-items:center; justify-content:center; min-height:480px; overflow:hidden; cursor:zoom-in; }
+.dp-img-main img#mainImg { max-width:100%; max-height:460px; object-fit:contain; filter:drop-shadow(0 20px 40px rgba(0,0,0,.12)); transition:transform .4s ease; pointer-events:none; user-select:none; }
 .dp-img-main.zoomed img#mainImg { transform:scale(1.9); }
-
-.dp-img-main video#mainVideo {
-    max-width:100%; max-height:460px;
-    object-fit:contain;
-    display:none;
-    width: 100%;
-    height: 100%;
-}
-
-.dp-zoom-hint {
-    position:absolute; bottom:14px; right:14px;
-    background:rgba(26,26,46,.6); color:#fff;
-    border-radius:8px; padding:4px 10px;
-    font-size:9px; font-weight:700; letter-spacing:.06em;
-    pointer-events:none; opacity:.7;
-}
-
+.dp-img-main video#mainVideo { max-width:100%; max-height:460px; object-fit:contain; display:none; width:100%; height:100%; }
+.dp-zoom-hint { position:absolute; bottom:14px; right:14px; background:rgba(26,26,46,.6); color:#fff; border-radius:8px; padding:4px 10px; font-size:9px; font-weight:700; letter-spacing:.06em; pointer-events:none; opacity:.7; }
 .dp-img-badges { position:absolute; top:16px; left:16px; display:flex; flex-direction:column; gap:5px; z-index:2; }
 .dp-badge { padding:3px 9px; border-radius:7px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
 .dp-badge-cat { background:#1a1a2e; color:#fff; }
@@ -64,83 +34,36 @@
 .dp-badge-cond { background:#0d7377; color:#fff; }
 .dp-badge-sold { background:#6b7280; color:#fff; }
 @keyframes salePulse { 0%,100%{opacity:1}50%{opacity:.6} }
-
-.dp-wl-img {
-    position:absolute; top:16px; right:16px; z-index:2;
-    width:38px; height:38px;
-    background:#fff; border:1.5px solid #e8e5e0; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    text-decoration:none; font-size:17px;
-    transition:border-color .2s, transform .2s;
-    box-shadow:0 4px 12px rgba(0,0,0,.06);
-}
+.dp-wl-img { position:absolute; top:16px; right:16px; z-index:2; width:38px; height:38px; background:#fff; border:1.5px solid #e8e5e0; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:17px; transition:border-color .2s, transform .2s; box-shadow:0 4px 12px rgba(0,0,0,.06); }
 .dp-wl-img:hover { border-color:#c84b31; transform:scale(1.1); }
 
-/* Thumbnail gallery */
 .dp-thumbs { display:flex; gap:8px; padding:14px; overflow-x:auto; scrollbar-width:none; border-top:1px solid #f0ede8; }
 .dp-thumbs::-webkit-scrollbar { display:none; }
-.dp-thumb {
-    width:70px; height:70px; flex-shrink:0;
-    border:2px solid #e8e5e0; border-radius:11px;
-    overflow:hidden; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    background:#f8f7f4; padding:5px;
-    position: relative;
-    transition:border-color .2s, transform .2s;
-}
+.dp-thumb { width:70px; height:70px; flex-shrink:0; border:2px solid #e8e5e0; border-radius:11px; overflow:hidden; cursor:pointer; display:flex; align-items:center; justify-content:center; background:#f8f7f4; padding:5px; position:relative; transition:border-color .2s, transform .2s; }
 .dp-thumb:hover { transform:scale(1.05); }
 .dp-thumb.active { border-color:#c84b31; }
 .dp-thumb img { width:100%; height:100%; object-fit:contain; }
-.dp-thumb video { width:100%; height:100%; object-fit:cover; pointer-events: none; }
+.dp-thumb video { width:100%; height:100%; object-fit:cover; pointer-events:none; }
 
-/* Lightbox */
-.dp-lightbox {
-    display:none; position:fixed; inset:0;
-    background:rgba(0,0,0,.92); z-index:9999;
-    align-items:center; justify-content:center;
-    cursor:zoom-out;
-}
+.dp-lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:9999; align-items:center; justify-content:center; cursor:zoom-out; }
 .dp-lightbox.open { display:flex; }
-.dp-lightbox img {
-    max-width:90vw; max-height:90vh;
-    object-fit:contain;
-    border-radius:12px;
-    box-shadow:0 40px 80px rgba(0,0,0,.5);
-    animation:lbIn .25s ease;
-}
+.dp-lightbox img { max-width:90vw; max-height:90vh; object-fit:contain; border-radius:12px; box-shadow:0 40px 80px rgba(0,0,0,.5); animation:lbIn .25s ease; }
 @keyframes lbIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
-.dp-lb-close {
-    position:absolute; top:20px; right:24px;
-    color:#fff; font-size:28px; cursor:pointer;
-    background:rgba(255,255,255,.1); border:none;
-    width:44px; height:44px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .2s;
-}
+.dp-lb-close { position:absolute; top:20px; right:24px; color:#fff; font-size:28px; cursor:pointer; background:rgba(255,255,255,.1); border:none; width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background .2s; }
 .dp-lb-close:hover { background:rgba(200,75,49,.6); }
-.dp-lb-nav {
-    position:absolute; top:50%; transform:translateY(-50%);
-    color:#fff; font-size:22px; cursor:pointer;
-    background:rgba(255,255,255,.1); border:none;
-    width:48px; height:48px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .2s;
-}
+.dp-lb-nav { position:absolute; top:50%; transform:translateY(-50%); color:#fff; font-size:22px; cursor:pointer; background:rgba(255,255,255,.1); border:none; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background .2s; }
 .dp-lb-nav:hover { background:rgba(200,75,49,.6); }
 .dp-lb-prev { left:20px; }
 .dp-lb-next { right:20px; }
 
-/* ── INFO PANEL ── */
 .dp-info { background:#fff; border-radius:24px; border:1.5px solid #e8e5e0; padding:28px; }
 .dp-info-cat { font-size:10px; font-weight:700; color:#c84b31; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
 .dp-info-name { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#1a1a2e; line-height:1.15; margin-bottom:14px; }
-
 .dp-rating-row { display:flex; align-items:center; gap:8px; margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid #f0ede8; }
 .dp-stars { color:#f59e0b; font-size:13px; }
 .dp-rating-count { font-size:11px; font-weight:600; color:#aaa; }
 .dp-seller-link { font-size:11px; font-weight:600; color:#555; margin-left:auto; }
 .dp-seller-link b { color:#1a1a2e; }
-
 .dp-price-box { background:#f8f7f4; border-radius:14px; padding:18px; margin-bottom:18px; }
 .dp-price-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
 .dp-price-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
@@ -148,32 +71,26 @@
 .dp-price-orig { font-size:17px; font-weight:600; color:#bbb; text-decoration:line-through; }
 .dp-price-main { font-family:'Syne',sans-serif; font-size:34px; font-weight:800; color:#1a1a2e; line-height:1; }
 .dp-discount-tag { background:#c84b31; color:#fff; border-radius:6px; padding:2px 7px; font-size:10px; font-weight:700; margin-left:auto; }
-
 .dp-stock { margin-bottom:18px; }
 .dp-stock-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
 .dp-stock-label { font-size:11px; font-weight:600; color:#666; }
 .dp-stock-count { font-size:11px; font-weight:700; color:#1a1a2e; }
 .dp-stock-bar { height:4px; background:#f0ede8; border-radius:999px; overflow:hidden; }
 .dp-stock-fill { height:100%; background:linear-gradient(90deg,#c84b31,#ff8c7a); border-radius:999px; transition:width .8s ease; }
-
 .dp-desc { margin-bottom:20px; }
 .dp-desc-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
 .dp-desc-text { font-size:13px; font-weight:500; color:#555; line-height:1.7; }
-
 .dp-meta { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:20px; }
 .dp-meta-tag { padding:4px 10px; background:#f8f7f4; border:1.5px solid #e8e5e0; border-radius:7px; font-size:10px; font-weight:600; color:#555; }
 .dp-meta-tag b { color:#1a1a2e; }
-
 .dp-ctas { display:flex; flex-direction:column; gap:9px; }
 .dp-btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; padding:15px 24px; background:#1a1a2e; color:#fff; border-radius:13px; border:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:12px; font-weight:700; text-decoration:none; text-transform:uppercase; letter-spacing:.06em; transition:background .2s, transform .2s, box-shadow .2s; box-shadow:0 8px 20px rgba(26,26,46,.2); }
 .dp-btn-primary:hover { background:#c84b31; transform:translateY(-2px); box-shadow:0 12px 28px rgba(200,75,49,.3); }
 .dp-btn-primary.red { background:#c84b31; box-shadow:0 8px 20px rgba(200,75,49,.25); }
 .dp-btn-primary.red:hover { background:#b03d26; }
-
 .dp-btn-row { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
 .dp-btn-sec { display:flex; align-items:center; justify-content:center; gap:6px; padding:12px 14px; background:#fff; color:#1a1a2e; border:1.5px solid #e8e5e0; border-radius:11px; cursor:pointer; font-family:'Inter',sans-serif; font-size:11px; font-weight:700; text-decoration:none; text-transform:uppercase; letter-spacing:.05em; transition:all .2s; }
 .dp-btn-sec:hover { border-color:#c84b31; color:#c84b31; transform:translateY(-1px); }
-
 .dp-owner-box { background:#f8f7f4; border-radius:13px; padding:14px; }
 .dp-owner-label { font-size:10px; font-weight:700; color:#aaa; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
 .dp-owner-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
@@ -181,10 +98,8 @@
 .dp-owner-edit:hover { background:#c84b31 !important; border-color:#c84b31 !important; color:#fff !important; }
 .dp-owner-del { background:#fee2e2; color:#c84b31; border-color:#fecaca; }
 .dp-owner-del:hover { background:#c84b31 !important; color:#fff !important; border-color:#c84b31 !important; }
-
 .dp-sold-overlay { display:flex; align-items:center; justify-content:center; gap:8px; padding:15px; background:#f3f4f6; border-radius:13px; font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; }
 
-/* Related */
 .dp-related { margin-top:44px; }
 .dp-related-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#1a1a2e; margin-bottom:18px; }
 .dp-related-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
@@ -197,7 +112,6 @@
 .dp-rel-name { font-size:13px; font-weight:600; color:#1a1a2e; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .dp-rel-price { font-family:'Syne',sans-serif; font-size:15px; font-weight:800; color:#c84b31; }
 
-/* Delete modal */
 .dp-modal { display:none; position:fixed; inset:0; background:rgba(26,26,46,.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; }
 .dp-modal.open { display:flex; }
 .dp-modal-box { background:#fff; border-radius:22px; padding:28px; max-width:340px; width:90%; box-shadow:0 40px 80px rgba(0,0,0,.15); }
@@ -241,13 +155,10 @@
         {% endif %}
       </div>
 
-      <!-- Thumbnails -->
       <div class="dp-thumbs" id="thumbStrip">
-        <!-- Main image thumbnail -->
         <div class="dp-thumb active" onclick="switchImg(this, '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}', 0)">
           <img src="{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/400/400{% endif %}" alt="">
         </div>
-        <!-- Extra images -->
         {% for img in extra_images %}
           {% if img.media_type == 'video' or img.video %}
           <div class="dp-thumb" onclick="switchToVideo(this, '{{ img.video.url }}', {{ forloop.counter }})">
@@ -261,7 +172,6 @@
           </div>
           {% endif %}
         {% endfor %}
-        <!-- Video thumbnail from item model if exists -->
         {% if item.video %}
         <div class="dp-thumb" onclick="switchToVideo(this, '{{ item.video.url }}', {{ extra_images|length|add:1 }})">
           <video src="{{ item.video.url }}"></video>
@@ -276,8 +186,10 @@
       <h1 class="dp-info-name">{{ item.name }}</h1>
 
       <div class="dp-rating-row">
-        <div class="dp-stars">★★★★☆</div>
-        <span class="dp-rating-count">{% with item.reviews.count as rc %}{{ rc }} review{{ rc|pluralize }}{% endwith %}</span>
+        <div class="dp-stars">
+          {% for i in "12345" %}{% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}{% endfor %}
+        </div>
+        <span class="dp-rating-count">{{ reviews.count }} review{{ reviews.count|pluralize }}</span>
         <span class="dp-seller-link">By <b>{{ item.user.username }}</b>{% if item.shop %} · {{ item.shop.name }}{% endif %}</span>
       </div>
 
@@ -349,6 +261,115 @@
     </div>
   </div>
 
+  <!-- Reviews Section -->
+  <div class="dp-related" style="margin-top:32px;">
+    <div class="dp-related-title">⭐ Customer Reviews</div>
+
+    <!-- Average Rating Summary -->
+    <div style="background:#fff;border:1.5px solid #e8e5e0;border-radius:20px;padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+      <div style="text-align:center;min-width:80px;">
+        <div style="font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:#1a1a2e;line-height:1;">{{ avg_rating|floatformat:1 }}</div>
+        <div style="color:#f59e0b;font-size:20px;">
+          {% for i in "12345" %}{% if forloop.counter <= avg_rating %}★{% else %}☆{% endif %}{% endfor %}
+        </div>
+        <div style="font-size:11px;color:#aaa;font-weight:600;margin-top:4px;">{{ reviews.count }} review{{ reviews.count|pluralize }}</div>
+      </div>
+      <div style="flex:1;min-width:200px;color:#555;font-size:12px;font-weight:500;line-height:2;">
+        {% if reviews.count == 0 %}
+        No reviews yet for this product.
+        {% else %}
+        Based on {{ reviews.count }} customer review{{ reviews.count|pluralize }}.
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Write Review Form -->
+    {% if request.user.is_authenticated and request.user != item.user %}
+    <div style="background:#fff;border:1.5px solid #e8e5e0;border-radius:20px;padding:24px;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:16px;">
+        {% if user_review %}✏️ Update Your Review{% else %}✍️ Write a Review{% endif %}
+      </div>
+      <form method="post" action="{% url 'item:add_review' item.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Star Rating -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Your Rating</div>
+          <div style="display:flex;gap:6px;" id="starRating">
+            {% for i in "12345" %}
+            <label style="cursor:pointer;">
+              <input type="radio" name="rating" value="{{ forloop.counter }}" style="display:none;"
+                {% if user_review and user_review.rating == forloop.counter %}checked{% endif %}>
+              <span class="star-btn" style="font-size:28px;color:#e8e5e0;transition:color .2s;">★</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div style="margin-bottom:12px;">
+          <input type="text" name="title" placeholder="Review title (optional)"
+            value="{% if user_review %}{{ user_review.title }}{% endif %}"
+            style="width:100%;padding:12px 14px;border:1.5px solid #e8e5e0;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;outline:none;">
+        </div>
+
+        <!-- Body -->
+        <div style="margin-bottom:12px;">
+          <textarea name="body" placeholder="Share your experience with this product..." rows="4" required
+            style="width:100%;padding:12px 14px;border:1.5px solid #e8e5e0;border-radius:11px;font-family:'Inter',sans-serif;font-size:13px;outline:none;resize:vertical;">{% if user_review %}{{ user_review.body }}{% endif %}</textarea>
+        </div>
+
+        <!-- Image -->
+        <div style="margin-bottom:16px;">
+          <input type="file" name="review_image" accept="image/*" style="font-size:12px;color:#555;">
+        </div>
+
+        <button type="submit"
+          style="padding:12px 24px;background:#1a1a2e;color:#fff;border:none;border-radius:11px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;">
+          {% if user_review %}✅ Update Review{% else %}⭐ Submit Review{% endif %}
+        </button>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- Reviews List -->
+    {% if reviews %}
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      {% for review in reviews %}
+      <div style="background:#fff;border:1.5px solid #e8e5e0;border-radius:18px;padding:20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#1a1a2e;color:#e5c158;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">
+            {{ review.user.username|first|upper }}
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a1a2e;">{{ review.user.username }}</div>
+            <div style="font-size:10px;color:#aaa;">{{ review.created_at|date:"d M Y" }}</div>
+          </div>
+          <div style="margin-left:auto;color:#f59e0b;font-size:14px;">
+            {% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+          </div>
+          {% if review.is_verified_purchase %}
+          <span style="background:#dcfce7;color:#16a34a;border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700;">✓ Verified Purchase</span>
+          {% endif %}
+        </div>
+        {% if review.title %}
+        <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:5px;">{{ review.title }}</div>
+        {% endif %}
+        <div style="font-size:12px;color:#555;line-height:1.6;">{{ review.body }}</div>
+        {% if review.image %}
+        <img src="{{ review.image.url }}" alt="Review image"
+          style="margin-top:10px;max-width:120px;border-radius:10px;border:1.5px solid #e8e5e0;">
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:40px;color:#aaa;font-size:13px;background:#fff;border-radius:18px;border:1.5px solid #e8e5e0;">
+      No reviews yet. Be the first to review!
+    </div>
+    {% endif %}
+  </div>
+
   <!-- Related -->
   <div class="dp-related">
     <div class="dp-related-title">Related Items</div>
@@ -402,17 +423,14 @@ gsap.to('#bread',    { opacity:1, y:0, duration:.6, ease:'power3.out', delay:.1 
 gsap.to('#imgPanel', { opacity:1, y:0, duration:.7, ease:'power3.out', delay:.15 });
 gsap.to('#infoPanel',{ opacity:1, y:0, duration:.7, ease:'power3.out', delay:.25 });
 
-// Stock bar
 const sf = document.getElementById('stockFill');
 if(sf){ setTimeout(()=>{ sf.style.width = Math.min(100, Math.round(({{ item.stock_count|default:0 }}/20)*100))+'%'; }, 600); }
 
-// Related reveal
 gsap.utils.toArray('.dp-rel-card').forEach((el,i)=>{
   gsap.to(el,{ opacity:1, y:0, duration:.6, delay:i*.08, ease:'power3.out',
     scrollTrigger:{trigger:el,start:'top 90%'} });
 });
 
-// Image gallery variables & arrays
 const allImgs = [
   '{% if item.image %}{{ item.image.url }}{% else %}https://picsum.photos/seed/{{ item.id }}/800/800{% endif %}'
   {% for img in extra_images %}{% if img.image %},'{{ img.image.url }}'{% endif %}{% endfor %}
@@ -424,19 +442,15 @@ function switchToVideo(thumb, url, idx) {
   const mainImg = document.getElementById('mainImg');
   const mainVideo = document.getElementById('mainVideo');
   const zoomHint = document.getElementById('zoomHint');
-  
   mainImg.style.display = 'none';
   if(zoomHint) zoomHint.style.display = 'none';
-  
   gsap.to(mainVideo, { opacity:0, duration:.1, onComplete:()=>{
     mainVideo.src = url;
     mainVideo.style.display = 'block';
     gsap.to(mainVideo, { opacity:1, duration:.3 });
   }});
-  
   document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
   thumb.classList.add('active');
-  
   document.getElementById('imgMain').onclick = null;
 }
 
@@ -445,25 +459,17 @@ const switchImg = function(thumb, url, idx) {
   const mainVideo = document.getElementById('mainVideo');
   const mainImg = document.getElementById('mainImg');
   const zoomHint = document.getElementById('zoomHint');
-
-  if(mainVideo) {
-    mainVideo.pause();
-    mainVideo.style.display = 'none';
-  }
-  
+  if(mainVideo) { mainVideo.pause(); mainVideo.style.display = 'none'; }
   mainImg.style.display = 'block';
   if(zoomHint) zoomHint.style.display = 'block';
-
   document.getElementById('imgMain').onclick = () => {
     document.getElementById('lbImg').src = allImgs[currentIdx];
     document.getElementById('lightbox').classList.add('open');
   };
-
   gsap.to(mainImg, { opacity:0, scale:.96, duration:.15, onComplete:()=>{
     mainImg.src = url;
     gsap.to(mainImg, { opacity:1, scale:1, duration:.25 });
   }});
-  
   document.querySelectorAll('.dp-thumb').forEach(t => t.classList.remove('active'));
   thumb.classList.add('active');
 }
@@ -505,5 +511,29 @@ ip.addEventListener('mousemove', e=>{
   gsap.to(ip,{ rotateY:x*5, rotateX:-y*5, duration:.4, ease:'power2.out', transformPerspective:1000 });
 });
 ip.addEventListener('mouseleave',()=>{ gsap.to(ip,{ rotateY:0, rotateX:0, duration:.6, ease:'power2.out' }); });
+
+// Star rating UI
+document.querySelectorAll('#starRating label').forEach((label, idx) => {
+  const stars = document.querySelectorAll('#starRating .star-btn');
+  label.addEventListener('mouseenter', () => {
+    stars.forEach((s, i) => s.style.color = i <= idx ? '#f59e0b' : '#e8e5e0');
+  });
+  label.addEventListener('mouseleave', () => {
+    const checked = document.querySelector('#starRating input:checked');
+    const checkedIdx = checked ? parseInt(checked.value) - 1 : -1;
+    stars.forEach((s, i) => s.style.color = i <= checkedIdx ? '#f59e0b' : '#e8e5e0');
+  });
+  label.addEventListener('click', () => {
+    stars.forEach((s, i) => s.style.color = i <= idx ? '#f59e0b' : '#e8e5e0');
+  });
+});
+
+const checkedStar = document.querySelector('#starRating input:checked');
+if(checkedStar) {
+  const idx = parseInt(checkedStar.value) - 1;
+  document.querySelectorAll('#starRating .star-btn').forEach((s, i) => {
+    s.style.color = i <= idx ? '#f59e0b' : '#e8e5e0';
+  });
+}
 </script>
 {% endblock %}
