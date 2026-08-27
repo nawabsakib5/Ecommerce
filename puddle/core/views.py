@@ -121,19 +121,6 @@ def toggle_wishlist(request, item_id):
     return redirect('item:detail', pk=item_id)
 
 
-@login_required
-def add_review(request, item_id):
-    item = get_object_or_404(Item, id=item_id)
-    if request.method == 'POST':
-        rating = int(request.POST.get('rating', 5))
-        comment = request.POST.get('comment', '')
-        Review.objects.update_or_create(
-            user=request.user,
-            item=item,
-            defaults={'rating': rating, 'comment': comment}
-        )
-        messages.success(request, "Review submitted! ⭐")
-    return redirect('item:detail', pk=item_id)
 
 
 def help_center(request):

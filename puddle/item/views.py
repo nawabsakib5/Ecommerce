@@ -204,3 +204,52 @@ def delete(request, pk):
     return render(request, 'item/delete_confirm.html', {
         'item': item,
     })
+
+
+
+@login_required
+def add_review(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+
+    # নিজের item-এ review দেওয়া যাবে না
+    if request.user == item.user:
+        messages.error(request, "You cannot review your own item.")
+        return redirect('item:detail', pk=item_id)
+
+    # Verified purchase check
+    from payment.models import Order
+    from .models import Review
+    verified = Order.objects.filter(
+        buyer=request.user,
+        item=item,
+        status__in=['delivered', 'confirmed']
+    ).exists()
+
+    if request.method == 'POST':
+        rating = int(request.POST.get('rating', 5))
+        title = request.POST.get('title', '').strip()
+        body = request.POST.get('body', '').strip()
+        image = request.FILES.get('review_image')
+
+        if not body:
+            messages.error(request, "Review body cannot be empty.")
+            return redirect('item:detail', pk=item_id)
+
+        review, created = Review.objects.update_or_create(
+            user=request.user,
+            item=item,
+            defaults={
+                'rating': rating,
+                'title': title,
+                'body': body,
+                'is_verified_purchase': verified,
+                'image': image if image else None,
+            }
+        )
+
+        if created:
+            messages.success(request, "Review submitted! ⭐")
+        else:
+            messages.success(request, "Review updated! ⭐")
+
+    return redirect('item:detail', pk=item_id)
