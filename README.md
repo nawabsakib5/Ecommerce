@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8B5CF6,100:06B6D4&height=220&section=header&text=Puddle&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=32&desc=A%20Second-hand%20Marketplace&descAlignY=55&descSize=22" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8B5CF6,100:06B6D4&height=220&section=header&text=Puddle&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=32&desc=A%20Full-Stack%20E-Commerce%20Platform&descAlignY=55&descSize=22" width="100%"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Buy+%26+sell+second-hand+items+with+ease;Built-in+buyer-seller+messaging;Search+%2B+category+filtering;Full-Stack+Django+%2B+Tailwind+by+Mohammad+Sakib" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Browse+%26+shop+products+with+ease;Built-in+customer-seller+messaging;Search+%2B+category+filtering;Full-Stack+Django+%2B+Tailwind+by+Mohammad+Sakib" alt="Typing SVG" />
 
 <br/>
 
@@ -17,7 +17,7 @@
 
 ## 🛒 About The Project
 
-**Puddle** is a scalable, full-stack **second-hand marketplace** built with **Python & Django**, where users can list items for sale, browse and search listings, message sellers directly, and manage everything from a personal dashboard. It's designed with secure authentication and a clean, dynamic product-management flow — a real-world take on peer-to-peer e-commerce.
+**Puddle** is a scalable, full-stack **e-commerce platform** built with **Python & Django**, where users can browse and search products, list and manage items for sale, message sellers about products, and manage everything from a personal dashboard. It's designed with secure authentication and a clean, dynamic product-management flow for a seamless shopping experience.
 
 <div align="center">
 <img src="https://skillicons.dev/icons?i=python,django,tailwind,sqlite,html,js,git,github&theme=dark" />
@@ -48,17 +48,17 @@
 ### 🔐 Secure Authentication
 Full registration, login & logout flow built on Django's auth system.
 
-### 🖼️ Listing Management
-Add, edit, and delete item listings — complete with images, price & category.
+### 🖼️ Product Management
+Add, edit, and delete product listings — complete with images, price & category.
 
 ### 🔍 Search & Filter
-Find items instantly by name, description, or category.
+Find products instantly by name, description, or category.
 
 </td>
 <td width="50%" valign="top">
 
-### 💬 Buyer–Seller Messaging
-Built-in conversation system so buyers and sellers can chat without leaving the platform.
+### 💬 Customer–Seller Messaging
+Built-in conversation system so customers and sellers can chat about products without leaving the platform.
 
 ### 📋 Personal Dashboard
 Manage all your own listings from a dedicated user dashboard.
@@ -81,9 +81,9 @@ flowchart LR
     Auth --> Dash["📋 dashboard\nManage listings"]
     Dash --> Item["🛍️ item\nAdd / Edit / Delete"]
     Item --> Search["🔍 Search & Category Filter"]
-    Item --> Conv["💬 conversation\nBuyer ↔ Seller Chat"]
+    Item --> Conv["💬 conversation\nCustomer ↔ Seller Chat"]
     Conv --> Seller["🧑‍💼 Seller"]
-    Conv --> Buyer["🛒 Buyer"]
+    Conv --> Buyer["🛒 Customer"]
 ```
 
 ---
@@ -94,8 +94,8 @@ flowchart LR
 Ecommerce/
 └── puddle/
     ├── core/             # Home page & base templates
-    ├── item/             # Item listings — add, edit, delete
-    ├── conversation/     # Messaging between buyers & sellers
+    ├── item/             # Product listings — add, edit, delete
+    ├── conversation/     # Messaging between customers & sellers
     ├── dashboard/        # User dashboard
     ├── templates/        # Shared HTML templates
     ├── puddle/           # Project settings & URLs
@@ -153,8 +153,8 @@ Open your browser and go to → **`http://127.0.0.1:8000`** 🎉
 ## 📖 Usage
 
 1. 📝 Register a new account or log in
-2. 🏷️ Post items for sale with images, price & category
-3. 🔍 Browse or search items by name or category
+2. 🏷️ List products for sale with images, price & category
+3. 🔍 Browse or search products by name or category
 4. 💬 Contact sellers via the built-in messaging system
 5. 📋 Manage your listings from your personal dashboard
 
@@ -168,11 +168,11 @@ Open your browser and go to → **`http://127.0.0.1:8000`** 🎉
 
 ## 🗺️ Roadmap
 
-- [ ] ⭐ Ratings & reviews for sellers
+- [ ] ⭐ Ratings & reviews for products
 - [ ] 💳 In-app payment / checkout flow
+- [ ] 🛒 Shopping cart & order history
 - [ ] 📱 Mobile-responsive polish
 - [ ] 🔔 Real-time chat notifications
-- [ ] 🗺️ Location-based item filtering
 
 ---
 
