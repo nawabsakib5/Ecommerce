@@ -115,9 +115,19 @@ def toggle_wishlist(request, item_id):
     )
     if not created:
         wishlist_item.delete()
-        messages.success(request, f"'{item.name}' removed from wishlist.")
+        action = 'removed'
+        msg = f"'{item.name}' removed from wishlist."
     else:
-        messages.success(request, f"'{item.name}' added to wishlist! ❤️")
+        action = 'added'
+        msg = f"'{item.name}' added to wishlist! ❤️"
+
+    # AJAX request হলে JSON response দাও
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({'action': action, 'message': msg})
+
+    # Normal request হলে আগের মতো redirect
+    messages.success(request, msg)
     return redirect('item:detail', pk=item_id)
 
 
