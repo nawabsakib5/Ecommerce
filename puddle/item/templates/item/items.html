@@ -11,46 +11,38 @@
 <style>
 * { box-sizing: border-box; }
 .br { font-family: 'Inter', sans-serif; background: #f8f7f4; min-height: 100vh; }
-
 .br-wrap { max-width: 1360px; margin: 0 auto; padding: 28px 32px; display: grid; grid-template-columns: 260px 1fr; gap: 24px; }
 @media(max-width:1024px){ .br-wrap{ grid-template-columns:1fr; } }
 @media(max-width:768px){ .br-wrap{ padding:16px; } }
 
-/* ── SIDEBAR ── */
 .br-sidebar { display: flex; flex-direction: column; gap: 16px; }
 @media(max-width:1024px){ .br-sidebar{ display:none; } }
 
 .br-box { background: #fff; border: 1.5px solid #e8e5e0; border-radius: 18px; padding: 20px; }
 .br-box-title { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f0ede8; }
 
-/* Search */
 .br-search-form { position: relative; }
 .br-search-input { width: 100%; padding: 10px 40px 10px 14px; background: #f8f7f4; border: 1.5px solid #e8e5e0; border-radius: 10px; font-size: 12px; font-weight: 500; color: #1a1a2e; outline: none; transition: border-color .2s; }
 .br-search-input:focus { border-color: #9A7432; background: #fff; }
 .br-search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #aaa; transition: color .2s; }
 .br-search-btn:hover { color: #9A7432; }
 
-/* Categories */
 .br-cat-list { display: flex; flex-direction: column; gap: 2px; }
 .br-cat-item { display: block; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #555; text-decoration: none; transition: all .15s; }
 .br-cat-item:hover { background: #f8f7f4; color: #1a1a2e; }
 .br-cat-item.active { background: #1a1a2e; color: #E5C158; }
 
-/* Clear filter */
 .br-clear { display: flex; align-items: center; justify-content: center; padding: 10px; background: #fee2e2; color: #c84b31; border: 1.5px solid #fecaca; border-radius: 10px; font-size: 11px; font-weight: 700; text-decoration: none; transition: all .2s; }
 .br-clear:hover { background: #c84b31; color: #fff; }
 
-/* ── MAIN ── */
 .br-main { min-width: 0; }
 
-/* Top bar */
 .br-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
 .br-topbar-left { display: flex; flex-direction: column; }
 .br-topbar-label { font-size: 10px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
 .br-topbar-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #1a1a2e; }
 .br-topbar-count { font-size: 12px; font-weight: 600; color: #aaa; margin-top: 2px; }
 
-/* Mobile search */
 .br-mobile-search { display: none; margin-bottom: 16px; }
 @media(max-width:1024px){ .br-mobile-search{ display:block; } }
 .br-mobile-search form { position: relative; }
@@ -58,7 +50,6 @@
 .br-mobile-search input:focus { border-color: #9A7432; }
 .br-mobile-search button { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #aaa; }
 
-/* Mobile categories */
 .br-mobile-cats { display: none; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
 .br-mobile-cats::-webkit-scrollbar { display: none; }
 @media(max-width:1024px){ .br-mobile-cats{ display:flex; gap:8px; padding-bottom:4px; } }
@@ -66,8 +57,6 @@
 .br-mobile-cat:hover { border-color: #9A7432; color: #9A7432; }
 .br-mobile-cat.active { background: #1a1a2e; color: #E5C158; border-color: #1a1a2e; }
 
-/* Flash sale banner */
-{% if flash_items %}
 .br-flash-banner { background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 18px; padding: 20px 24px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
 .br-flash-left { display: flex; align-items: center; gap: 14px; }
 .br-flash-icon { font-size: 28px; }
@@ -75,14 +64,14 @@
 .br-flash-sub { font-size: 11px; color: rgba(255,255,255,.5); font-weight: 500; margin-top: 2px; }
 .br-flash-btn { background: #9A7432; color: #fff; border-radius: 10px; padding: 8px 18px; font-size: 11px; font-weight: 700; text-decoration: none; transition: background .2s; }
 .br-flash-btn:hover { background: #E5C158; color: #1a1a2e; }
-{% endif %}
 
-/* Product Grid */
 .br-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
 
-/* Product Card */
-.br-card { background: #fff; border: 1.5px solid #e8e5e0; border-radius: 18px; overflow: hidden; transition: transform .3s, border-color .3s, box-shadow .3s; cursor: pointer; }
+.br-card { background: #fff; border: 1.5px solid #e8e5e0; border-radius: 18px; overflow: hidden; transition: transform .3s, border-color .3s, box-shadow .3s; cursor: pointer; position: relative; }
 .br-card:hover { transform: translateY(-5px); border-color: rgba(154,116,50,.25); box-shadow: 0 16px 32px rgba(0,0,0,.07); }
+
+.br-wl-btn { position: absolute; top: 10px; right: 10px; z-index: 10; width: 32px; height: 32px; background: #fff; border: 1.5px solid #e8e5e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: all .2s; }
+.br-wl-btn:hover { border-color: #c84b31; transform: scale(1.1); }
 
 .br-card-img { position: relative; aspect-ratio: 1; background: #f8f7f4; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
 .br-card-img img { width: 100%; height: 100%; object-fit: contain; transition: transform .4s; }
@@ -103,12 +92,10 @@
 .br-view-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #1a1a2e; border-radius: 8px; color: #fff; font-size: 13px; text-decoration: none; transition: background .2s; }
 .br-view-btn:hover { background: #9A7432; }
 
-/* Empty */
 .br-empty { grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #fff; border-radius: 18px; border: 1.5px dashed #e8e5e0; }
 .br-empty-icon { font-size: 40px; margin-bottom: 12px; }
 .br-empty p { font-size: 13px; font-weight: 500; color: #aaa; }
 
-/* Pagination */
 .br-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 32px; }
 .br-page-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid #e8e5e0; background: #fff; font-size: 12px; font-weight: 600; color: #555; text-decoration: none; transition: all .2s; }
 .br-page-btn:hover { border-color: #9A7432; color: #9A7432; }
@@ -123,8 +110,6 @@
 
   <!-- Sidebar -->
   <div class="br-sidebar">
-
-    <!-- Search -->
     <div class="br-box">
       <div class="br-box-title">🔍 Search</div>
       <form class="br-search-form" method="get" action="{% url 'item:items' %}">
@@ -136,7 +121,6 @@
       </form>
     </div>
 
-    <!-- Categories -->
     <div class="br-box">
       <div class="br-box-title">📦 Categories</div>
       <div class="br-cat-list">
@@ -149,17 +133,14 @@
       </div>
     </div>
 
-    <!-- Clear filter -->
     {% if query or category_id %}
     <a href="{% url 'item:items' %}" class="br-clear">✕ Clear All Filters</a>
     {% endif %}
-
   </div>
 
   <!-- Main -->
   <div class="br-main">
 
-    <!-- Mobile search -->
     <div class="br-mobile-search">
       <form method="get" action="{% url 'item:items' %}">
         {% if category_id %}<input type="hidden" name="category" value="{{ category_id }}">{% endif %}
@@ -170,7 +151,6 @@
       </form>
     </div>
 
-    <!-- Mobile categories -->
     <div class="br-mobile-cats">
       <a href="{% url 'item:items' %}" class="br-mobile-cat {% if not category_id %}active{% endif %}">All</a>
       {% for category in categories %}
@@ -178,7 +158,6 @@
       {% endfor %}
     </div>
 
-    <!-- Flash sale banner -->
     {% if flash_items %}
     <div class="br-flash-banner reveal">
       <div class="br-flash-left">
@@ -192,13 +171,12 @@
     </div>
     {% endif %}
 
-    <!-- Top bar -->
     <div class="br-topbar reveal">
       <div class="br-topbar-left">
         <span class="br-topbar-label">🛍️ Browse</span>
         <span class="br-topbar-title">
           {% if query %}Results for "{{ query }}"
-          {% elif category_id %}{{ categories|dictsort:"id"|first }}
+          {% elif category_id %}Category Items
           {% else %}All Items{% endif %}
         </span>
         <span class="br-topbar-count">{{ items.paginator.count }} items found</span>
@@ -213,25 +191,30 @@
       </div>
       <div class="br-grid">
         {% for item in flash_items %}
-        <a href="{% url 'item:detail' item.id %}" class="br-card reveal" style="text-decoration:none;">
-          <div class="br-card-img">
-            {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
-            {% else %}<img src="https://picsum.photos/seed/f{{ item.id }}/400/400" alt="" loading="lazy">{% endif %}
-            <div class="br-badge-cat">{{ item.category.name }}</div>
-            {% if item.discount_percent %}<div class="br-badge-sale">-{{ item.discount_percent }}%</div>{% endif %}
-          </div>
-          <div class="br-card-body">
-            <div class="br-card-name">{{ item.name }}</div>
-            <div class="br-card-seller">By <b>{{ item.user.username }}</b></div>
-            <div class="br-card-footer">
-              <div>
-                <div class="br-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
-                <div class="br-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
-              </div>
-              <span class="br-view-btn">→</span>
+        <div class="br-card reveal">
+          {% if request.user.is_authenticated %}
+          <a href="{% url 'core:toggle_wishlist' item.id %}" class="br-wl-btn" onclick="event.stopPropagation();">♡</a>
+          {% endif %}
+          <a href="{% url 'item:detail' item.id %}" style="text-decoration:none;display:block;">
+            <div class="br-card-img">
+              {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+              {% else %}<img src="https://picsum.photos/seed/f{{ item.id }}/400/400" alt="" loading="lazy">{% endif %}
+              <div class="br-badge-cat">{{ item.category.name }}</div>
+              {% if item.discount_percent %}<div class="br-badge-sale">-{{ item.discount_percent }}%</div>{% endif %}
             </div>
-          </div>
-        </a>
+            <div class="br-card-body">
+              <div class="br-card-name">{{ item.name }}</div>
+              <div class="br-card-seller">By <b>{{ item.user.username }}</b></div>
+              <div class="br-card-footer">
+                <div>
+                  <div class="br-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
+                  <div class="br-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
+                </div>
+                <span class="br-view-btn">→</span>
+              </div>
+            </div>
+          </a>
+        </div>
         {% endfor %}
       </div>
     </div>
@@ -240,30 +223,35 @@
     <!-- All items grid -->
     <div class="br-grid">
       {% for item in items %}
-      <a href="{% url 'item:detail' item.id %}" class="br-card reveal" style="text-decoration:none;">
-        <div class="br-card-img">
-          {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
-          {% else %}<img src="https://picsum.photos/seed/{{ item.id }}/400/400" alt="" loading="lazy">{% endif %}
-          <div class="br-badge-cat">{{ item.category.name }}</div>
-          {% if item.condition %}<div class="br-badge-cond">{{ item.get_condition_display }}</div>{% endif %}
-          {% if item.is_on_sale %}<div class="br-badge-sale">SALE</div>{% endif %}
-        </div>
-        <div class="br-card-body">
-          <div class="br-card-name">{{ item.name }}</div>
-          <div class="br-card-seller">By <b>{{ item.user.username }}</b>{% if item.shop %} · {{ item.shop.name }}{% endif %}</div>
-          <div class="br-card-footer">
-            <div>
-              {% if item.is_on_sale %}
-              <div class="br-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
-              <div class="br-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
-              {% else %}
-              <div class="br-price-main">৳{{ item.original_price|floatformat:0 }}</div>
-              {% endif %}
-            </div>
-            <span class="br-view-btn">→</span>
+      <div class="br-card reveal">
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'core:toggle_wishlist' item.id %}" class="br-wl-btn" onclick="event.stopPropagation();">♡</a>
+        {% endif %}
+        <a href="{% url 'item:detail' item.id %}" style="text-decoration:none;display:block;">
+          <div class="br-card-img">
+            {% if item.image %}<img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+            {% else %}<img src="https://picsum.photos/seed/{{ item.id }}/400/400" alt="" loading="lazy">{% endif %}
+            <div class="br-badge-cat">{{ item.category.name }}</div>
+            {% if item.condition %}<div class="br-badge-cond">{{ item.get_condition_display }}</div>{% endif %}
+            {% if item.is_on_sale %}<div class="br-badge-sale">SALE</div>{% endif %}
           </div>
-        </div>
-      </a>
+          <div class="br-card-body">
+            <div class="br-card-name">{{ item.name }}</div>
+            <div class="br-card-seller">By <b>{{ item.user.username }}</b>{% if item.shop %} · {{ item.shop.name }}{% endif %}</div>
+            <div class="br-card-footer">
+              <div>
+                {% if item.is_on_sale %}
+                <div class="br-price-orig">৳{{ item.original_price|floatformat:0 }}</div>
+                <div class="br-price-sale">৳{{ item.sale_price|floatformat:0 }}</div>
+                {% else %}
+                <div class="br-price-main">৳{{ item.original_price|floatformat:0 }}</div>
+                {% endif %}
+              </div>
+              <span class="br-view-btn">→</span>
+            </div>
+          </div>
+        </a>
+      </div>
       {% empty %}
       <div class="br-empty">
         <div class="br-empty-icon">🔍</div>
@@ -309,7 +297,6 @@ gsap.utils.toArray('.reveal').forEach((el,i) => {
   });
 });
 
-// Card 3D hover
 document.querySelectorAll('.br-card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const r = card.getBoundingClientRect();
