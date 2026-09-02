@@ -50,6 +50,22 @@ def contact(request):
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
+        
+        # reCAPTCHA verify
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        import requests as req
+        from django.conf import settings
+        r = req.post('https://www.google.com/recaptcha/api/siteverify', data={
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response,
+        })
+        result = r.json()
+        score = result.get('score', 0)
+
+        if not result.get('success') or score < 0.5:
+            messages.error(request, "Security check failed. Please try again.")
+            return render(request, 'core/signup.html', {'form': form})
+
         if form.is_valid():
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -57,7 +73,11 @@ def signup(request):
     else:
         form = SignupForm()
 
-    return render(request, 'core/signup.html', {'form': form})
+    from django.conf import settings
+    return render(request, 'core/signup.html', {
+        'form': form,
+        'RECAPTCHA_SITE_KEY': settings.RECAPTCHA_SITE_KEY,
+    })
 
 
 @login_required
