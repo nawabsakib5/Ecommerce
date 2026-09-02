@@ -21,7 +21,7 @@ def index(request):
 @login_required
 def seller_dashboard(request):
     from cart.models import Sale
-    from core.models import Review
+    from item.models import Review
     from conversation.models import Conversation
 
     profile, _ = Profile.objects.get_or_create(user=request.user)
