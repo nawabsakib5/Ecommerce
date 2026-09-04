@@ -17,6 +17,19 @@ class LoginForm(AuthenticationForm):
         'autocomplete': 'current-password',
     }))
 
+    def confirm_login_allowed(self, user):
+        super().confirm_login_allowed(user)
+        if user.is_frozen:
+            raise forms.ValidationError(
+                "Your account has been frozen. Please contact support.",
+                code='frozen',
+            )
+        if user.is_spam:
+            raise forms.ValidationError(
+                "Your account has been flagged as spam. Please contact support.",
+                code='spam',
+            )
+
 
 class SignupForm(UserCreationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
