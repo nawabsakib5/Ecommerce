@@ -18,6 +18,8 @@ class CustomUserModel(AbstractUser):
         null=True,
         blank=True
     )
+    is_frozen = models.BooleanField(default=False)
+    is_spam = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
