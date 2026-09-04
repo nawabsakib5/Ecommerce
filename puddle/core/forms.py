@@ -54,9 +54,14 @@ class SignupForm(UserCreationForm):
 
     # ✅ Admin বাদ দিয়ে শুধু Seller/Buyer choice
     USER_TYPE_CHOICES = [
-        ('Seller', 'Seller — I want to sell products'),
         ('Buyer', 'Buyer — I want to buy products'),
     ]
+
+    user_type = forms.ChoiceField(
+        choices=USER_TYPE_CHOICES,
+        initial='Buyer',
+        widget=forms.HiddenInput()
+    )
 
     user_type = forms.ChoiceField(
         choices=USER_TYPE_CHOICES,
