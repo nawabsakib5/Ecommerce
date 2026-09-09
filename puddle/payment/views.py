@@ -276,14 +276,14 @@ def sslcommerz_success(request, transaction_id):
                     order = transaction.order
                     if not order.confirm_payment():
                         transaction.status = 'failed'
-
                         transaction.save()
                         messages.error(request, "দুঃখিত, এই মুহূর্তে stock শেষ হয়ে গেছে। আপনার টাকা রিফান্ড করা হবে।")
                         return redirect('payment:failed', transaction_id=transaction_id)
-                    
-                    
 
-                    # Seller কে notification পাঠাও
+                    # ✅ FIXED: item variable সঠিকভাবে define করা (আগে NameError ছিল)
+                    item = transaction.item
+
+                    # ✅ Seller কে in-app notification
                     from core.models import Notification
                     Notification.objects.create(
                         user=item.user,
@@ -292,6 +292,10 @@ def sslcommerz_success(request, transaction_id):
                         notification_type='sale',
                         link=f"/items/{item.id}/",
                     )
+
+                    # ✅ Buyer কে confirmation email (COD-এর মতো SSL-এও পাবে)
+                    from core.email_utils import send_order_confirmation
+                    send_order_confirmation(order)
 
                     messages.success(request, "Payment successful! 🎉")
                     return redirect('payment:success', transaction_id=transaction_id)
@@ -438,7 +442,7 @@ def cod_confirm(request, transaction_id):
         order.status = 'confirmed'
         order.save(update_fields=['status'])
 
-        # Email notification
+        # Buyer কে confirmation email
         from core.email_utils import send_order_confirmation
         send_order_confirmation(order)
 
@@ -495,15 +499,15 @@ def pending(request, transaction_id):
 @require_POST
 def save_payment_method(request):
     method_type = request.POST.get('method_type')
-    
+
     if method_type in ['bkash', 'nagad', 'rocket']:
         phone = request.POST.get('phone', '').strip()
         if len(phone) < 4:
             return JsonResponse({'error': 'Invalid phone number'}, status=400)
-        
+
         # শুধু masked version store করো
         masked = phone[:2] + '****' + phone[-4:]
-        
+
         PaymentMethod.objects.create(
             user=request.user,
             method_type=method_type,
@@ -541,8 +545,6 @@ def delete_payment_method(request, pk):
     method.save()
     messages.success(request, "Payment method removed.")
     return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
 
 
 # ── Steadfast Integration ──
@@ -608,7 +610,6 @@ def track_order(request, order_number):
             data = response.json()
             if data.get('status') == 200:
                 sf_status = data.get('delivery_status', '')
-                # Status map করো
                 status_map = {
                     'in_review': 'processing',
                     'partially_dispatched': 'picked_up',
@@ -623,7 +624,6 @@ def track_order(request, order_number):
                     order.status = new_status
                     order.add_tracking_event(new_status, f'Status updated: {sf_status}')
                     if new_status == 'delivered':
-                        from django.utils import timezone
                         order.delivered_at = timezone.now()
                         order.save()
         except Exception:
@@ -634,13 +634,11 @@ def track_order(request, order_number):
     })
 
 
-
 @login_required
 @require_POST
 def apply_coupon(request):
     """Coupon validate করো — AJAX call"""
     from .models import Coupon, CouponUsage
-    import json
 
     code = request.POST.get('code', '').strip().upper()
     order_amount = float(request.POST.get('order_amount', 0))
@@ -715,11 +713,11 @@ def request_return(request, order_number):
         order.status = 'returned'
         order.save(update_fields=['status'])
 
-        # Email notification
+        # Seller কে email notification
         from core.email_utils import send_return_request_notification
         send_return_request_notification(order)
 
-        # Seller কে notification
+        # Seller কে in-app notification
         from core.models import Notification
         Notification.objects.create(
             user=order.item.user,
@@ -767,7 +765,7 @@ def process_return(request, order_number):
             order.status = 'refunded'
             order.save(update_fields=['status'])
 
-            # Buyer কে notification
+            # Buyer কে in-app notification
             from core.models import Notification
             Notification.objects.create(
                 user=order.buyer,
