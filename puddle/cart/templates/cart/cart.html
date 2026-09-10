@@ -42,19 +42,6 @@
     </div>
 
     <!-- Alert / System Messages -->
-    {% if messages %}
-        <div class="mb-8 space-y-2">
-            {% for message in messages %}
-                <div class="p-4 bg-slate-900 text-white rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center justify-between shadow-xl">
-                    <div class="flex items-center gap-3">
-                        <span class="w-2 h-2 rounded-full bg-[#e94560] animate-pulse"></span>
-                        {{ message }}
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-mono">SYSTEM NOTIFICATION</span>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
     {% if cart_items %}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
