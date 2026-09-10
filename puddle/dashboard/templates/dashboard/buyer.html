@@ -54,16 +54,6 @@
     </div>
 
     <!-- Alert Messages Panel -->
-    {% if messages %}
-        <div class="max-w-7xl mx-auto mb-6 space-y-2">
-            {% for message in messages %}
-                <div class="px-5 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-100 text-emerald-800 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
     <!-- Dasher Buyer Stats Row (Class stat-box added for GSAP) -->
     <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
