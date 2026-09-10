@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, update_session_auth_hash, login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.http import JsonResponse
 
 from item.models import Item, Category
 from .forms import SignupForm
@@ -50,7 +53,7 @@ def contact(request):
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        
+
         # reCAPTCHA verify
         recaptcha_response = request.POST.get('g-recaptcha-response')
         import requests as req
@@ -87,19 +90,57 @@ def changePass(request):
         new_pass = request.POST.get('new_pass')
         con_pass = request.POST.get('con_pass')
 
-        if request.user.check_password(old_pass):
-            if new_pass == con_pass:
-                request.user.set_password(new_pass)
-                request.user.save()
-                update_session_auth_hash(request, request.user)
-                messages.success(request, "Password changed successfully!")
-                return redirect('core:index')
-            else:
-                messages.error(request, "New passwords do not match.")
-        else:
+        # ── পুরনো password চেক ──
+        if not request.user.check_password(old_pass):
             messages.error(request, "Old password is incorrect.")
+            return render(request, 'core/changePass.html')
+
+        # ── নতুন password match চেক ──
+        if new_pass != con_pass:
+            messages.error(request, "New passwords do not match.")
+            return render(request, 'core/changePass.html')
+
+        # ── ✅ Django password validator দিয়ে strength চেক ──
+        # এটা settings.py-এর AUTH_PASSWORD_VALIDATORS ব্যবহার করে
+        # (min 8 chars, not common, not numeric only, not similar to username)
+        try:
+            validate_password(new_pass, user=request.user)
+        except ValidationError as e:
+            for error in e.messages:
+                messages.error(request, error)
+            return render(request, 'core/changePass.html')
+
+        # ── সব ঠিক আছে — password change করো ──
+        request.user.set_password(new_pass)
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+        messages.success(request, "Password changed successfully! 🔒")
+        return redirect('core:index')
 
     return render(request, 'core/changePass.html')
+
+
+@login_required
+def generate_password_suggestion(request):
+    """
+    ✅ Strong password suggestion generate করো — AJAX call
+    Password pattern: 2 uppercase + 4 lowercase + 2 digits + 2 special chars
+    মোট ১২ characters — সহজে মনে রাখা যায় এমন format
+    """
+    import random
+    import string
+
+    uppercase = random.choices(string.ascii_uppercase, k=2)
+    lowercase = random.choices(string.ascii_lowercase, k=6)
+    digits = random.choices(string.digits, k=2)
+    special = random.choices('@#$!%*?&', k=2)
+
+    # সব মিলিয়ে shuffle করো
+    all_chars = uppercase + lowercase + digits + special
+    random.shuffle(all_chars)
+    password = ''.join(all_chars)
+
+    return JsonResponse({'password': password})
 
 
 def logoutpage(request):
@@ -143,27 +184,23 @@ def toggle_wishlist(request, item_id):
 
     # AJAX request হলে JSON response দাও
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.http import JsonResponse
         return JsonResponse({'action': action, 'message': msg})
 
-    # Normal request হলে আগের মতো redirect
+    # Normal request হলে redirect
     messages.success(request, msg)
     return redirect('item:detail', pk=item_id)
-
-
 
 
 def help_center(request):
     return render(request, 'core/help_center.html')
 
+
 def privacy_policy(request):
     return render(request, 'core/privacy_policy.html')
 
 
-
 @login_required
 def wishlist(request):
-    from core.models import Wishlist
     items = Wishlist.objects.filter(
         user=request.user
     ).select_related('item', 'item__category').order_by('-added_at')

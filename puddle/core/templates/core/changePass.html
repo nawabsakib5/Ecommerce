@@ -52,16 +52,71 @@
                     <input type="password" name="old_pass" required placeholder="••••••••" class="pass-input">
                 </div>
 
-                <!-- New Password (Class form-row added for GSAP) -->
+                <!-- New Password + Suggestion Button -->
                 <div class="form-row space-y-2 opacity-0">
-                    <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">New Password</label>
-                    <input type="password" name="new_pass" required placeholder="••••••••" class="pass-input">
+                    <div class="flex items-center justify-between ml-1">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F]">New Password</label>
+                        <!-- ✅ Password Suggestion Button -->
+                        <button type="button" id="suggestBtn"
+                            class="flex items-center gap-1.5 text-[10px] font-black text-[#e94560] hover:text-[#d23f57] uppercase tracking-wider transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Suggest Password
+                        </button>
+                    </div>
+
+                    <!-- Input + Show/Hide toggle -->
+                    <div class="relative">
+                        <input type="password" name="new_pass" id="new_pass" required placeholder="••••••••" class="pass-input pr-12">
+                        <button type="button" onclick="toggleVisibility('new_pass', 'eye1')"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition">
+                            <svg id="eye1" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- ✅ Suggested password preview box -->
+                    <div id="suggestionBox" class="hidden mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[9px] font-black text-emerald-600 uppercase tracking-wider mb-1">Suggested Password</p>
+                            <p id="suggestedPass" class="text-sm font-black text-emerald-800 font-mono tracking-wider"></p>
+                        </div>
+                        <button type="button" id="usePassBtn"
+                            class="shrink-0 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition">
+                            Use This
+                        </button>
+                    </div>
+
+                    <!-- ✅ Password Strength Indicator -->
+                    <div id="strengthWrap" class="hidden mt-2">
+                        <div class="flex gap-1 mb-1">
+                            <div id="bar1" class="h-1 flex-1 rounded-full bg-slate-200 transition-all duration-300"></div>
+                            <div id="bar2" class="h-1 flex-1 rounded-full bg-slate-200 transition-all duration-300"></div>
+                            <div id="bar3" class="h-1 flex-1 rounded-full bg-slate-200 transition-all duration-300"></div>
+                            <div id="bar4" class="h-1 flex-1 rounded-full bg-slate-200 transition-all duration-300"></div>
+                        </div>
+                        <p id="strengthText" class="text-[10px] font-bold text-slate-400"></p>
+                    </div>
                 </div>
 
-                <!-- Confirm Password (Class form-row added for GSAP) -->
+                <!-- Confirm Password -->
                 <div class="form-row space-y-2 opacity-0">
                     <label class="block text-[10px] font-black uppercase tracking-widest text-[#556B2F] ml-1">Confirm New Password</label>
-                    <input type="password" name="con_pass" required placeholder="••••••••" class="pass-input">
+                    <div class="relative">
+                        <input type="password" name="con_pass" id="con_pass" required placeholder="••••••••" class="pass-input pr-12">
+                        <button type="button" onclick="toggleVisibility('con_pass', 'eye2')"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition">
+                            <svg id="eye2" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Match indicator -->
+                    <p id="matchMsg" class="text-[10px] font-bold hidden ml-1"></p>
                 </div>
 
                 <!-- Action Button in Bazaar Crimson (Class form-row added for GSAP) -->
@@ -125,6 +180,120 @@
         submitBtn.addEventListener('mouseleave', () => {
             gsap.to(submitBtn, { y: 0, duration: 0.2, ease: "power1.out" });
         });
+    }
+
+    // ── ✅ Password Suggestion Feature ──
+    const suggestBtn = document.getElementById('suggestBtn');
+    const suggestionBox = document.getElementById('suggestionBox');
+    const suggestedPassEl = document.getElementById('suggestedPass');
+    const usePassBtn = document.getElementById('usePassBtn');
+    const newPassInput = document.getElementById('new_pass');
+    const conPassInput = document.getElementById('con_pass');
+
+    // Suggest বাটনে click করলে server থেকে strong password আনো
+    suggestBtn.addEventListener('click', function() {
+        suggestBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg> Generating...`;
+
+        fetch("{% url 'core:generate_password' %}")
+            .then(res => res.json())
+            .then(data => {
+                suggestedPassEl.textContent = data.password;
+                suggestionBox.classList.remove('hidden');
+                gsap.from(suggestionBox, { y: -8, opacity: 0, duration: 0.3, ease: "power2.out" });
+                suggestBtn.innerHTML = `
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg> Suggest Password`;
+            });
+    });
+
+    // "Use This" বাটনে click করলে দুটো input-এ password বসিয়ে দাও
+    usePassBtn.addEventListener('click', function() {
+        const pass = suggestedPassEl.textContent;
+        newPassInput.value = pass;
+        newPassInput.type = 'text'; // দেখানোর জন্য temporarily text করো
+        conPassInput.value = pass;
+        suggestionBox.classList.add('hidden');
+        checkStrength(pass);
+        checkMatch();
+
+        // ৩ সেকেন্ড পর আবার password type করো
+        setTimeout(() => { newPassInput.type = 'password'; }, 3000);
+    });
+
+    // ── ✅ Password Strength Indicator ──
+    function checkStrength(pass) {
+        const strengthWrap = document.getElementById('strengthWrap');
+        const bars = [
+            document.getElementById('bar1'),
+            document.getElementById('bar2'),
+            document.getElementById('bar3'),
+            document.getElementById('bar4'),
+        ];
+        const strengthText = document.getElementById('strengthText');
+
+        if (!pass) {
+            strengthWrap.classList.add('hidden');
+            return;
+        }
+        strengthWrap.classList.remove('hidden');
+
+        let score = 0;
+        if (pass.length >= 8) score++;
+        if (/[A-Z]/.test(pass)) score++;
+        if (/[0-9]/.test(pass)) score++;
+        if (/[@#$!%*?&]/.test(pass)) score++;
+
+        const colors = ['bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-emerald-500'];
+        const labels = ['Weak', 'Fair', 'Good', 'Strong 💪'];
+
+        bars.forEach((bar, i) => {
+            bar.className = 'h-1 flex-1 rounded-full transition-all duration-300';
+            if (i < score) {
+                bar.classList.add(colors[score - 1]);
+            } else {
+                bar.classList.add('bg-slate-200');
+            }
+        });
+
+        strengthText.textContent = labels[score - 1] || '';
+        strengthText.className = `text-[10px] font-bold ml-1 ${
+            score === 1 ? 'text-red-500' :
+            score === 2 ? 'text-orange-500' :
+            score === 3 ? 'text-yellow-600' : 'text-emerald-600'
+        }`;
+    }
+
+    // ── ✅ Password Match Indicator ──
+    function checkMatch() {
+        const matchMsg = document.getElementById('matchMsg');
+        const newPass = newPassInput.value;
+        const conPass = conPassInput.value;
+
+        if (!conPass) {
+            matchMsg.classList.add('hidden');
+            return;
+        }
+        matchMsg.classList.remove('hidden');
+        if (newPass === conPass) {
+            matchMsg.textContent = '✅ Passwords match';
+            matchMsg.className = 'text-[10px] font-bold ml-1 text-emerald-600';
+        } else {
+            matchMsg.textContent = '❌ Passwords do not match';
+            matchMsg.className = 'text-[10px] font-bold ml-1 text-red-500';
+        }
+    }
+
+    newPassInput.addEventListener('input', () => checkStrength(newPassInput.value));
+    conPassInput.addEventListener('input', () => checkMatch());
+
+    // ── ✅ Show/Hide Password Toggle ──
+    function toggleVisibility(inputId, eyeId) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
     }
 </script>
 {% endblock %}

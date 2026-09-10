@@ -20,7 +20,6 @@ urlpatterns = [
     path('wishlist/toggle/<int:item_id>/', views.toggle_wishlist, name='toggle_wishlist'),
     path('help-center/', views.help_center, name='help_center'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
-
-
     path('wishlist/', views.wishlist, name='wishlist'),
+    path('generate-password/', views.generate_password_suggestion, name='generate_password'),
 ]
