@@ -78,6 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'puddle.wsgi.application'
+ASGI_APPLICATION = 'puddle.asgi.application'
 
 DATABASES = {
     'default': {
@@ -106,9 +107,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# ✅ FIXED: তিনটা backend একসাথে — Axes + Django + Allauth
+# আগে দুইবার define ছিল, নিচেরটায় Axes বাদ পড়ে যেত
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'axes.backends.AxesStandaloneBackend',          # Brute force protection
+    'django.contrib.auth.backends.ModelBackend',    # Default Django auth
+    'allauth.account.auth_backends.AuthenticationBackend',  # Google OAuth
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -137,21 +141,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'core.CustomUserModel'
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://cottonweb.up.railway.app',
-    'https://web-production-30f2d.up.railway.app',
-    'https://ecommerce-iyil.onrender.com',
-]
+# ── Django Sites Framework ──
+SITE_ID = 1
 
-
-ASGI_APPLICATION = 'puddle.asgi.application'
-
+# ── Channels (WebSocket) ──
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
-
 
 # ── Security Settings ──
 SECURE_BROWSER_XSS_FILTER = True
@@ -163,7 +161,7 @@ SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE = 120960  # 2 weeks
+SESSION_COOKIE_AGE = 1209600  # 2 weeks (সঠিক value — আগে 120960 ছিল যেটা মাত্র ৩৩ ঘণ্টা)
 
 # CSRF Security
 CSRF_COOKIE_HTTPONLY = True
@@ -183,19 +181,16 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-
-    # ── Axes (Brute Force Protection) ──
+# ── Axes (Brute Force Protection) ──
 AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1/6        # 10 minutes (1 hour / 6)
+AXES_COOLOFF_TIME = 1/6        # 10 minutes
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_RESET_ON_SUCCESS = True
 AXES_ENABLE_ADMIN = True
 AXES_LOCKOUT_TEMPLATE = None
-AXES_ONLY_USER_FAILURES = True  # শুধু ওই username lock হবে, IP নয়
+AXES_ONLY_USER_FAILURES = True
 AXES_LOCK_OUT_BY_USER_OR_IP = False
 AXES_USERNAME_FORM_FIELD = 'username'
-
-
 
 # ── Payment Gateway Settings ──
 SSLCOMMERZ_STORE_ID = env('SSLCOMMERZ_STORE_ID', default='')
@@ -206,14 +201,11 @@ BKASH_MERCHANT_NUMBER = env('BKASH_MERCHANT_NUMBER', default='')
 NAGAD_MERCHANT_NUMBER = env('NAGAD_MERCHANT_NUMBER', default='')
 ROCKET_MERCHANT_NUMBER = env('ROCKET_MERCHANT_NUMBER', default='')
 
-
-# Steadfast Courier
+# ── Steadfast Courier ──
 STEADFAST_API_KEY = env('STEADFAST_API_KEY', default='')
 STEADFAST_SECRET_KEY = env('STEADFAST_SECRET_KEY', default='')
 
-
-
-# Email/SMS Notification
+# ── Email Settings ──
 EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = env.int('EMAIL_PORT', default=587)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
@@ -221,15 +213,7 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='CADO Fashion <noreply@gmail.com>')
 
-
-
-SITE_ID = 1
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
+# ── Google OAuth (Allauth) ──
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],
@@ -238,17 +222,14 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/'
 SOCIALACCOUNT_LOGIN_ON_GET = True
-
-
-
-#Goggle Auth System
-RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', default='')
-RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY', default='')
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_STORE_TOKENS = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
+
+# ── reCAPTCHA ──
+RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', default='')
+RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY', default='')
