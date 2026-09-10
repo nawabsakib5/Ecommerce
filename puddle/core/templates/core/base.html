@@ -165,6 +165,76 @@
         </div>
     </nav>
 
+    <!-- ✅ Centralized Flash Messages — সব page-এ কাজ করবে -->
+    {% if messages %}
+    <div id="django-messages" class="fixed top-20 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+        {% for message in messages %}
+        <div
+            data-message
+            class="pointer-events-auto flex items-start gap-3 px-4 py-3.5 rounded-2xl shadow-lg border text-sm font-semibold
+            {% if message.tags == 'error' %}
+                bg-red-50 border-red-200 text-red-800
+            {% elif message.tags == 'success' %}
+                bg-green-50 border-green-200 text-green-800
+            {% elif message.tags == 'warning' %}
+                bg-amber-50 border-amber-200 text-amber-800
+            {% else %}
+                bg-blue-50 border-blue-200 text-blue-800
+            {% endif %}
+            opacity-0 translate-x-4 transition-all duration-300"
+        >
+            <!-- Icon -->
+            <span class="mt-0.5 shrink-0 text-base leading-none">
+                {% if message.tags == 'error' %}❌
+                {% elif message.tags == 'success' %}✅
+                {% elif message.tags == 'warning' %}⚠️
+                {% else %}ℹ️
+                {% endif %}
+            </span>
+
+            <!-- Message Text -->
+            <span class="flex-1 leading-snug">{{ message }}</span>
+
+            <!-- Close Button -->
+            <button
+                onclick="this.closest('[data-message]').remove()"
+                class="shrink-0 ml-1 opacity-50 hover:opacity-100 transition-opacity text-lg leading-none"
+            >&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    // Messages animate in করো, তারপর auto-dismiss করো
+    (function() {
+        var container = document.getElementById('django-messages');
+        if (!container) return;
+
+        var msgs = container.querySelectorAll('[data-message]');
+        msgs.forEach(function(msg, i) {
+            // Animate in — stagger করে একটার পর একটা
+            setTimeout(function() {
+                msg.style.opacity = '1';
+                msg.style.transform = 'translateX(0)';
+            }, i * 150);
+
+            // Auto-dismiss — ৫ সেকেন্ড পর
+            setTimeout(function() {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateX(16px)';
+                setTimeout(function() {
+                    if (msg.parentNode) msg.remove();
+                    // সব message চলে গেলে container সরাও
+                    if (container && !container.querySelector('[data-message]')) {
+                        container.remove();
+                    }
+                }, 300);
+            }, 5000 + i * 150);
+        });
+    })();
+    </script>
+    {% endif %}
+
     <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
