@@ -1,12 +1,17 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Sum, Count
+from django.views.decorators.http import require_POST
 
 from item.models import Item, Category
 from dashboard.models import Profile
 from dashboard.forms import UserUpdateForm, ProfileUpdateForm
 from payment.models import Order, Transaction
+
+
+def is_admin_user(user):
+    return user.is_active and (user.is_staff or user.is_superuser)
 
 
 @login_required
@@ -118,12 +123,10 @@ def buyer_dashboard(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=profile)
 
-    # Buyer এর orders
     buyer_orders = Order.objects.filter(
         buyer=request.user
     ).select_related('item', 'transaction').order_by('-created_at')[:10]
 
-    # Wishlist
     from core.models import Wishlist
     wishlist = Wishlist.objects.filter(
         user=request.user
@@ -139,10 +142,100 @@ def buyer_dashboard(request):
 
 
 @login_required
+@user_passes_test(is_admin_user, login_url='core:index')
 def admin_dashboard(request):
     from dashboard.admin_stats import build_admin_dashboard_data
     data = build_admin_dashboard_data()
     return render(request, 'dashboard/admin.html', data)
+
+
+# ── ✅ User Management Actions ──
+
+@login_required
+@user_passes_test(is_admin_user, login_url='core:index')
+@require_POST
+def freeze_user(request, user_id):
+    """User freeze করো — login করতে পারবে না"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    target = get_object_or_404(User, pk=user_id)
+
+    # নিজেকে বা অন্য superuser-কে freeze করা যাবে না
+    if target == request.user:
+        messages.error(request, "আপনি নিজেকে freeze করতে পারবেন না।")
+        return redirect('dashboard:admin')
+    if target.is_superuser:
+        messages.error(request, "Superuser-কে freeze করা যাবে না।")
+        return redirect('dashboard:admin')
+
+    target.is_frozen = True
+    target.save(update_fields=['is_frozen'])
+    messages.success(request, f"✅ '{target.username}' freeze করা হয়েছে।")
+    return redirect('dashboard:admin')
+
+
+@login_required
+@user_passes_test(is_admin_user, login_url='core:index')
+@require_POST
+def unfreeze_user(request, user_id):
+    """User unfreeze করো — আবার login করতে পারবে"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    target = get_object_or_404(User, pk=user_id)
+    target.is_frozen = False
+    target.save(update_fields=['is_frozen'])
+    messages.success(request, f"✅ '{target.username}' unfreeze করা হয়েছে।")
+    return redirect('dashboard:admin')
+
+
+@login_required
+@user_passes_test(is_admin_user, login_url='core:index')
+@require_POST
+def mark_spam_user(request, user_id):
+    """User-কে spam mark করো"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    target = get_object_or_404(User, pk=user_id)
+
+    if target == request.user or target.is_superuser:
+        messages.error(request, "এই user-কে spam mark করা যাবে না।")
+        return redirect('dashboard:admin')
+
+    target.is_spam = True
+    target.is_frozen = True  # spam হলে automatically freeze
+    target.save(update_fields=['is_spam', 'is_frozen'])
+    messages.success(request, f"⚠️ '{target.username}' spam mark ও freeze করা হয়েছে।")
+    return redirect('dashboard:admin')
+
+
+@login_required
+@user_passes_test(is_admin_user, login_url='core:index')
+@require_POST
+def delete_user(request, user_id):
+    """User delete করো — confirm required"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+    target = get_object_or_404(User, pk=user_id)
+    confirm = request.POST.get('confirm_delete')
+
+    if target == request.user:
+        messages.error(request, "আপনি নিজেকে delete করতে পারবেন না।")
+        return redirect('dashboard:admin')
+    if target.is_superuser:
+        messages.error(request, "Superuser-কে delete করা যাবে না।")
+        return redirect('dashboard:admin')
+    if confirm != 'DELETE':
+        messages.error(request, "Delete confirm করা হয়নি। 'DELETE' টাইপ করুন।")
+        return redirect('dashboard:admin')
+
+    username = target.username
+    target.delete()
+    messages.success(request, f"🗑️ '{username}' সম্পূর্ণ delete করা হয়েছে।")
+    return redirect('dashboard:admin')
 
 
 @login_required
@@ -186,7 +279,6 @@ def update_order_status(request, order_number):
 
             order.save()
 
-            # Email notification
             from core.email_utils import send_order_status_update
             send_order_status_update(order)
 
