@@ -107,10 +107,12 @@
                         <tr>
                             <th>User Details</th>
                             <th>Role</th>
+                            <th>Status</th>
                             <th>Active</th>
                             <th>Sold</th>
                             <th>Revenue</th>
                             <th>Commission</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,14 +140,80 @@
                                     <span class="text-stone-400 text-xs font-bold">—</span>
                                 {% endif %}
                             </td>
+
+                            <!-- ✅ Status column -->
+                            <td>
+                                {% if row.user.is_spam %}
+                                    <span class="px-2 py-0.5 bg-red-50 border border-red-100 text-red-600 text-[10px] font-black uppercase rounded">Spam</span>
+                                {% elif row.user.is_frozen %}
+                                    <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase rounded">Frozen</span>
+                                {% else %}
+                                    <span class="px-2 py-0.5 bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded">Active</span>
+                                {% endif %}
+                            </td>
+
                             <td><span class="font-bold text-slate-500">{{ row.available_count }}</span></td>
                             <td><span class="font-bold text-emerald-600">{{ row.sold_count }}</span></td>
-                            <td><span class="font-bold text-[#0f172a]">${{ row.revenue }}</span></td>
-                            <td><span class="font-bold text-amber-600">${{ row.commission }}</span></td>
+                            <td><span class="font-bold text-[#0f172a]">৳{{ row.revenue }}</span></td>
+                            <td><span class="font-bold text-amber-600">৳{{ row.commission }}</span></td>
+
+                            <!-- ✅ Action buttons -->
+                            <td>
+                                {% if not row.user.is_superuser and row.user != request.user %}
+                                <div class="flex items-center gap-1.5 flex-wrap">
+
+                                    <!-- Freeze / Unfreeze -->
+                                    {% if row.user.is_frozen %}
+                                        <form method="POST" action="{% url 'dashboard:unfreeze_user' row.user.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-lg border border-emerald-100 transition">
+                                                Unfreeze
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST" action="{% url 'dashboard:freeze_user' row.user.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-black uppercase rounded-lg border border-slate-200 transition">
+                                                Freeze
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <!-- Spam -->
+                                    {% if not row.user.is_spam %}
+                                        <form method="POST" action="{% url 'dashboard:mark_spam_user' row.user.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit"
+                                                class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[10px] font-black uppercase rounded-lg border border-amber-100 transition">
+                                                Spam
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <!-- Delete — confirm popup -->
+                                    <button type="button"
+                                        onclick="confirmDelete('{{ row.user.pk }}', '{{ row.user.username }}')"
+                                        class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] font-black uppercase rounded-lg border border-red-100 transition">
+                                        Delete
+                                    </button>
+
+                                    <!-- Hidden delete form -->
+                                    <form id="delete-form-{{ row.user.pk }}" method="POST"
+                                        action="{% url 'dashboard:delete_user' row.user.pk %}" class="hidden">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="confirm_delete" value="DELETE">
+                                    </form>
+                                </div>
+                                {% else %}
+                                    <span class="text-[10px] text-slate-300 font-bold">Protected</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" style="text-align:center;color:#64748b;padding:3rem;font-weight:700;">No users found in database</td>
+                            <td colspan="8" style="text-align:center;color:#64748b;padding:3rem;font-weight:700;">No users found in database</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -201,6 +269,35 @@
 
 <!-- GSAP Premium Admin Dashboard Animations Script -->
 <script>
+    // ✅ Delete Confirm Popup
+    function confirmDelete(userId, username) {
+        // Custom confirm modal
+        const modal = document.createElement('div');
+        modal.innerHTML = `
+            <div class="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4" id="deleteModal">
+                <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🗑️</div>
+                        <h3 class="text-lg font-black text-slate-900">Delete User?</h3>
+                        <p class="text-sm text-slate-500 mt-2 font-semibold">
+                            <span class="text-red-600 font-black">${username}</span> এবং তার সব data মুছে যাবে। এটা undo করা যাবে না।
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="document.getElementById('deleteModal').remove()"
+                            class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase rounded-xl transition">
+                            Cancel
+                        </button>
+                        <button onclick="document.getElementById('delete-form-${userId}').submit()"
+                            class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition">
+                            হ্যাঁ, Delete করো
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+
     // Register GSAP ScrollTrigger
     gsap.registerPlugin(ScrollTrigger);
 
