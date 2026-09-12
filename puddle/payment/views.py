@@ -293,9 +293,12 @@ def sslcommerz_success(request, transaction_id):
                         link=f"/items/{item.id}/",
                     )
 
-                    # ✅ Buyer কে confirmation email (COD-এর মতো SSL-এও পাবে)
-                    from core.email_utils import send_order_confirmation
+                    # ✅ Buyer কে confirmation email
+                    from core.email_utils import send_order_confirmation, send_new_order_to_seller
                     send_order_confirmation(order)
+
+                    # ✅ Seller কে new order email
+                    send_new_order_to_seller(order)
 
                     messages.success(request, "Payment successful! 🎉")
                     return redirect('payment:success', transaction_id=transaction_id)
@@ -409,6 +412,11 @@ def mobile_banking(request, transaction_id):
         order.save()
 
         messages.success(request, f"Payment submitted! We'll verify your {transaction.get_payment_type_display()} payment within 1 hour.")
+
+        # ✅ Admin কে verification pending email
+        from core.email_utils import send_mobile_payment_pending_to_admin
+        send_mobile_payment_pending_to_admin(order)
+
         return redirect('payment:pending', transaction_id=transaction_id)
 
     return render(request, 'payment/mobile_banking.html', {
@@ -443,8 +451,11 @@ def cod_confirm(request, transaction_id):
         order.save(update_fields=['status'])
 
         # Buyer কে confirmation email
-        from core.email_utils import send_order_confirmation
+        from core.email_utils import send_order_confirmation, send_new_order_to_seller
         send_order_confirmation(order)
+
+        # ✅ Seller কে new order email
+        send_new_order_to_seller(order)
 
         messages.success(request, "Order placed! Pay on delivery. 🚚")
         return redirect('payment:success', transaction_id=transaction_id)
@@ -773,6 +784,11 @@ def process_return(request, order_number):
                 message=f"Your return request for '{order.item.name}' has been approved.",
                 notification_type='general',
             )
+
+            # ✅ Buyer কে email notification
+            from core.email_utils import send_return_decision_to_buyer
+            send_return_decision_to_buyer(order, approved=True, admin_note=admin_note)
+
             messages.success(request, "Return approved, stock restored.")
 
         elif action == 'reject':
@@ -790,6 +806,11 @@ def process_return(request, order_number):
                 message=f"Your return request for '{order.item.name}' was rejected. {admin_note}",
                 notification_type='general',
             )
+
+            # ✅ Buyer কে email notification
+            from core.email_utils import send_return_decision_to_buyer
+            send_return_decision_to_buyer(order, approved=False, admin_note=admin_note)
+
             messages.warning(request, "Return rejected.")
 
     return redirect('dashboard:orders')
