@@ -72,6 +72,11 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+
+            # ✅ Welcome email পাঠাও
+            from core.email_utils import send_welcome_email
+            send_welcome_email(user)
+
             return redirect('core:index')
     else:
         form = SignupForm()
