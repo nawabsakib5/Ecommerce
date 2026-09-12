@@ -1,442 +1,517 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Admin Dashboard | CADO Fashion{% endblock %}
 
 {% block content %}
-<!-- Google Fonts, ChartJS, and GSAP Animation Packages -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 <style>
-    .dasher-container {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .dasher-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 800;
-    }
-    
-    /* Sleek Custom Scrollbar for Recent Activity */
-    .sale-list { max-height: 520px; overflow-y: auto; padding-right: 4px; }
-    .sale-list::-webkit-scrollbar { width: 4px; }
-    .sale-list::-webkit-scrollbar-track { background: transparent; }
-    .sale-list::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 10px; }
-    .sale-list::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+* { box-sizing: border-box; }
+.adm { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-    /* Custom Table Styling */
-    .tbl { width: 100%; border-collapse: collapse; }
-    .tbl th {
-        font-size: 0.7rem; font-weight: 700; color: #64748b;
-        text-transform: uppercase; letter-spacing: 0.06em;
-        padding: 0.9rem 1.25rem; text-align: left; white-space: nowrap;
-        background: #f8fafc;
-    }
-    .tbl td { padding: 1rem 1.25rem; border-top: 1px solid #f1f5f9; font-size: 0.85rem; color: #0f172a; }
-    .tbl tr:hover td { background: #f8fafc; }
+/* ── GSAP initial states ── */
+.gs-hero  { opacity:0; transform:translateY(-24px); }
+.gs-stat  { opacity:0; transform:translateY(32px) scale(0.94); }
+.gs-panel { opacity:0; transform:translateY(28px); }
+.gs-table { opacity:0; transform:translateY(28px); }
+
+/* ── Stat Card ── */
+.stat-card {
+    background:white; border-radius:22px;
+    padding:1.5rem 1.75rem;
+    border:1px solid #f1f5f9;
+    box-shadow:0 2px 12px rgba(0,0,0,0.05);
+    position:relative; overflow:hidden;
+    transition:box-shadow 0.3s;
+}
+.stat-card::after {
+    content:''; position:absolute;
+    top:0; left:0; right:0; height:4px;
+    border-radius:22px 22px 0 0;
+}
+.sc-purple::after { background:linear-gradient(90deg,#624bff,#a78bfa); }
+.sc-blue::after   { background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
+.sc-green::after  { background:linear-gradient(90deg,#10b981,#34d399); }
+.sc-gold::after   { background:linear-gradient(90deg,#D4AF37,#f9bf29); }
+
+.stat-icon {
+    width:48px; height:48px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.25rem; margin-bottom:1.1rem;
+}
+.stat-lbl {
+    font-size:0.68rem; font-weight:900; color:#94a3b8;
+    text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;
+}
+.stat-val { font-size:2.4rem; font-weight:900; line-height:1; color:#0f172a; }
+.stat-sub { font-size:0.75rem; font-weight:700; margin-top:8px; }
+
+/* ── Panel ── */
+.panel {
+    background:white; border-radius:22px;
+    border:1px solid #f1f5f9;
+    box-shadow:0 2px 12px rgba(0,0,0,0.05);
+    overflow:hidden;
+}
+.panel-hd {
+    padding:1.25rem 1.75rem;
+    border-bottom:1px solid #f8fafc;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem;
+}
+.panel-title { font-size:0.95rem; font-weight:900; color:#0f172a; }
+.panel-sub   { font-size:0.72rem; color:#94a3b8; font-weight:600; margin-top:2px; }
+.chip {
+    display:inline-flex; align-items:center;
+    padding:4px 12px; border-radius:8px;
+    font-size:0.65rem; font-weight:900;
+    text-transform:uppercase; letter-spacing:0.06em;
+    flex-shrink:0;
+}
+
+/* ── Table ── */
+.utbl { width:100%; border-collapse:collapse; }
+.utbl th {
+    font-size:0.65rem; font-weight:900; color:#94a3b8;
+    text-transform:uppercase; letter-spacing:0.1em;
+    padding:0.95rem 1.25rem; text-align:left;
+    background:#fafbff; border-bottom:2px solid #f1f5f9;
+    white-space:nowrap;
+}
+.utbl td {
+    padding:0.95rem 1.25rem;
+    border-bottom:1px solid #f8fafc;
+    font-size:0.85rem; vertical-align:middle; color:#0f172a;
+}
+.utbl tbody tr:last-child td { border-bottom:none; }
+.utbl tbody tr { transition:background 0.15s; }
+.utbl tbody tr:hover td { background:#fafbff; }
+
+/* ── User Avatar ── */
+.uav {
+    width:38px; height:38px; border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; font-weight:900; flex-shrink:0;
+    background:linear-gradient(135deg,#ede9fe,#ddd6fe); color:#5b21b6;
+}
+
+/* ── Badge ── */
+.bdg {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:4px 11px; border-radius:8px;
+    font-size:0.67rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap;
+}
+
+/* ── Action Button ── */
+.act {
+    display:inline-flex; align-items:center; gap:3px;
+    padding:5px 11px; border-radius:9px;
+    font-size:0.67rem; font-weight:800;
+    text-transform:uppercase; letter-spacing:0.04em;
+    border:1.5px solid transparent; cursor:pointer;
+    transition:all 0.15s; white-space:nowrap;
+    background:none; font-family:inherit;
+}
+.act:hover { transform:translateY(-1px); filter:brightness(0.9); }
+
+/* ── Txn item ── */
+.txn {
+    display:flex; align-items:center; gap:10px;
+    padding:0.85rem 1.5rem;
+    border-bottom:1px solid #f8fafc;
+    transition:background 0.12s;
+}
+.txn:last-child { border-bottom:none; }
+.txn:hover { background:#fafbff; }
+
+/* scrollbar */
+.sc::-webkit-scrollbar { width:4px; }
+.sc::-webkit-scrollbar-track { background:transparent; }
+.sc::-webkit-scrollbar-thumb { background:#e2e8f0; border-radius:10px; }
 </style>
 
-<div class="dasher-container min-h-screen bg-[#f5f6fa] -mx-6 md:-mx-12 px-4 sm:px-6 lg:px-8 py-10 md:py-14 overflow-hidden">
+<div class="adm min-h-screen bg-[#f0f2f8] -mx-6 md:-mx-12 px-5 sm:px-8 lg:px-12 py-10 overflow-hidden">
 
-    <!-- Top Admin Banner (Class header-banner added for GSAP) -->
-    <div class="header-banner max-w-7xl mx-auto mb-10 opacity-0">
-        <div class="relative bg-gradient-to-r from-[#1e293b] to-[#0f172a] rounded-[2.5rem] p-8 md:p-10 shadow-lg overflow-hidden">
-            <div class="absolute right-0 bottom-0 opacity-5 pointer-events-none translate-x-10 translate-y-10">
-                <svg width="280" height="280" fill="currentColor" viewBox="0 0 24 24"><path d="M17 8C15.3 8 13.6 8.7 12.4 10C11.1 8.7 9.4 8 7.7 8C4 8 1 11.2 1 15C1 18.8 4 22 7.7 22C10.7 22 13 19 13 19S15.3 22 18.3 22C22 22 25 18.8 25 15C25 11.2 22 8 18.3 8Z"/></svg>
-            </div>
-            
-            <div class="relative z-10">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[#f9bf29] text-[10px] font-black uppercase tracking-widest mb-3">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#f9bf29] animate-pulse"></span>
-                    Central Administration
-                </span>
-                <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Cotton Web Admin</h1>
-                <p class="text-slate-300 mt-2 max-w-xl text-xs font-bold">
-                    Full platform monitoring — {{ total_users }} users · {{ grand_available }} active listings · {{ grand_sold_qty }} sold items
-                </p>
-            </div>
-        </div>
-    </div>
+    <!-- ── HERO BANNER ── -->
+    <div class="gs-hero mb-8">
+        <div style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#0f172a 100%);border-radius:28px;padding:2.75rem 3.5rem;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(15,23,42,0.25);">
+            <div style="position:absolute;top:-100px;right:-80px;width:380px;height:380px;border-radius:50%;background:rgba(98,75,255,0.1);pointer-events:none;"></div>
+            <div style="position:absolute;bottom:-80px;left:38%;width:240px;height:240px;border-radius:50%;background:rgba(212,175,55,0.06);pointer-events:none;"></div>
+            <div style="position:absolute;top:50%;left:-60px;transform:translateY(-50%);width:180px;height:180px;border-radius:50%;background:rgba(98,75,255,0.06);pointer-events:none;"></div>
 
-    <!-- Dasher Admin Stats Grid (Class stat-box added for GSAP) -->
-    <div class="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-5 gap-5 mb-8">
-        <div class="stat-box bg-white rounded-2xl border border-slate-100 p-5 shadow-xs opacity-0">
-            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Total Users</p>
-            <p class="text-3xl font-black text-[#0f172a] mt-2">{{ total_users }}</p>
-            <p class="text-[10px] text-[#624bff] font-bold mt-1">👥 Registered accounts</p>
-        </div>
-        <div class="stat-box bg-white rounded-2xl border border-slate-100 p-5 shadow-xs opacity-0">
-            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Active Listings</p>
-            <p class="text-3xl font-black text-[#624bff] mt-2">{{ grand_available }}</p>
-            <p class="text-[10px] text-[#624bff] font-bold mt-1">📦 Live on market</p>
-        </div>
-        <div class="stat-box bg-white rounded-2xl border border-slate-100 p-5 shadow-xs opacity-0">
-            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Total Sold</p>
-            <p class="text-3xl font-black text-[#624bff] mt-2">{{ grand_sold_qty }}</p>
-            <p class="text-[10px] text-[#624bff] font-bold mt-1">✅ Dispatched items</p>
-        </div>
-        <div class="stat-box bg-white rounded-2xl border border-slate-100 p-5 shadow-xs opacity-0">
-            <p class="text-[10px] font-black text-[#64748b] uppercase tracking-wider">Revenue</p>
-            <p class="text-3xl font-black text-amber-600 mt-2">${{ grand_sales }}</p>
-            <p class="text-[10px] text-amber-600 font-bold mt-1">💰 Platform GMV</p>
-        </div>
-        <div class="stat-box bg-gradient-to-br from-[#624bff] to-[#523edb] rounded-2xl p-5 shadow-md text-white opacity-0">
-            <p class="text-[10px] font-black text-white/80 uppercase tracking-wider">Commission</p>
-            <p class="text-3xl font-black mt-2">${{ grand_commission }}</p>
-            <p class="text-[10px] text-white/80 font-bold mt-1">{{ commission_rate_pct }}% platform rate</p>
-        </div>
-    </div>
-
-    <!-- Main Grid Panels (Class dashboard-panel added for GSAP) -->
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-
-        <!-- Left Column: Seller Performance table -->
-        <div class="dashboard-panel lg:col-span-8 bg-white rounded-[2rem] border border-slate-100 shadow-xs overflow-hidden opacity-0">
-            <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc] flex items-center justify-between">
+            <div style="position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem;">
                 <div>
-                    <h3 class="text-base font-black text-[#0f172a]">Seller Performance</h3>
-                    <p class="text-xs text-[#64748b] font-semibold mt-0.5">Overview of registered accounts activity</p>
-                </div>
-                <span class="px-3 py-1 bg-[#624bff]/10 text-[#624bff] text-[10px] font-black uppercase rounded-md">{{ total_users }} users registered</span>
-            </div>
-            <div style="overflow-x:auto;">
-                <table class="tbl">
-                    <thead>
-                        <tr>
-                            <th>User Details</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Active</th>
-                            <th>Sold</th>
-                            <th>Revenue</th>
-                            <th>Commission</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in user_rows %}
-                        <tr>
-                            <td>
-                                <div style="display:flex;align-items:center;gap:12px;">
-                                    <div class="av w-9 h-9 rounded-xl flex items-center justify-center text-xs font-extrabold" style="background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a;">
-                                        {{ row.user.username|slice:":1"|upper }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="font-extrabold text-[#0f172a] text-sm truncate">{{ row.user.username|title }}</p>
-                                        <p class="text-[10px] text-[#64748b] font-bold">{{ row.user.email }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                {% if row.user.is_superuser %}
-                                    <span class="px-2 py-0.5 bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-black uppercase rounded">Admin</span>
-                                {% elif row.user.user_type == 'Seller' %}
-                                    <span class="px-2 py-0.5 bg-[#624bff]/10 border border-[#624bff]/20 text-[#624bff] text-[10px] font-black uppercase rounded">Seller</span>
-                                {% elif row.user.user_type == 'Buyer' %}
-                                    <span class="px-2 py-0.5 bg-blue-50 border border-blue-100 text-blue-700 text-[10px] font-black uppercase rounded">Buyer</span>
-                                {% else %}
-                                    <span class="text-stone-400 text-xs font-bold">—</span>
-                                {% endif %}
-                            </td>
-
-                            <!-- ✅ Status column -->
-                            <td>
-                                {% if row.user.is_spam %}
-                                    <span class="px-2 py-0.5 bg-red-50 border border-red-100 text-red-600 text-[10px] font-black uppercase rounded">Spam</span>
-                                {% elif row.user.is_frozen %}
-                                    <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase rounded">Frozen</span>
-                                {% else %}
-                                    <span class="px-2 py-0.5 bg-emerald-50 border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase rounded">Active</span>
-                                {% endif %}
-                            </td>
-
-                            <td><span class="font-bold text-slate-500">{{ row.available_count }}</span></td>
-                            <td><span class="font-bold text-emerald-600">{{ row.sold_count }}</span></td>
-                            <td><span class="font-bold text-[#0f172a]">৳{{ row.revenue }}</span></td>
-                            <td><span class="font-bold text-amber-600">৳{{ row.commission }}</span></td>
-
-                            <!-- ✅ Action buttons -->
-                            <td>
-                                {% if not row.user.is_superuser and row.user != request.user %}
-                                <div class="flex items-center gap-1.5 flex-wrap">
-
-                                    <!-- Freeze / Unfreeze -->
-                                    {% if row.user.is_frozen %}
-                                        <form method="POST" action="{% url 'dashboard:unfreeze_user' row.user.pk %}">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                class="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-lg border border-emerald-100 transition">
-                                                Unfreeze
-                                            </button>
-                                        </form>
-                                    {% else %}
-                                        <form method="POST" action="{% url 'dashboard:freeze_user' row.user.pk %}">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                class="px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 text-[10px] font-black uppercase rounded-lg border border-slate-200 transition">
-                                                Freeze
-                                            </button>
-                                        </form>
-                                    {% endif %}
-
-                                    <!-- Spam -->
-                                    {% if not row.user.is_spam %}
-                                        <form method="POST" action="{% url 'dashboard:mark_spam_user' row.user.pk %}">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[10px] font-black uppercase rounded-lg border border-amber-100 transition">
-                                                Spam
-                                            </button>
-                                        </form>
-                                    {% endif %}
-
-                                    <!-- Delete — confirm popup -->
-                                    <button type="button"
-                                        onclick="confirmDelete('{{ row.user.pk }}', '{{ row.user.username }}')"
-                                        class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] font-black uppercase rounded-lg border border-red-100 transition">
-                                        Delete
-                                    </button>
-
-                                    <!-- Hidden delete form -->
-                                    <form id="delete-form-{{ row.user.pk }}" method="POST"
-                                        action="{% url 'dashboard:delete_user' row.user.pk %}" class="hidden">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="confirm_delete" value="DELETE">
-                                    </form>
-                                </div>
-                                {% else %}
-                                    <span class="text-[10px] text-slate-300 font-bold">Protected</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" style="text-align:center;color:#64748b;padding:3rem;font-weight:700;">No users found in database</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Right Column: Recent Activity list -->
-        <div class="dashboard-panel lg:col-span-4 bg-white rounded-[2rem] border border-slate-100 shadow-xs overflow-hidden opacity-0">
-            <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc]">
-                <h3 class="text-base font-black text-[#0f172a]">Recent Transactions</h3>
-                <p class="text-xs text-[#64748b] font-semibold mt-0.5">Last 20 marketplace sales</p>
-            </div>
-            <div class="p-6">
-                <div class="sale-list">
-                    {% for sale in recent_sales %}
-                    <div class="sale-item flex items-center gap-3 py-3 border-b border-slate-100 last:border-0 last:pb-0">
-                        <div class="w-11 h-11 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 flex items-center justify-center p-1">
-                            {% if sale.item.image %}
-                                <img src="{{ sale.item.image.url }}" class="max-w-full max-h-full object-contain">
-                            {% else %}
-                                <img src="https://picsum.photos/seed/{{ sale.item.id }}/80/80" class="max-w-full max-h-full object-contain">
-                            {% endif %}
-                        </div>
-                        <div style="flex:1;min-width:0;">
-                            <div class="sale-name text-xs font-extrabold text-[#0f172a] truncate">{{ sale.item.name }}</div>
-                            <div class="sale-meta text-[10px] text-slate-400 font-bold mt-0.5">{{ sale.seller.username }} ➔ {{ sale.buyer.username }}</div>
-                            <div class="sale-meta text-[9px] text-[#624bff] font-black mt-1">{{ sale.sold_at|date:"M d, H:i" }}</div>
-                        </div>
-                        <div class="sale-amount text-sm font-black text-[#624bff]">${{ sale.total_amount }}</div>
+                    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.25);padding:6px 18px;border-radius:100px;margin-bottom:1.1rem;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#D4AF37;display:inline-block;animation:pulse-dot 1.5s ease-in-out infinite;"></span>
+                        <span style="color:#D4AF37;font-size:0.68rem;font-weight:900;text-transform:uppercase;letter-spacing:0.14em;">Central Administration</span>
                     </div>
-                    {% empty %}
-                    <div style="text-align:center;color:#64748b;padding:3rem;font-weight:700;" class="text-xs">No transactions recorded yet</div>
-                    {% endfor %}
+                    <h1 style="font-size:2.75rem;font-weight:900;color:white;line-height:1.05;margin-bottom:0.6rem;letter-spacing:-0.02em;">
+                        CADO <span style="background:linear-gradient(135deg,#D4AF37,#f9bf29);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Admin</span> Panel
+                    </h1>
+                    <p style="color:#64748b;font-size:0.875rem;font-weight:600;line-height:1.6;">
+                        {{ total_users }} registered users &nbsp;·&nbsp; {{ grand_available }} active listings &nbsp;·&nbsp; {{ grand_sold_qty }} items sold &nbsp;·&nbsp; {{ commission_rate_pct }}% commission rate
+                    </p>
+                </div>
+
+                <!-- Hero Stats Pills -->
+                <div style="display:flex;gap:0.85rem;flex-wrap:wrap;">
+                    <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:1.1rem 1.75rem;text-align:center;min-width:120px;">
+                        <p style="font-size:0.63rem;font-weight:900;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px;">Revenue</p>
+                        <p style="font-size:1.6rem;font-weight:900;color:white;line-height:1;">৳{{ grand_sales }}</p>
+                    </div>
+                    <div style="background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.22);border-radius:18px;padding:1.1rem 1.75rem;text-align:center;min-width:120px;">
+                        <p style="font-size:0.63rem;font-weight:900;color:rgba(212,175,55,0.6);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px;">Commission</p>
+                        <p style="font-size:1.6rem;font-weight:900;color:#D4AF37;line-height:1;">৳{{ grand_commission }}</p>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- Revenue Breakdown Chart (Class chart-panel-wrap added for GSAP) -->
-    <div class="chart-panel-wrap max-w-7xl mx-auto bg-white rounded-[2.5rem] border border-slate-100 shadow-xs overflow-hidden opacity-0">
-        <div class="px-6 py-5 border-b border-slate-100 bg-[#f8fafc]">
-            <h3 class="text-base font-black text-[#0f172a]">Revenue & Commission Breakdown</h3>
-            <p class="text-xs text-[#64748b] font-semibold mt-0.5">Categorized breakdown per seller account</p>
+    <!-- ── STAT CARDS ── -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:1.5rem;">
+        <div class="stat-card sc-purple gs-stat">
+            <div class="stat-icon" style="background:#ede9fe;">👥</div>
+            <div class="stat-lbl">Total Users</div>
+            <div class="stat-val">{{ total_users }}</div>
+            <div class="stat-sub" style="color:#624bff;">Registered accounts</div>
         </div>
-        <div class="p-8" style="position:relative; height:280px;">
-            <canvas id="revenueChart"></canvas>
+        <div class="stat-card sc-blue gs-stat">
+            <div class="stat-icon" style="background:#e0f2fe;">📦</div>
+            <div class="stat-lbl">Active Listings</div>
+            <div class="stat-val" style="color:#0284c7;">{{ grand_available }}</div>
+            <div class="stat-sub" style="color:#0284c7;">Live on market</div>
+        </div>
+        <div class="stat-card sc-green gs-stat">
+            <div class="stat-icon" style="background:#d1fae5;">✅</div>
+            <div class="stat-lbl">Total Sold</div>
+            <div class="stat-val" style="color:#059669;">{{ grand_sold_qty }}</div>
+            <div class="stat-sub" style="color:#059669;">Items dispatched</div>
+        </div>
+        <div class="stat-card sc-gold gs-stat" style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border-color:#1e1b4b;">
+            <div class="stat-icon" style="background:rgba(212,175,55,0.15);">💰</div>
+            <div class="stat-lbl" style="color:rgba(255,255,255,0.4);">Platform Revenue</div>
+            <div class="stat-val" style="color:white;">৳{{ grand_sales }}</div>
+            <div class="stat-sub" style="color:#D4AF37;">৳{{ grand_commission }} commission</div>
+        </div>
+    </div>
+
+    <!-- ── GRAPHS ROW ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 320px;gap:1.1rem;margin-bottom:1.5rem;">
+
+        <!-- Revenue Bar Chart -->
+        <div class="panel gs-panel">
+            <div class="panel-hd">
+                <div>
+                    <div class="panel-title">Revenue per User</div>
+                    <div class="panel-sub">Seller revenue & commission breakdown</div>
+                </div>
+                <span class="chip" style="background:#ede9fe;color:#5b21b6;">📊 Bar</span>
+            </div>
+            <div style="padding:1.25rem 1.5rem;">
+                <div style="position:relative;height:210px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Distribution Doughnut -->
+        <div class="panel gs-panel">
+            <div class="panel-hd">
+                <div>
+                    <div class="panel-title">User Distribution</div>
+                    <div class="panel-sub">Admin · Seller · Buyer breakdown</div>
+                </div>
+                <span class="chip" style="background:#e0f2fe;color:#0284c7;">🍩 Doughnut</span>
+            </div>
+            <div style="padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:2.5rem;">
+                <div style="position:relative;height:190px;width:190px;flex-shrink:0;">
+                    <canvas id="userChart"></canvas>
+                    <!-- Center label -->
+                    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+                        <span style="font-size:1.75rem;font-weight:900;color:#0f172a;line-height:1;">{{ total_users }}</span>
+                        <span style="font-size:0.65rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em;">Users</span>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.85rem;">
+                    {% for row in user_rows %}{% if row.user.is_superuser %}{% if forloop.first %}
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="width:12px;height:12px;border-radius:4px;background:#f9bf29;flex-shrink:0;"></span>
+                        <div>
+                            <p style="font-size:0.75rem;font-weight:800;color:#0f172a;">Admin</p>
+                            <p style="font-size:0.68rem;color:#94a3b8;font-weight:600;">Superusers</p>
+                        </div>
+                    </div>
+                    {% endif %}{% endif %}{% endfor %}
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="width:12px;height:12px;border-radius:4px;background:#624bff;flex-shrink:0;"></span>
+                        <div>
+                            <p style="font-size:0.75rem;font-weight:800;color:#0f172a;">Sellers</p>
+                            <p style="font-size:0.68rem;color:#94a3b8;font-weight:600;">Product owners</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span style="width:12px;height:12px;border-radius:4px;background:#0ea5e9;flex-shrink:0;"></span>
+                        <div>
+                            <p style="font-size:0.75rem;font-weight:800;color:#0f172a;">Buyers</p>
+                            <p style="font-size:0.68rem;color:#94a3b8;font-weight:600;">Active shoppers</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:0.25rem;padding-top:0.75rem;border-top:1px solid #f1f5f9;">
+                        <p style="font-size:0.68rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;">Total</p>
+                        <p style="font-size:1.6rem;font-weight:900;color:#0f172a;line-height:1.1;">{{ total_users }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="panel gs-panel">
+            <div class="panel-hd">
+                <div>
+                    <div class="panel-title">Recent Transactions</div>
+                    <div class="panel-sub">Last 20 marketplace sales</div>
+                </div>
+            </div>
+            <div class="sc" style="max-height:290px;overflow-y:auto;">
+                {% for sale in recent_sales %}
+                <div class="txn">
+                    <div style="width:38px;height:38px;border-radius:10px;border:1px solid #f1f5f9;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f8fafc;">
+                        {% if sale.item.image %}<img src="{{ sale.item.image.url }}" style="width:100%;height:100%;object-fit:cover;">
+                        {% else %}<span style="font-size:1.1rem;">👗</span>{% endif %}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <p style="font-size:0.8rem;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ sale.item.name }}</p>
+                        <p style="font-size:0.68rem;color:#94a3b8;font-weight:600;">{{ sale.seller.username }} → {{ sale.buyer.username }}</p>
+                        <p style="font-size:0.63rem;color:#cbd5e1;font-weight:600;">{{ sale.sold_at|date:"M d, H:i" }}</p>
+                    </div>
+                    <span style="font-size:0.85rem;font-weight:900;color:#624bff;flex-shrink:0;">৳{{ sale.total_amount }}</span>
+                </div>
+                {% empty %}
+                <div style="text-align:center;padding:2.5rem 1rem;color:#94a3b8;font-size:0.85rem;font-weight:700;">
+                    <div style="font-size:2.5rem;margin-bottom:0.5rem;">📭</div>
+                    No transactions yet
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ── USER MANAGEMENT TABLE ── -->
+    <div class="panel gs-table">
+        <div class="panel-hd">
+            <div>
+                <div class="panel-title">User Management</div>
+                <div class="panel-sub">Freeze, spam or delete accounts</div>
+            </div>
+            <span class="chip" style="background:#0f172a;color:#D4AF37;">{{ total_users }} Users</span>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="utbl">
+                <thead>
+                    <tr>
+                        <th style="min-width:195px;">User</th>
+                        <th style="min-width:85px;">Role</th>
+                        <th style="min-width:95px;">Status</th>
+                        <th style="min-width:65px;text-align:center;">Active</th>
+                        <th style="min-width:65px;text-align:center;">Sold</th>
+                        <th style="min-width:105px;">Revenue</th>
+                        <th style="min-width:110px;">Commission</th>
+                        <th style="min-width:215px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in user_rows %}
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="uav">{{ row.user.username|slice:":1"|upper }}</div>
+                                <div style="min-width:0;">
+                                    <p style="font-size:0.875rem;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">{{ row.user.username }}</p>
+                                    <p style="font-size:0.7rem;color:#94a3b8;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">{{ row.user.email }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if row.user.is_superuser %}<span class="bdg" style="background:#fef3c7;color:#92400e;">👑 Admin</span>
+                            {% elif row.user.user_type == 'Seller' %}<span class="bdg" style="background:#ede9fe;color:#5b21b6;">🏪 Seller</span>
+                            {% else %}<span class="bdg" style="background:#dbeafe;color:#1e40af;">🛒 Buyer</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if row.user.is_spam %}<span class="bdg" style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;">🚫 Spam</span>
+                            {% elif row.user.is_frozen %}<span class="bdg" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;">🔒 Frozen</span>
+                            {% else %}<span class="bdg" style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;">✅ Active</span>{% endif %}
+                        </td>
+                        <td style="text-align:center;font-size:1rem;font-weight:900;color:#475569;">{{ row.available_count }}</td>
+                        <td style="text-align:center;font-size:1rem;font-weight:900;color:#15803d;">{{ row.sold_count }}</td>
+                        <td style="font-size:0.9rem;font-weight:900;color:#0f172a;">৳{{ row.revenue }}</td>
+                        <td style="font-size:0.9rem;font-weight:900;color:#d97706;">৳{{ row.commission }}</td>
+                        <td>
+                            {% if not row.user.is_superuser and row.user != request.user %}
+                            <div style="display:flex;align-items:center;gap:5px;flex-wrap:nowrap;">
+                                {% if row.user.is_frozen %}
+                                    <form method="POST" action="{% url 'dashboard:unfreeze_user' row.user.pk %}">{% csrf_token %}
+                                        <button type="submit" class="act" style="background:#dcfce7;color:#15803d;border-color:#bbf7d0;">✅ Unfreeze</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{% url 'dashboard:freeze_user' row.user.pk %}">{% csrf_token %}
+                                        <button type="submit" class="act" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0;">🔒 Freeze</button>
+                                    </form>
+                                {% endif %}
+                                {% if row.user.is_spam %}
+                                    <form method="POST" action="{% url 'dashboard:unfreeze_user' row.user.pk %}">{% csrf_token %}
+                                        <button type="submit" class="act" style="background:#ede9fe;color:#5b21b6;border-color:#ddd6fe;">🔄 Normal</button>
+                                    </form>
+                                {% else %}
+                                    <form method="POST" action="{% url 'dashboard:mark_spam_user' row.user.pk %}">{% csrf_token %}
+                                        <button type="submit" class="act" style="background:#fef3c7;color:#92400e;border-color:#fde68a;">⚠️ Spam</button>
+                                    </form>
+                                {% endif %}
+                                <button type="button" class="act"
+                                    onclick="confirmDelete('{{ row.user.pk }}','{{ row.user.username }}')"
+                                    style="background:#fee2e2;color:#991b1b;border-color:#fecaca;">🗑️ Delete</button>
+                                <form id="delete-form-{{ row.user.pk }}" method="POST"
+                                    action="{% url 'dashboard:delete_user' row.user.pk %}" style="display:none;">
+                                    {% csrf_token %}<input type="hidden" name="confirm_delete" value="DELETE">
+                                </form>
+                            </div>
+                            {% else %}
+                                <span style="font-size:0.75rem;color:#cbd5e1;font-weight:700;">🛡️ Protected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" style="text-align:center;padding:3rem;color:#94a3b8;font-weight:700;">No users found</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
 </div>
 
-<!-- GSAP Premium Admin Dashboard Animations Script -->
+<!-- ── Delete Modal ── -->
 <script>
-    // ✅ Delete Confirm Popup
-    function confirmDelete(userId, username) {
-        // Custom confirm modal
-        const modal = document.createElement('div');
-        modal.innerHTML = `
-            <div class="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4" id="deleteModal">
-                <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
-                    <div class="text-center mb-6">
-                        <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">🗑️</div>
-                        <h3 class="text-lg font-black text-slate-900">Delete User?</h3>
-                        <p class="text-sm text-slate-500 mt-2 font-semibold">
-                            <span class="text-red-600 font-black">${username}</span> এবং তার সব data মুছে যাবে। এটা undo করা যাবে না।
-                        </p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="document.getElementById('deleteModal').remove()"
-                            class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase rounded-xl transition">
-                            Cancel
-                        </button>
-                        <button onclick="document.getElementById('delete-form-${userId}').submit()"
-                            class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition">
-                            হ্যাঁ, Delete করো
-                        </button>
-                    </div>
-                </div>
-            </div>`;
-        document.body.appendChild(modal);
-    }
+function confirmDelete(userId, username) {
+    document.getElementById('delModal')?.remove();
+    const m = document.createElement('div');
+    m.id = 'delModal';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    m.innerHTML = `
+        <div id="mBox" style="background:white;border-radius:26px;padding:2.5rem;max-width:390px;width:100%;box-shadow:0 30px 70px rgba(0,0,0,0.22);">
+            <div style="text-align:center;margin-bottom:1.75rem;">
+                <div style="width:64px;height:64px;background:#fee2e2;border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.75rem;">🗑️</div>
+                <h3 style="font-size:1.15rem;font-weight:900;color:#0f172a;margin-bottom:8px;">Delete Account?</h3>
+                <p style="font-size:0.875rem;color:#64748b;font-weight:600;line-height:1.6;">
+                    <strong style="color:#dc2626;">${username}</strong>-এর সব data, orders, items মুছে যাবে।<br>এটা undo করা যাবে না।
+                </p>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button onclick="document.getElementById('delModal').remove()"
+                    style="flex:1;padding:0.875rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;font-weight:800;font-size:0.82rem;cursor:pointer;color:#475569;font-family:inherit;text-transform:uppercase;letter-spacing:0.05em;">
+                    Cancel
+                </button>
+                <button onclick="document.getElementById('delete-form-${userId}').submit()"
+                    style="flex:1;padding:0.875rem;background:linear-gradient(135deg,#dc2626,#b91c1c);border:none;border-radius:14px;font-weight:800;font-size:0.82rem;cursor:pointer;color:white;font-family:inherit;text-transform:uppercase;letter-spacing:0.05em;box-shadow:0 4px 16px rgba(220,38,38,0.35);">
+                    হ্যাঁ, Delete করো
+                </button>
+            </div>
+        </div>`;
+    document.body.appendChild(m);
+    m.addEventListener('click', e => { if(e.target===m) m.remove(); });
+    gsap.from('#mBox', { scale:0.85, opacity:0, duration:0.35, ease:'back.out(1.5)' });
+}
 
-    // Register GSAP ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger);
+// ── GSAP & Charts ──
+gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Top Admin Banner reveal animation
-    gsap.to(".header-banner", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
+document.addEventListener('DOMContentLoaded', () => {
+
+    gsap.to('.gs-hero',  { opacity:1, y:0, duration:0.9, ease:'power3.out' });
+    gsap.to('.gs-stat',  { opacity:1, y:0, scale:1, stagger:0.08, duration:0.65, ease:'back.out(1.2)', delay:0.25 });
+    gsap.to('.gs-panel', { opacity:1, y:0, stagger:0.1, duration:0.7, ease:'power3.out', delay:0.45,
+        scrollTrigger:{ trigger:'.gs-panel', start:'top 88%' } });
+    gsap.to('.gs-table', { opacity:1, y:0, duration:0.7, ease:'power3.out', delay:0.2,
+        scrollTrigger:{ trigger:'.gs-table', start:'top 88%' } });
+
+    // Stat card hover
+    document.querySelectorAll('.stat-card').forEach(c => {
+        c.addEventListener('mouseenter', () => gsap.to(c, { y:-7, boxShadow:'0 20px 50px rgba(0,0,0,0.1)', duration:0.28, ease:'power2.out' }));
+        c.addEventListener('mouseleave', () => gsap.to(c, { y:0, boxShadow:'0 2px 12px rgba(0,0,0,0.05)', duration:0.28, ease:'power2.out' }));
     });
 
-    // 2. Elastic staggered reveal for metric boxes
-    gsap.to(".stat-box", {
-        scale: 1,
-        y: 0,
-        opacity: 1,
-        stagger: 0.05,
-        duration: 0.7,
-        ease: "back.out(1.15)",
-        delay: 0.1
-    });
-
-    // 3. Staggered fade and rise for main grid panels
-    gsap.to(".dashboard-panel", {
-        y: 0,
-        opacity: 1,
-        stagger: 0.08,
-        duration: 0.8,
-        ease: "power3.out",
-        delay: 0.2
-    });
-
-    // 4. Scroll triggered reveal for Revenue Chart
-    gsap.to(".chart-panel-wrap", {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-            trigger: ".chart-panel-wrap",
-            start: "top 85%"
-        }
-    });
-
-    // 5. Physics-based Micro-hover interactions for metric cards
-    const statCards = document.querySelectorAll('.stat-box');
-    statCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            gsap.to(card, {
-                y: -5,
-                boxShadow: "0 20px 25px -5px rgba(98, 75, 255, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
-                borderColor: "rgba(98, 75, 255, 0.15)",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-        });
-
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-                y: 0,
-                boxShadow: "none",
-                borderColor: "#f1f5f9",
-                duration: 0.4,
-                ease: "power2.out"
-            });
-        });
-    });
-
-    // Admin Breakdown Chart.js initialization script
-    const labels = [{% for row in user_rows %}"{{ row.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+    // ── Chart Data ──
+    const uLabels  = [{% for row in user_rows %}"{{ row.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
     const revenues = [{% for row in user_rows %}{{ row.revenue }}{% if not forloop.last %},{% endif %}{% endfor %}];
-    const commissions = [{% for row in user_rows %}{{ row.commission }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    const comms    = [{% for row in user_rows %}{{ row.commission }}{% if not forloop.last %},{% endif %}{% endfor %}];
 
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [
-                {
-                    label: 'Revenue',
-                    data: revenues,
-                    backgroundColor: 'rgba(98, 75, 255, 0.85)', /* Signature Indigo */
-                    borderRadius: 8,
-                    borderSkipped: false,
-                },
-                {
-                    label: 'Commission',
-                    data: commissions,
-                    backgroundColor: 'rgba(195, 181, 255, 0.85)', /* Muted Lilac */
-                    borderRadius: 8,
-                    borderSkipped: false,
-                }
+    let admins=0, sellers=0, buyers=0;
+    {% for row in user_rows %}
+        {% if row.user.is_superuser %}admins++;
+        {% elif row.user.user_type == 'Seller' %}sellers++;
+        {% else %}buyers++;{% endif %}
+    {% endfor %}
+
+    const chartDefaults = {
+        tooltip: {
+            backgroundColor:'#fff', borderColor:'#e2e8f0', borderWidth:1,
+            titleColor:'#0f172a', bodyColor:'#64748b', padding:14,
+            titleFont:{ family:'Plus Jakarta Sans', weight:'800' },
+            bodyFont:{ family:'Plus Jakarta Sans' }
+        }
+    };
+
+    // Revenue Bar Chart
+    new Chart(document.getElementById('revenueChart'), {
+        type:'bar',
+        data:{
+            labels: uLabels,
+            datasets:[
+                { label:'Revenue (৳)', data:revenues, backgroundColor:'rgba(98,75,255,0.82)', borderRadius:9, borderSkipped:false },
+                { label:'Commission (৳)', data:comms, backgroundColor:'rgba(212,175,55,0.82)', borderRadius:9, borderSkipped:false }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#64748b',
-                        font: { family: 'Plus Jakarta Sans', size: 12, weight: '700' },
-                        usePointStyle: true,
-                        pointStyleWidth: 8,
-                    }
-                },
-                tooltip: {
-                    backgroundColor: '#ffffff',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
-                    titleColor: '#0f172a',
-                    bodyColor: '#64748b',
-                    titleFont: { family: 'Plus Jakarta Sans', weight: '700' },
-                    bodyFont: { family: 'Plus Jakarta Sans' },
-                    padding: 12,
-                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)',
-                    callbacks: {
-                        label: ctx => ` $${ctx.raw.toLocaleString()}`
-                    }
-                }
+        options:{
+            responsive:true, maintainAspectRatio:false,
+            plugins:{
+                legend:{ labels:{ color:'#64748b', font:{family:'Plus Jakarta Sans',size:11,weight:'700'}, usePointStyle:true, pointStyleWidth:8 } },
+                tooltip:{ ...chartDefaults.tooltip, callbacks:{ label: ctx => ` ৳${ctx.raw.toLocaleString()}` } }
             },
-            scales: {
-                x: {
-                    ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', weight: '700', size: 10 } },
-                    grid: { color: 'rgba(98, 75, 255, 0.03)' },
-                    border: { color: 'rgba(98, 75, 255, 0.05)' }
-                },
-                y: {
-                    ticks: {
-                        color: '#64748b',
-                        font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' },
-                        callback: v => '$' + v.toLocaleString()
-                    },
-                    grid: { color: 'rgba(98, 75, 255, 0.03)' },
-                    border: { color: 'rgba(98, 75, 255, 0.05)' }
-                }
+            scales:{
+                x:{ ticks:{color:'#94a3b8',font:{family:'Plus Jakarta Sans',size:10,weight:'700'}}, grid:{display:false}, border:{display:false} },
+                y:{ ticks:{color:'#94a3b8',font:{family:'Plus Jakarta Sans',size:10,weight:'700'}, callback:v=>'৳'+v}, grid:{color:'rgba(0,0,0,0.04)'}, border:{display:false} }
             }
         }
     });
+
+    // User Doughnut Chart
+    new Chart(document.getElementById('userChart'), {
+        type:'doughnut',
+        data:{
+            labels:['Admin','Seller','Buyer'],
+            datasets:[{ data:[admins,sellers,buyers], backgroundColor:['#f9bf29','#624bff','#0ea5e9'], borderWidth:0, hoverOffset:10 }]
+        },
+        options:{
+            responsive:true, maintainAspectRatio:false, cutout:'70%',
+            plugins:{
+                legend:{ display:false },
+                tooltip:{ ...chartDefaults.tooltip, callbacks:{ label: ctx => ` ${ctx.label}: ${ctx.raw} users` } }
+            }
+        }
+    });
+});
 </script>
+
+<style>
+@keyframes pulse-dot {
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:0.5; transform:scale(1.5); }
+}
+</style>
 {% endblock %}

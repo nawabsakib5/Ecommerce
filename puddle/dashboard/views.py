@@ -185,8 +185,9 @@ def unfreeze_user(request, user_id):
 
     target = get_object_or_404(User, pk=user_id)
     target.is_frozen = False
-    target.save(update_fields=['is_frozen'])
-    messages.success(request, f"✅ '{target.username}' unfreeze করা হয়েছে।")
+    target.is_spam = False  # ✅ unfreeze করলে spam-ও clear হবে
+    target.save(update_fields=['is_frozen', 'is_spam'])
+    messages.success(request, f"✅ '{target.username}' unfreeze ও normal করা হয়েছে।")
     return redirect('dashboard:admin')
 
 
