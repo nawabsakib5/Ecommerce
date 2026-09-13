@@ -70,8 +70,8 @@ class Item(models.Model):
     image = models.ImageField(upload_to='item_images', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
-    original_price = models.FloatField()
-    sale_price = models.FloatField(blank=True, null=True)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2)
+    sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     sale_start = models.DateTimeField(blank=True, null=True)
     sale_end = models.DateTimeField(blank=True, null=True)
 
@@ -208,8 +208,9 @@ class ProductVariant(models.Model):
 
     @property
     def final_price(self):
+        from decimal import Decimal
         base = self.item.sale_price if self.item.is_on_sale else self.item.original_price
-        return float(base) + float(self.additional_price)
+        return base + self.additional_price
 
     @property
     def is_in_stock(self):
