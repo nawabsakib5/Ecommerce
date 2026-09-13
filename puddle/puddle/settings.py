@@ -188,9 +188,9 @@ AXES_LOCK_OUT_AT_FAILURE = True
 AXES_RESET_ON_SUCCESS = True
 AXES_ENABLE_ADMIN = True
 AXES_LOCKOUT_TEMPLATE = None
-AXES_ONLY_USER_FAILURES = True
-AXES_LOCK_OUT_BY_USER_OR_IP = False
 AXES_USERNAME_FORM_FIELD = 'username'
+# ✅ নতুন format — deprecated settings সরানো হয়েছে
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']  # IP + username দুটোই check করবে
 
 # ── Payment Gateway Settings ──
 SSLCOMMERZ_STORE_ID = env('SSLCOMMERZ_STORE_ID', default='')
@@ -226,9 +226,11 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_STORE_TOKENS = True
-ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
+# ✅ নতুন format — deprecated ACCOUNT_USERNAME_REQUIRED সরানো হয়েছে
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'email'}
 
 # ── reCAPTCHA ──
 RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', default='')
