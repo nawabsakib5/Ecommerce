@@ -111,7 +111,40 @@ def initiate_payment(request, item_pk):
     # Price calculation
     unit_price = item.sale_price if item.is_on_sale else item.original_price
     subtotal = unit_price * quantity
-    total_amount = subtotal + delivery_charge
+
+    # ✅ Coupon discount — server-side validate ও apply
+    coupon_code = request.POST.get('coupon_code', '').strip().upper()
+    coupon_discount = 0
+    applied_coupon = None
+
+    if coupon_code:
+        try:
+            from .models import Coupon, CouponUsage
+            coupon = Coupon.objects.get(code=coupon_code)
+
+            # Validate করো
+            if coupon.is_valid():
+                user_usage = CouponUsage.objects.filter(
+                    coupon=coupon, user=request.user
+                ).count()
+
+                if user_usage < coupon.per_user_limit:
+                    order_total_for_coupon = float(subtotal) + delivery_charge
+                    if order_total_for_coupon >= float(coupon.min_order_amount):
+                        coupon_discount = float(coupon.get_discount_amount(order_total_for_coupon))
+
+                        # Free delivery coupon হলে delivery charge 0
+                        if coupon.discount_type == 'free_delivery':
+                            delivery_charge = 0
+                            coupon_discount = 0
+
+                        applied_coupon = coupon
+        except Exception:
+            coupon_discount = 0
+
+    # Final total — discount apply করো
+    total_amount = float(subtotal) + delivery_charge - coupon_discount
+    total_amount = max(total_amount, 0)  # negative হবে না
 
     # Transaction তৈরি
     transaction = Transaction.objects.create(
@@ -131,6 +164,8 @@ def initiate_payment(request, item_pk):
             'quantity': quantity,
             'unit_price': float(unit_price),
             'subtotal': float(subtotal),
+            'coupon_code': coupon_code or None,
+            'coupon_discount': coupon_discount,
         }
     )
 
@@ -147,8 +182,22 @@ def initiate_payment(request, item_pk):
         delivery_phone=delivery_phone,
         delivery_address=delivery_address,
         status='pending_payment',
-        notes=f"Zone: {'Inside Dhaka' if delivery_zone == 'dhaka' else 'Outside Dhaka'} | Delivery: ৳{delivery_charge} | {notes}".strip(' |'),
+        notes=f"Zone: {'Inside Dhaka' if delivery_zone == 'dhaka' else 'Outside Dhaka'} | Delivery: ৳{delivery_charge}{f' | Coupon: {coupon_code} (-৳{coupon_discount})' if coupon_code and coupon_discount else ''} | {notes}".strip(' |'),
     )
+
+    # ✅ Coupon usage record করো
+    if applied_coupon:
+        try:
+            from .models import CouponUsage
+            CouponUsage.objects.get_or_create(
+                coupon=applied_coupon,
+                user=request.user,
+                defaults={'order': order}
+            )
+            applied_coupon.used_count += 1
+            applied_coupon.save(update_fields=['used_count'])
+        except Exception:
+            pass
 
     # Payment type অনুযায়ী redirect
     if payment_type == 'sslcommerz':
@@ -290,8 +339,22 @@ def sslcommerz_success(request, transaction_id):
                         title="Item Sold! 🎉",
                         message=f"Your item '{item.name}' has been sold for ৳{transaction.amount}",
                         notification_type='sale',
-                        link=f"/items/{item.id}/",
+                        link=f"/dashboard/orders/",
                     )
+
+                    # ✅ Admin-দের in-app notification
+                    from django.contrib.auth import get_user_model
+                    User = get_user_model()
+                    admins = User.objects.filter(is_staff=True, is_active=True)
+                    for admin in admins:
+                        if admin != item.user:
+                            Notification.objects.create(
+                                user=admin,
+                                title="New Order 🛒",
+                                message=f"New SSLCommerz order for '{item.name}' — ৳{transaction.amount}",
+                                notification_type='sale',
+                                link=f"/dashboard/orders/",
+                            )
 
                     # ✅ Buyer কে confirmation email
                     from core.email_utils import send_order_confirmation, send_new_order_to_seller
@@ -456,6 +519,21 @@ def cod_confirm(request, transaction_id):
 
         # ✅ Seller কে new order email
         send_new_order_to_seller(order)
+
+        # ✅ Admin-দের in-app notification
+        from core.models import Notification
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        admins = User.objects.filter(is_staff=True, is_active=True)
+        for admin in admins:
+            if admin != order.item.user:
+                Notification.objects.create(
+                    user=admin,
+                    title="New COD Order 🚚",
+                    message=f"New Cash on Delivery order for '{order.item.name}' — ৳{order.total_amount}",
+                    notification_type='sale',
+                    link=f"/dashboard/orders/",
+                )
 
         messages.success(request, "Order placed! Pay on delivery. 🚚")
         return redirect('payment:success', transaction_id=transaction_id)

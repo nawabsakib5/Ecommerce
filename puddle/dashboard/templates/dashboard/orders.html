@@ -180,6 +180,27 @@
             {% endif %}
           {% endif %}
 
+          <!-- ✅ bKash/Nagad/Rocket payment verify — admin only -->
+          {% if request.user.is_staff or request.user.is_superuser %}
+            {% if order.status == 'pending_payment' and order.transaction.payment_type in 'bkash,nagad,rocket' %}
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:#fefce8;border:1.5px solid #fde68a;border-radius:12px;">
+                <span style="font-size:11px;font-weight:700;color:#92400e;">
+                    ⏳ {{ order.transaction.get_payment_type_display }} — Ref: {{ order.transaction.gateway_transaction_id|default:"N/A" }}
+                </span>
+                <form method="POST" action="{% url 'dashboard:verify_mobile_payment' order.order_number %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="od-btn" style="background:#16a34a;color:#fff;padding:6px 12px;font-size:10px;">✅ Verify</button>
+                </form>
+                <form method="POST" action="{% url 'dashboard:verify_mobile_payment' order.order_number %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reject">
+                    <button type="submit" class="od-btn" style="background:#dc2626;color:#fff;padding:6px 12px;font-size:10px;">❌ Reject</button>
+                </form>
+            </div>
+            {% endif %}
+          {% endif %}
+
           {% if request.user == order.item.user or request.user.is_staff %}
             {% if order.status == 'returned' %}
             <form method="post" action="{% url 'payment:process_return' order.order_number %}" style="display:inline;">

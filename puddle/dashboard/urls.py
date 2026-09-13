@@ -10,6 +10,9 @@ urlpatterns = [
     path('orders/', views.orders, name='orders'),
     path('orders/<uuid:order_number>/update/', views.update_order_status, name='update_order_status'),
 
+    # ✅ Mobile Payment Verification — admin only
+    path('orders/<uuid:order_number>/verify-payment/', views.verify_mobile_payment, name='verify_mobile_payment'),
+
     # ✅ User Management Actions — POST only, admin only
     path('users/<int:user_id>/freeze/', views.freeze_user, name='freeze_user'),
     path('users/<int:user_id>/unfreeze/', views.unfreeze_user, name='unfreeze_user'),

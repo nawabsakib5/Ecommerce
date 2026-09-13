@@ -240,6 +240,71 @@ def delete_user(request, user_id):
 
 
 @login_required
+@user_passes_test(is_admin_user, login_url='core:index')
+@require_POST
+def verify_mobile_payment(request, order_number):
+    """Admin bKash/Nagad/Rocket payment manually verify করবে"""
+    order = get_object_or_404(Order, order_number=order_number)
+
+    if order.status != 'pending_payment':
+        messages.warning(request, "এই order আগেই process করা হয়েছে।")
+        return redirect('dashboard:orders')
+
+    action = request.POST.get('action')
+
+    if action == 'approve':
+        # Payment confirm করো
+        if not order.confirm_payment():
+            messages.error(request, "Stock শেষ — payment confirm করা যায়নি।")
+            return redirect('dashboard:orders')
+
+        order.status = 'confirmed'
+        order.save(update_fields=['status'])
+
+        if order.transaction:
+            order.transaction.status = 'completed'
+            order.transaction.save(update_fields=['status'])
+
+        # Buyer কে notification
+        from core.models import Notification
+        Notification.objects.create(
+            user=order.buyer,
+            title="Payment Verified ✅",
+            message=f"আপনার {order.transaction.get_payment_type_display()} payment verify হয়েছে। Order confirmed!",
+            notification_type='general',
+            link=f"/payment/track/{order.order_number}/",
+        )
+
+        # Buyer কে email
+        from core.email_utils import send_order_confirmation
+        send_order_confirmation(order)
+
+        messages.success(request, f"✅ Payment verified! Order #{str(order.order_number)[:8].upper()} confirmed.")
+
+    elif action == 'reject':
+        order.status = 'cancelled'
+        order.save(update_fields=['status'])
+
+        if order.transaction:
+            order.transaction.status = 'failed'
+            order.transaction.save(update_fields=['status'])
+
+        # Buyer কে notification
+        from core.models import Notification
+        Notification.objects.create(
+            user=order.buyer,
+            title="Payment Rejected ❌",
+            message=f"আপনার payment verify করা যায়নি। Order cancel হয়েছে।",
+            notification_type='general',
+            link=f"/dashboard/orders/",
+        )
+
+        messages.error(request, f"❌ Payment rejected. Order #{str(order.order_number)[:8].upper()} cancelled.")
+
+    return redirect('dashboard:orders')
+
+
+@login_required
 def orders(request):
     if request.user.user_type == 'Buyer':
         all_orders = Order.objects.filter(
