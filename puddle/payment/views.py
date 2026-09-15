@@ -1,3 +1,4 @@
+from django_ratelimit.decorators import ratelimit
 import json
 import uuid
 from django.shortcuts import render, redirect, get_object_or_404
@@ -50,6 +51,7 @@ def checkout(request, item_pk):
         'saved_methods': saved_methods,
     })
 
+@ratelimit(key="user", rate="10/m", method="POST", block=True)
 
 @login_required
 @require_POST
@@ -724,6 +726,7 @@ def track_order(request, order_number):
 
 
 @login_required
+@ratelimit(key="user", rate="20/m", method="POST", block=True)
 @require_POST
 def apply_coupon(request):
     """Coupon validate করো — AJAX call"""

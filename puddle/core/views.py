@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.http import JsonResponse
+from django_ratelimit.decorators import ratelimit
 
 from item.models import Item, Category
 from .forms import SignupForm
@@ -50,6 +51,7 @@ def contact(request):
     return render(request, 'core/contact.html')
 
 
+@ratelimit(key="ip", rate="5/m", method="POST", block=True)
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
