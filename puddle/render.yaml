@@ -1,21 +1,45 @@
 services:
   - type: web
-    name: ecommerce
+    name: cado-fashion
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn puddle.wsgi:application
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: daphne puddle.asgi:application --port $PORT --bind 0.0.0.0
     envVars:
       - key: SECRET_KEY
         sync: false
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
-        value: ecommerce-iyil.onrender.com
+        sync: false
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://ecommerce-iyil.onrender.com
+        sync: false
+      - key: DATABASE_URL
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
         sync: false
       - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: SSLCOMMERZ_STORE_ID
+        sync: false
+      - key: SSLCOMMERZ_STORE_PASSWORD
+        sync: false
+      - key: BKASH_MERCHANT_NUMBER
+        sync: false
+      - key: NAGAD_MERCHANT_NUMBER
+        sync: false
+      - key: ROCKET_MERCHANT_NUMBER
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: RECAPTCHA_SITE_KEY
+        sync: false
+      - key: RECAPTCHA_SECRET_KEY
+        sync: false
+      - key: STEADFAST_API_KEY
+        sync: false
+      - key: STEADFAST_SECRET_KEY
         sync: false
