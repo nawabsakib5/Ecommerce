@@ -10,6 +10,50 @@ from .models import Item, Category
 from .forms import NewItemForm, EditItemForm
 
 
+# ── ✅ MIME type validation helper ──
+ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
+ALLOWED_VIDEO_TYPES = {'video/mp4', 'video/quicktime', 'video/webm'}
+ALLOWED_IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp'}
+ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.mov', '.webm'}
+
+
+def validate_image_file(file):
+    """Image file MIME type ও size validate করো"""
+    import os
+    ext = os.path.splitext(file.name)[1].lower()
+
+    if ext not in ALLOWED_IMAGE_EXTENSIONS:
+        return False, f"'{file.name}' — শুধু JPG, PNG, WebP allowed।"
+
+    # File content type check
+    content_type = getattr(file, 'content_type', '')
+    if content_type and content_type not in ALLOWED_IMAGE_TYPES:
+        return False, f"'{file.name}' — invalid file type।"
+
+    if file.size > 5 * 1024 * 1024:
+        return False, f"'{file.name}' — max 5MB allowed।"
+
+    return True, None
+
+
+def validate_video_file(file):
+    """Video file MIME type ও size validate করো"""
+    import os
+    ext = os.path.splitext(file.name)[1].lower()
+
+    if ext not in ALLOWED_VIDEO_EXTENSIONS:
+        return False, "শুধু MP4, MOV, WebM allowed।"
+
+    content_type = getattr(file, 'content_type', '')
+    if content_type and content_type not in ALLOWED_VIDEO_TYPES:
+        return False, "Invalid video file type।"
+
+    if file.size > 50 * 1024 * 1024:
+        return False, "Video max 50MB allowed।"
+
+    return True, None
+
+
 def items(request):
     query = request.GET.get('query', '')
     category_id = request.GET.get('category', 0)
@@ -105,20 +149,22 @@ def new(request):
                 item.shop = request.user.shop
             item.save()
 
-            # Extra images save — max 5MB each
+            # ✅ Extra images — MIME type validate করো
             from .models import ItemImage
             extra_images = request.FILES.getlist('extra_images')
             for i, img in enumerate(extra_images[:5]):
-                if img.size > 5 * 1024 * 1024:
-                    messages.warning(request, f"'{img.name}' is too large. Max 5MB per image.")
+                valid, error = validate_image_file(img)
+                if not valid:
+                    messages.warning(request, error)
                     continue
                 ItemImage.objects.create(item=item, image=img, order=i)
 
-            # Video save — max 50MB
+            # ✅ Video — MIME type validate করো
             product_video = request.FILES.get('product_video')
             if product_video:
-                if product_video.size > 50 * 1024 * 1024:
-                    messages.warning(request, "Video too large. Max 50MB allowed.")
+                valid, error = validate_video_file(product_video)
+                if not valid:
+                    messages.warning(request, error)
                 else:
                     ItemImage.objects.create(
                         item=item,
@@ -152,21 +198,23 @@ def edit(request, pk):
         if form.is_valid():
             form.save()
 
-            # নতুন extra images যোগ করা — max 5MB each
+            # ✅ নতুন extra images — MIME type validate করো
             from .models import ItemImage
             extra_images = request.FILES.getlist('extra_images')
             for i, img in enumerate(extra_images[:5]):
-                if img.size > 5 * 1024 * 1024:
-                    messages.warning(request, f"'{img.name}' is too large. Max 5MB per image.")
+                valid, error = validate_image_file(img)
+                if not valid:
+                    messages.warning(request, error)
                     continue
                 existing_count = item.images.filter(media_type='image').count()
                 ItemImage.objects.create(item=item, image=img, order=existing_count + i)
 
-            # নতুন video যোগ করা — max 50MB
+            # ✅ নতুন video — MIME type validate করো
             product_video = request.FILES.get('product_video')
             if product_video:
-                if product_video.size > 50 * 1024 * 1024:
-                    messages.warning(request, "Video too large. Max 50MB allowed.")
+                valid, error = validate_video_file(product_video)
+                if not valid:
+                    messages.warning(request, error)
                 else:
                     item.images.filter(media_type='video').delete()
                     ItemImage.objects.create(
@@ -186,7 +234,6 @@ def edit(request, pk):
     else:
         form = EditItemForm(instance=item)
 
-    # Existing media pass করো template এ
     existing_images = item.images.filter(media_type='image')
     existing_video = item.images.filter(media_type='video').first()
 
@@ -217,7 +264,6 @@ def delete(request, pk):
     })
 
 
-
 @login_required
 def add_review(request, item_id):
     item = get_object_or_404(Item, pk=item_id)
@@ -237,14 +283,41 @@ def add_review(request, item_id):
     ).exists()
 
     if request.method == 'POST':
-        rating = int(request.POST.get('rating', 5))
+
+        # ✅ Rating 1-5 range validate
+        try:
+            rating = int(request.POST.get('rating', 0))
+        except (ValueError, TypeError):
+            messages.error(request, "Invalid rating value.")
+            return redirect('item:detail', pk=item_id)
+
+        if not (1 <= rating <= 5):
+            messages.error(request, "Rating must be between 1 and 5.")
+            return redirect('item:detail', pk=item_id)
+
         title = request.POST.get('title', '').strip()
         body = request.POST.get('body', '').strip()
-        image = request.FILES.get('review_image')
 
+        # ✅ Body length validate
         if not body:
             messages.error(request, "Review body cannot be empty.")
             return redirect('item:detail', pk=item_id)
+
+        if len(body) < 10:
+            messages.error(request, "Review must be at least 10 characters.")
+            return redirect('item:detail', pk=item_id)
+
+        if len(body) > 2000:
+            messages.error(request, "Review cannot exceed 2000 characters.")
+            return redirect('item:detail', pk=item_id)
+
+        # ✅ Review image MIME type validate
+        image = request.FILES.get('review_image')
+        if image:
+            valid, error = validate_image_file(image)
+            if not valid:
+                messages.error(request, error)
+                return redirect('item:detail', pk=item_id)
 
         review, created = Review.objects.update_or_create(
             user=request.user,
