@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'django_ratelimit',
 ]
 
 MIDDLEWARE = [
@@ -146,9 +145,13 @@ AUTH_USER_MODEL = 'core.CustomUserModel'
 SITE_ID = 1
 
 # ── Channels (WebSocket) ──
+# ✅ Redis Channel Layers — multi-worker safe
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [env('REDIS_URL', default='redis://127.0.0.1:6379')],
+        },
     },
 }
 
@@ -181,6 +184,24 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+# ── Cache Settings ──
+if DEBUG:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'cache_table',
+        }
+    }
+else:
+    # Production — database cache (Redis যোগ হলে পরে switch করা যাবে)
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'cache_table',
+        }
+    }
+
 
 # ── Axes (Brute Force Protection) ──
 AXES_FAILURE_LIMIT = 5
